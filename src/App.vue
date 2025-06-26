@@ -142,12 +142,12 @@ function clearTasks() {
         <Splitter style="flex: 1; overflow: hidden">
 
             <!-- This is the Left Splitter Panel -->
-            <SplitterPanel class="flex flex-col flex-1  m-4 gap-2">
+            <SplitterPanel class="flex flex-col flex-1 gap-2">
 
-                <div id="file_buttons" class="">
-                    <Button class="mr-4" label="Open A Folder" @click="open_folder" icon="pi pi-folder-open" />
-                    <Button class="mr-4" label="Open Files" @click="open_files" icon="pi pi-folder-open" />
-                    <Button class="mr-4" label="Clear All Files" @click="clear_selection" icon="pi pi-folder-open" />
+                <div id="file_buttons" class="ml-4 my-4">
+                    <Button class="mr-4" label="Open A Folder" severity="primary" @click="open_folder" icon="pi pi-folder-open" />
+                    <Button class="mr-4" label="Open Files" severity="primary" @click="open_files" icon="pi pi-file" />
+                    <Button class="mr-4" label="Clear All Files" severity="danger" @click="clear_selection" icon="pi pi-trash" />
                 </div>
 
                 <div id="data_tables" class="flex-1 overflow-hidden">
@@ -164,19 +164,19 @@ function clearTasks() {
             </SplitterPanel>
 
             <!-- This is the Right Splitter Panel -->
-            <SplitterPanel class="flex flex-col flex-1 m-4">
+            <SplitterPanel class="flex flex-col flex-1">
 
-                <div class="flex flex-row">
-                    <Button class="mr-4" @click="addPrefix" label="Add Prefix" />
-                    <Button class="mr-4" @click="addFindReplace" label="Add Find & Replace" />
-                    <Button class="mr-4" @click="clearTasks" label="Clear All Tasks" />
+                <div class="flex flex-row my-4 ml-4">
+                    <Button class="mr-4" severity="primary" @click="addPrefix" label="Add Prefix" icon="pi pi-arrow-circle-left" />
+                    <Button class="mr-4" severity="primary" @click="addFindReplace" label="Add Find & Replace" icon="pi pi-search" />
+                    <Button class="mr-4" severity="danger" @click="clearTasks" label="Clear All Tasks" icon="pi pi-trash" />
                 </div>
 
                 <div v-for="(item, index) in taskList" :key="index" class="item">
 
                     <!-- Prefix Task -->
                     <template v-if="item.Prefix">
-                        <div class="flex flex-row m-4 gap-2">
+                        <div class="flex flex-row ml-4 my-2 gap-2">
 
                             <!-- Prefix Active Checkbox -->
                             <div class="flex items-center gap-2">
@@ -195,11 +195,11 @@ function clearTasks() {
 
                     <!-- Find & Replace Task -->
                     <template v-else-if="item.FindAndReplace">
-                        <div class="flex flex-row m-4 gap-2">
+                        <div class="flex flex-row ml-4 my-2 gap-2">
 
                             <!-- Active Checkbox -->
                             <div class="flex items-center gap-2">
-                                <Checkbox v-model="item.FindAndReplace.active" :inputId="`active-${index}`" name="namefindreplaceactive" binary default-value="true" @change="update_files" />
+                                <Checkbox v-model="item.FindAndReplace.active" :inputId="`active-${index}`" name="namefindreplaceactive" binary @change="update_files" />
                                 <label :for="`active-${index}`" >Active</label>
                             </div>
 
@@ -238,8 +238,8 @@ function clearTasks() {
             </SplitterPanel>
         </Splitter>
 
-        <div id="footer" class="h-10 bg-red-300">
-            Here is the global footer
+        <div id="footer" class="flex flex-row-reverse m-4">
+            <Button label="Batch Rename All Files" size="large" />
 
         </div>
 
@@ -252,8 +252,8 @@ function clearTasks() {
 :root {
 
 
-    color: #0f0f0f;
-    background-color: #f6f6f6;
+    /* color: #0f0f0f;
+    background-color: #f6f6f6; */
 
     font-synthesis: none;
     text-rendering: optimizeLegibility;
