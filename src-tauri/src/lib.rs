@@ -8,17 +8,25 @@ struct WorkingFile {
     active: bool,
 }
 
-impl WorkingFile {
-    fn new(path: String, old_file_name: String, new_file_name: String, active: bool) -> Self{
-        Self {
-            path,
-            old_file_name,
-            new_file_name,
-            active,
-        }
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+enum Tasks {
+    Prefix {
+        text: String,
+        active: bool,
+    },
+    Postfix{
+        text: String,
+        active: bool,
+    },
+    FindAndReplace {
+        find_text: String,
+        replace_text: String,
+        active: bool,
     }
 
 }
+
 
 // App Entry Point
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -54,8 +62,9 @@ fn greet(name: &str) -> String {
 }
 
 #[tauri::command]
-fn open_files(file_names: Vec<String>) -> Vec<WorkingFile> {
+fn open_files(file_names: Vec<String>, task_list: Vec<Tasks>) -> Vec<WorkingFile> {
     use std::path::Path;
+    println!("{:?}", &task_list);
 
     // let mut all_paths: Vec<String> = Vec::new();
     let mut all_paths: Vec<String> = file_names;
@@ -74,7 +83,29 @@ fn open_files(file_names: Vec<String>) -> Vec<WorkingFile> {
             active: true,
         };
         all_working_files.push(working_workingfile);
-    }
+    };
+
+    for file in &mut all_working_files{
+        for task in &task_list {
+            match task {
+                Tasks::Prefix { text, active } => {
+                    if *active {
+                        file.new_file_name = format!("{}{}", text, file.new_file_name);
+                    };
+                },
+                Tasks::Postfix { text, active } => {
+                    if *active{
+                        file.new_file_name = format!("{}{}", file.new_file_name, text);
+                    };
+                },
+                Tasks::FindAndReplace { find_text, replace_text, active } => {
+                    if *active {
+                        file.new_file_name = file.new_file_name.replace(find_text, replace_text);
+                    }
+                },
+            }
+        }
+    };
 
     all_working_files
 }
