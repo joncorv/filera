@@ -12,9 +12,12 @@ import Column from 'primevue/column';
 // import ColumnGroup from 'primevue/columngroup';   // optional
 // import Row from 'primevue/row';                   // optional
 import InputText from 'primevue/inputtext';
-import Checkbox from 'primevue/checkbox';
-import CheckboxGroup from 'primevue/checkboxgroup';
+// import Checkbox from 'primevue/checkbox';
+// import CheckboxGroup from 'primevue/checkboxgroup';
 import FloatLabel from 'primevue/floatlabel';
+
+import ToggleSwitch from 'primevue/toggleswitch';
+
 
 
 
@@ -27,13 +30,13 @@ interface WorkingFile {
   active: boolean;
 }
 
-type Tasks = 
+type Task = 
   | { Prefix: { text: string; active: boolean; } }
   | { Postfix: { text: string; active: boolean; } }
   | { FindAndReplace: { find_text: string; replace_text: string; active: boolean; } };
 
-// Create an array of Tasks
-const taskList = ref<Tasks[]>([]);
+// Create an array of Task
+const taskList = ref<Task[]>([]);
 
 const addPrefix = () => {
   taskList.value.push({
@@ -54,7 +57,7 @@ const addFindReplace = () => {
   });
 };
 
-// Add tasks to the array like this:
+// Add Task to the array like this:
 // taskList.value = [
 //   {
 //     Prefix: {
@@ -125,7 +128,7 @@ function clear_selection(){
     workingFileReturn.value = [];
 }
 
-function clearTasks() {
+function clearTask() {
     taskList.value = [];
     update_files();
 }
@@ -135,32 +138,54 @@ function clearTasks() {
 
 <template>
 
-    <body class="flex flex-col box-border w-screen h-screen m-0 p-0 overflow-hidden">
-        <p class="text-3xl font-bold px-4">Batch Renamer</p>
+    <body class="flex flex-col box-border w-screen h-screen m-0 p-0 overflow-hidden z-0">
 
         <!-- This is the Master Splitter Panel -->
-        <Splitter style="flex: 1; overflow: hidden">
+        <Splitter style="flex: 1; overflow: hidden; background-color: transparent; backdrop-filter: blur(50px); z-index: 40;">
 
             <!-- This is the Left Splitter Panel -->
-            <SplitterPanel class="flex flex-col flex-1 gap-2">
+            <SplitterPanel class="flex flex-col flex-1 gap-0 m-4 rounded-2xl p-4 border border-white/30  backdrop-blur-3xl shadow-lg z-50">
 
-                <div id="file_buttons" class="ml-4 my-4">
-                    <Button class="mr-4" label="Open A Folder" severity="primary" @click="open_folder" icon="pi pi-folder-open" />
+
+                <div id="file_buttons" class="">
+                    <!-- <Button class="mr-4" label="Open A Folder" severity="primary" @click="open_folder" icon="pi pi-folder-open" /> -->
                     <Button class="mr-4" label="Open Files" severity="primary" @click="open_files" icon="pi pi-file" />
                     <Button class="mr-4" label="Clear All Files" severity="danger" @click="clear_selection" icon="pi pi-trash" />
                 </div>
 
-                <div id="data_tables" class="flex-1 overflow-hidden">
-                    <DataTable :value="workingFileReturn" scrollable scrollHeight="flex" size="small" stripedRows
+                <hr class="border-white/30 my-4" />
+
+                <Transition mode="out-in">
+                <div v-if="!number_of_working_files" class="flex-1 justify-items-center flex-row ml-4 mb-2">
+                    <span class="font-thin text-xs font-mono text-center text-black/50"> no files selected </span>
+                </div>
+
+                <div v-else id="data_tables" class="flex-1 overflow-hidden gap-3">
+                    <DataTable :value="workingFileReturn" scrollable scrollHeight="flex" size="small" 
                         tableStyle="min-width: 5rem">
-                        <Column selectionMode="multiple"></Column>
-                        <Column field="old_file_name" header="Old Name" sortable></Column>
-                        <Column field="new_file_name" header="New Name" sortable></Column>
+                        <!-- <Column selectionMode="multiple"></Column> -->
+                        <Column field="old_file_name" header="Old Name" class="text-left mr-2" ></Column>
+                        <Column field="new_file_name" header="New Name" class="text-left mr-2" ></Column>
                         <!-- <Column field="path" header="Full Path"></Column> -->
                         <!-- <Column field="active" header="Active"></Column> -->
                     </DataTable>
                 </div>
-                <div id="selection_info" class="">Total files selected: {{ number_of_working_files }}</div>
+
+                
+               
+
+
+                </Transition>
+
+                <div id="selection_info">
+                    <span class="font-bold">Total Files Selected:</span>
+                    <Transition mode="out-in">
+                        <span class="ml-2">{{ number_of_working_files}}</span>
+                    </Transition>
+                </div>
+
+
+
             </SplitterPanel>
 
             <!-- This is the Right Splitter Panel -->
@@ -169,19 +194,20 @@ function clearTasks() {
                 <div class="flex flex-row my-4 ml-4">
                     <Button class="mr-4" severity="primary" @click="addPrefix" label="Add Prefix" icon="pi pi-arrow-circle-left" />
                     <Button class="mr-4" severity="primary" @click="addFindReplace" label="Add Find & Replace" icon="pi pi-search" />
-                    <Button class="mr-4" severity="danger" @click="clearTasks" label="Clear All Tasks" icon="pi pi-trash" />
+                    <Button class="mr-4" severity="danger" @click="clearTask" label="Clear All Task" icon="pi pi-trash" />
                 </div>
 
+                <TransitionGroup>
                 <div v-for="(item, index) in taskList" :key="index" class="item">
 
                     <!-- Prefix Task -->
                     <template v-if="item.Prefix">
-                        <div class="flex flex-row ml-4 my-2 gap-2">
+                        <div class="flex flex-row ml-4 my-2 gap-4">
 
                             <!-- Prefix Active Checkbox -->
                             <div class="flex items-center gap-2">
-                                <Checkbox v-model="item.Prefix.active" :inputId="`checkbox-${index}`" :name="`active-checkbox${index}`" binary @change="update_files" />
-                                <label :for="`checkbox-${index}`" >Active</label>
+                                <ToggleSwitch v-model="item.Prefix.active" :inputId="`checkbox-${index}`" :name="`active-checkbox${index}`" binary @change="update_files" />
+                                <!-- <label :for="`checkbox-${index}`" >Active</label> -->
                             </div>
 
                             <!-- Prefix Text -->
@@ -198,9 +224,9 @@ function clearTasks() {
                         <div class="flex flex-row ml-4 my-2 gap-2">
 
                             <!-- Active Checkbox -->
-                            <div class="flex items-center gap-2">
-                                <Checkbox v-model="item.FindAndReplace.active" :inputId="`active-${index}`" name="namefindreplaceactive" binary @change="update_files" />
-                                <label :for="`active-${index}`" >Active</label>
+                            <div class="flex items-center gap-2 mr-2">
+                                <ToggleSwitch v-model="item.FindAndReplace.active" :inputId="`active-${index}`" name="namefindreplaceactive" binary @change="update_files" />
+                                <!-- <label :for="`active-${index}`" >Active</label> -->
                             </div>
 
                             <!-- Find Text Field -->
@@ -220,19 +246,12 @@ function clearTasks() {
                         </div>
                     </template>
                 </div>
+                </TransitionGroup>
 
                 <!-- <div class="debug">
                     <strong>Current data:</strong>
                     <pre>{{ JSON.stringify(taskList, null, 2) }}</pre>
                 </div> -->
-
-
-
-
-
-
-
-
 
 
             </SplitterPanel>
@@ -251,9 +270,11 @@ function clearTasks() {
 <style>
 :root {
 
-
-    /* color: #0f0f0f;
-    background-color: #f6f6f6; */
+    background-image: url("src/assets/636977f64331639884919566b3ec074a_edit1.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 
     font-synthesis: none;
     text-rendering: optimizeLegibility;
@@ -261,15 +282,42 @@ function clearTasks() {
     -moz-osx-font-smoothing: grayscale;
     -webkit-text-size-adjust: 100%;
     }
-/* 
-.body {
-    margin: 0;
-    padding-top: 10vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    text-align: center;
-} */
 
+.body {
+    
+    background-image: url("src/assets/636977f64331639884919566b3ec074a_edit1.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    
+}
+
+/* Transition Classes */
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 0.1s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
+}
+
+.p-splitter {
+    --p-splitter-border-width: 0px;
+    --p-splitter-border-color: transparent;
+    --p-splitter-gutter-background: transparent;
+}
+
+.p-datatable {
+
+    --p-datatable-row-background: transparent;
+    --p-datatable-header-cell-background: transparent;
+    --p-datatable-body-cell-border-color: rgba(255, 255, 255, 0.0);
+    --p-datatable-body-cell-border-width: 0px;
+
+ 
+}
 
 </style>

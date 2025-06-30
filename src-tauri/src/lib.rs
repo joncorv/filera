@@ -10,7 +10,7 @@ struct WorkingFile {
 
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-enum Tasks {
+enum Task {
     Prefix {
         text: String,
         active: bool,
@@ -62,7 +62,7 @@ fn greet(name: &str) -> String {
 }
 
 #[tauri::command]
-fn open_files(file_names: Vec<String>, task_list: Vec<Tasks>) -> Vec<WorkingFile> {
+fn open_files(file_names: Vec<String>, task_list: Vec<Task>) -> Vec<WorkingFile> {
     use std::path::Path;
     println!("{:?}", &task_list);
 
@@ -88,17 +88,17 @@ fn open_files(file_names: Vec<String>, task_list: Vec<Tasks>) -> Vec<WorkingFile
     for file in &mut all_working_files{
         for task in &task_list {
             match task {
-                Tasks::Prefix { text, active } => {
+                Task::Prefix { text, active } => {
                     if *active {
                         file.new_file_name = format!("{}{}", text, file.new_file_name);
                     };
                 },
-                Tasks::Postfix { text, active } => {
+                Task::Postfix { text, active } => {
                     if *active{
                         file.new_file_name = format!("{}{}", file.new_file_name, text);
                     };
                 },
-                Tasks::FindAndReplace { find_text, replace_text, active } => {
+                Task::FindAndReplace { find_text, replace_text, active } => {
                     if *active {
                         file.new_file_name = file.new_file_name.replace(find_text, replace_text);
                     }
