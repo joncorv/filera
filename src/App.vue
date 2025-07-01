@@ -18,6 +18,9 @@ import FloatLabel from 'primevue/floatlabel';
 
 import ToggleSwitch from 'primevue/toggleswitch';
 
+import 'primeicons/primeicons.css'
+
+
 
 
 
@@ -144,36 +147,43 @@ function clearTask() {
         <Splitter style="flex: 1; overflow: hidden; background-color: transparent; backdrop-filter: blur(50px); z-index: 40;">
 
             <!-- This is the Left Splitter Panel -->
-            <SplitterPanel class="flex flex-col flex-1 gap-0 m-4 rounded-2xl p-4 border border-white/30  backdrop-blur-3xl shadow-lg z-50">
+            <SplitterPanel class="flex flex-col gap-0 m-4 rounded-2xl p-4 border-2 border-white/30  backdrop-blur-3xl shadow-lg z-50">
 
 
-                <div id="file_buttons" class="">
+                <div id="file_buttons" class="flex flex-row items-center justify-start">
                     <!-- <Button class="mr-4" label="Open A Folder" severity="primary" @click="open_folder" icon="pi pi-folder-open" /> -->
-                    <Button class="mr-4" label="Open Files" severity="primary" @click="open_files" icon="pi pi-file" />
-                    <Button class="mr-4" label="Clear All Files" severity="danger" @click="clear_selection" icon="pi pi-trash" />
+                    <Button class="flex flex-row items-center gap-2 px-3.5 mr-4 h-10 border-2 rounded-full border-white/40 text-black/60 text-sm font-semibold hover:bg-white/20 cursor-pointer " unstyled label="Open Files" @click="open_files" icon="pi pi-file" />
+                    <Button class="flex flex-row items-center gap-2 px-3.5 mr-4 h-10 border-2 rounded-full border-white/40 text-black/60 text-sm font-semibold hover:bg-white/20 cursor-pointer " unstyled  label="Clear All Files" severity="danger" @click="clear_selection" icon="pi pi-trash" />
                 </div>
 
-                <hr class="border-white/30 my-4" />
+                <hr class="border-1 border-white/30 my-4" />
 
                 <Transition mode="out-in">
                 <div v-if="!number_of_working_files" class="flex-1 justify-items-center flex-row ml-4 mb-2">
                     <span class="font-thin text-xs font-mono text-center text-black/50"> no files selected </span>
                 </div>
 
-                <div v-else id="data_tables" class="flex-1 overflow-hidden gap-3">
-                    <DataTable :value="workingFileReturn" scrollable scrollHeight="flex" size="small" 
-                        tableStyle="min-width: 5rem">
-                        <!-- <Column selectionMode="multiple"></Column> -->
-                        <Column field="old_file_name" header="Old Name" class="text-left mr-2" ></Column>
-                        <Column field="new_file_name" header="New Name" class="text-left mr-2" ></Column>
-                        <!-- <Column field="path" header="Full Path"></Column> -->
-                        <!-- <Column field="active" header="Active"></Column> -->
-                    </DataTable>
-                </div>
+               <div v-else id="table-container" class="flex-1 flex flex-col mb-2 min-h-0">
+                    <table class="w-full">
+                        <thead>
+                            <tr>
+                                <th class="px-4 py-2 text-left border-b border-white/30">Old Name</th>
+                                <th class="px-4 py-2 text-left border-b border-white/30">New Name</th>
+                            </tr>
+                        </thead>
+                    </table>
 
-                
-               
-
+                    <div class="flex-1 overflow-y-auto min-h-0">
+                        <table class="w-full">
+                            <tbody>
+                                <tr v-for="(item, index) in workingFileReturn" :key="index" >
+                                    <td class="px-4 py-2 border-b">{{ item.old_file_name }}</td>
+                                    <td class="px-4 py-2 border-b">{{ item.new_file_name }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+               </div>
 
                 </Transition>
 
@@ -191,10 +201,10 @@ function clearTask() {
             <!-- This is the Right Splitter Panel -->
             <SplitterPanel class="flex flex-col flex-1">
 
-                <div class="flex flex-row my-4 ml-4">
-                    <Button class="mr-4" severity="primary" @click="addPrefix" label="Add Prefix" icon="pi pi-arrow-circle-left" />
-                    <Button class="mr-4" severity="primary" @click="addFindReplace" label="Add Find & Replace" icon="pi pi-search" />
-                    <Button class="mr-4" severity="danger" @click="clearTask" label="Clear All Task" icon="pi pi-trash" />
+                <div class="flex flex-row mt-4 mb-2 ml-4">
+                    <Button class="flex flex-row items-center gap-2 px-3.5 mr-4 h-10 border-2 rounded-full border-white/40 text-black/60 text-sm font-semibold hover:bg-white/20 cursor-pointer " unstyled  severity="primary" @click="addPrefix" label="Add Prefix" icon="pi pi-arrow-circle-left" />
+                    <Button class="flex flex-row items-center gap-2 px-3.5 mr-4 h-10 border-2 rounded-full border-white/40 text-black/60 text-sm font-semibold hover:bg-white/20 cursor-pointer" unstyled  severity="primary" @click="addFindReplace" label="Add Find & Replace" icon="pi pi-search" />
+                    <Button class="flex flex-row items-center gap-2 px-3.5 mr-4 h-10 border-2 rounded-full border-white/40 text-black/60 text-sm font-semibold hover:bg-white/20 cursor-pointer" unstyled  severity="danger" @click="clearTask" label="Clear All Task" icon="pi pi-trash" />
                 </div>
 
                 <TransitionGroup>
@@ -202,45 +212,44 @@ function clearTask() {
 
                     <!-- Prefix Task -->
                     <template v-if="item.Prefix">
-                        <div class="flex flex-row ml-4 my-2 gap-4">
+                        <div class="flex flex-row mx-4 my-2 gap-4 border-2 border-white/30 rounded-lg p-2 backdrop-blur-3xl shadow-lg">
 
-                            <!-- Prefix Active Checkbox -->
-                            <div class="flex items-center gap-2">
-                                <ToggleSwitch v-model="item.Prefix.active" :inputId="`checkbox-${index}`" :name="`active-checkbox${index}`" binary @change="update_files" />
-                                <!-- <label :for="`checkbox-${index}`" >Active</label> -->
+                            <!-- Drag Button -->
+                            <div class="flex items-center ml-2 mr-1">
+                                <i class="pi pi-arrows-v hover:cursor-pointer" style="font-size: 1rem"></i>
                             </div>
 
                             <!-- Prefix Text -->
-                            <FloatLabel variant="on">
-                                <InputText :id="`input-text-${index}`" v-model="item.Prefix.text" variant="filled" @input="update_files" />
-                                <label :for="`input-text-${index}`" >Prefix Text</label>
-                            </FloatLabel>
-                            
+                            <InputText placeholder="Prefix Text" fluid size="small" :id="`input-text-${index}`" v-model="item.Prefix.text" variant="filled" @input="update_files" />
+
+                            <!-- Checkbox -->
+                            <div class="flex items-center gap-2 mr-2">
+                                <ToggleSwitch v-model="item.Prefix.active" :inputId="`checkbox-${index}`" :name="`active-checkbox${index}`" binary @change="update_files" />
+                            </div>
+
                         </div>
                     </template>
 
                     <!-- Find & Replace Task -->
                     <template v-else-if="item.FindAndReplace">
-                        <div class="flex flex-row ml-4 my-2 gap-2">
+                        <div class="flex flex-row mx-4 my-2 gap-4 border-2 border-white/30 rounded-lg p-2 backdrop-blur-3xl shadow-lg">
 
-                            <!-- Active Checkbox -->
-                            <div class="flex items-center gap-2 mr-2">
-                                <ToggleSwitch v-model="item.FindAndReplace.active" :inputId="`active-${index}`" name="namefindreplaceactive" binary @change="update_files" />
-                                <!-- <label :for="`active-${index}`" >Active</label> -->
+                            <!-- Drag Button -->
+                            <div class="flex items-center ml-2 mr-1">
+                                <i class="pi pi-arrows-v hover:cursor-pointer" style="font-size: 1rem"></i>
                             </div>
 
                             <!-- Find Text Field -->
-                             <FloatLabel variant="on">
-                                <InputText id="in_label" v-model="item.FindAndReplace.find_text" variant="filled" @input="update_files" />
-                                <label for="in_label">Find</label>
-                            </FloatLabel>
-
+                            <InputText id="in_label" placeholder="Find" fluid size="small"  v-model="item.FindAndReplace.find_text" variant="filled" @input="update_files" />
+                                
                             <!-- Replace Text Field -->
-                             <FloatLabel variant="on">
-                                <InputText id="in_label" v-model="item.FindAndReplace.replace_text" variant="filled" @input="update_files" />
-                                <label for="in_label">Replace</label>
-                            </FloatLabel>
+                                <InputText id="in_label" placeholder="Replace" fluid size="small"  v-model="item.FindAndReplace.replace_text" variant="filled" @input="update_files" />
 
+
+                            <!--  Checkbox -->
+                            <div class="flex items-center gap-2 mr-2">
+                                <ToggleSwitch v-model="item.FindAndReplace.active" :inputId="`active-${index}`" name="namefindreplaceactive" binary @change="update_files" />
+                            </div>
 
 
                         </div>
@@ -270,7 +279,7 @@ function clearTask() {
 <style>
 :root {
 
-    background-image: url("src/assets/636977f64331639884919566b3ec074a_edit1.jpg");
+    background-image: url("src/assets/v960-ning-30.jpg");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
