@@ -147,13 +147,13 @@ function clearTask() {
         <Splitter style="flex: 1; overflow: hidden; background-color: transparent; backdrop-filter: blur(50px); z-index: 40;">
 
             <!-- This is the Left Splitter Panel -->
-            <SplitterPanel class="flex flex-col gap-0 m-4 rounded-2xl p-4 border-2 border-white/30  backdrop-blur-3xl shadow-lg z-50">
+            <SplitterPanel class="flex flex-col gap-0 m-4 rounded-2xl p-4 border-2 border-white/30 bg-white/20 backdrop-blur-3xl shadow-lg z-50">
 
 
                 <div id="file_buttons" class="flex flex-row items-center justify-start">
                     <!-- <Button class="mr-4" label="Open A Folder" severity="primary" @click="open_folder" icon="pi pi-folder-open" /> -->
-                    <Button class="flex flex-row items-center gap-2 px-3.5 mr-4 h-10 border-2 rounded-full border-white/40 text-black/60 text-sm font-semibold hover:bg-white/20 cursor-pointer " unstyled label="Open Files" @click="open_files" icon="pi pi-file" />
-                    <Button class="flex flex-row items-center gap-2 px-3.5 mr-4 h-10 border-2 rounded-full border-white/40 text-black/60 text-sm font-semibold hover:bg-white/20 cursor-pointer " unstyled  label="Clear All Files" severity="danger" @click="clear_selection" icon="pi pi-trash" />
+                    <Button class="reg-button" unstyled label="Open Files" @click="open_files" icon="pi pi-file" />
+                    <Button class="reg-button" unstyled label="Clear All Files" severity="danger" @click="clear_selection" icon="pi pi-trash" />
                 </div>
 
                 <hr class="border-1 border-white/30 my-4" />
@@ -202,9 +202,9 @@ function clearTask() {
             <SplitterPanel class="flex flex-col flex-1">
 
                 <div class="flex flex-row mt-4 mb-2 ml-4">
-                    <Button class="flex flex-row items-center gap-2 px-3.5 mr-4 h-10 border-2 rounded-full border-white/40 text-black/60 text-sm font-semibold hover:bg-white/20 cursor-pointer " unstyled  severity="primary" @click="addPrefix" label="Add Prefix" icon="pi pi-arrow-circle-left" />
-                    <Button class="flex flex-row items-center gap-2 px-3.5 mr-4 h-10 border-2 rounded-full border-white/40 text-black/60 text-sm font-semibold hover:bg-white/20 cursor-pointer" unstyled  severity="primary" @click="addFindReplace" label="Add Find & Replace" icon="pi pi-search" />
-                    <Button class="flex flex-row items-center gap-2 px-3.5 mr-4 h-10 border-2 rounded-full border-white/40 text-black/60 text-sm font-semibold hover:bg-white/20 cursor-pointer" unstyled  severity="danger" @click="clearTask" label="Clear All Task" icon="pi pi-trash" />
+                    <Button class="reg-button" unstyled  severity="primary" @click="addPrefix" label="Add Prefix" icon="pi pi-arrow-circle-left" />
+                    <Button class="reg-button" unstyled  severity="primary" @click="addFindReplace" label="Add Find & Replace" icon="pi pi-search" />
+                    <Button class="reg-button shadow-xl" unstyled  severity="danger" @click="clearTask" label="Clear All Task" icon="pi pi-trash" />
                 </div>
 
                 <TransitionGroup>
@@ -212,7 +212,7 @@ function clearTask() {
 
                     <!-- Prefix Task -->
                     <template v-if="item.Prefix">
-                        <div class="flex flex-row mx-4 my-2 gap-4 border-2 border-white/30 rounded-lg p-2 backdrop-blur-3xl shadow-lg">
+                        <div class="flex flex-row mx-4 my-2 gap-4 border-2 border-white/30 bg-white/40 rounded-lg p-2 backdrop-blur-3xl shadow-lg">
 
                             <!-- Drag Button -->
                             <div class="flex items-center ml-2 mr-1">
@@ -232,7 +232,7 @@ function clearTask() {
 
                     <!-- Find & Replace Task -->
                     <template v-else-if="item.FindAndReplace">
-                        <div class="flex flex-row mx-4 my-2 gap-4 border-2 border-white/30 rounded-lg p-2 backdrop-blur-3xl shadow-lg">
+                        <div class="flex flex-row mx-4 my-2 gap-4 border-2 border-white/30 bg-white/40 rounded-lg p-2 backdrop-blur-3xl shadow-lg">
 
                             <!-- Drag Button -->
                             <div class="flex items-center ml-2 mr-1">
@@ -327,6 +327,31 @@ function clearTask() {
     --p-datatable-body-cell-border-width: 0px;
 
  
+}
+
+.reg-button {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+    padding: calc(var(--spacing) * 4) /* 1rem = 16px */;
+    margin-right: calc(var(--spacing) * 4) /* 1rem = 16px */;
+    height: 2.5rem;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-radius: 9999px;
+    color: color-mix(in oklab, var(--color-black) /* #000 = #000000 */ 60%, transparent);
+    font-weight: 600;
+    font-size: var(--text-sm) /* 0.875rem = 14px */;
+    line-height: var(--tw-leading, var(--text-sm--line-height) /* calc(1.25 / 0.875) ≈ 1.4286 */);
+    background-color: color-mix(in oklab, var(--color-white) /* #fff = #ffffff */ 80%, transparent);
+    box-shadow: black 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -1px;
+    
+    transition: background-color 0.2s ease;
+    &:hover {
+        background-color: color-mix(in oklab, var(--color-white) /* #fff = #ffffff */ 100%, transparent);
+        cursor: pointer;
+    }
+
 }
 
 </style>
