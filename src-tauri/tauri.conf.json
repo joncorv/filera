@@ -12,9 +12,10 @@
   "app": {
     "windows": [
       {
-        "title": "demo2",
+        "title": "Giant Batch Renamer",
         "width": 1200,
-        "height": 800
+        "height": 800,
+        "decorations": true
       }
     ],
     "security": {
