@@ -4,11 +4,13 @@ import './styles.css'; // Tailwind Stuff
 import { invoke } from "@tauri-apps/api/core";
 import { open } from '@tauri-apps/plugin-dialog';
 import { usePosNoise } from "./scripts/usePosNoise"
-import { Button } from "primevue";
+import Button from "primevue";
 import Splitter from 'primevue/splitter';
 import SplitterPanel from 'primevue/splitterpanel';
 import InputText from 'primevue/inputtext';
 import ToggleSwitch from 'primevue/toggleswitch';
+import Select from 'primevue/select';
+
 import 'primeicons/primeicons.css'
 
 
@@ -25,6 +27,16 @@ type Task =
     | { Prefix: { text: string; active: boolean; } }
     | { Postfix: { text: string; active: boolean; } }
     | { FindAndReplace: { find_text: string; replace_text: string; active: boolean; } };
+
+
+const sortChoice = ref();
+const metadata = ref([
+    { name: 'Name', code: 'name' },
+    { name: 'Date Created', code: 'dateCreated' },
+    { name: 'Date Modified', code: 'dateModified' },
+    { name: 'Type', code: 'type' },
+    { name: 'Size', code: 'size' }
+]);
 
 //  <-- === Add unique ID to each task. Needed for proper animation in the DOM === -->
 interface TaskWithId {
@@ -122,10 +134,14 @@ async function update_files() {
 //  <-- === Rename Files on the Rust Backend === -->
 async function rename_files() {
     if (dirtyFilesSelection) {
-        let renameSuccess = await invoke("rename_files", { fileNames: dirtyFilesSelection, taskList: taskList.value.map(t => t.task) });
-        console.log(renameSuccess)
+        let renameSuccess: string = await invoke("rename_files", { fileNames: dirtyFilesSelection, taskList: taskList.value.map(t => t.task) });
 
-        clearSelection();
+        if (renameSuccess.startsWith('Rename Error', 0)) {
+            console.log(renameSuccess);
+        }
+        else {
+            clearSelection();
+        }
     };
 }
 
@@ -134,8 +150,14 @@ function clearSelection() {
     dirtyFilesSelection = null;
     workingFileReturn.value = [];
 }
-function clearTasks() {
-    taskList.value = [];
+async function clearTasks() {
+    const loopLength = taskList.value.length;
+    for (let i = loopLength - 1; i >= 0; i--) {
+        taskList.value.pop();
+        if (i > 0) { // Don't wait after the last iteration
+            await new Promise(resolve => setTimeout(resolve, 40));
+        }
+    }
     update_files();
 }
 function deleteSelectedTask(index: number) {
@@ -192,6 +214,10 @@ const sphere3 = usePosNoise({ size: 1.5, speed: 0.0004, amplitude: 175 })
                     <Button class="reg-button" unstyled label="Open Files" @click="open_files" icon="pi pi-file" />
                     <Button class="reg-button" unstyled label="Clear All Files" severity="danger"
                         @click="clearSelection" icon="pi pi-trash" />
+                    <Select v-model="sortChoice" :options="metadata" optionLabel="name" placeholder="Sort By"
+                        optionValue="code" class="w-full md:w-56" />
+
+
                 </div>
 
                 <!-- <hr class="border-1 border-white/30 my-4" /> -->
@@ -371,23 +397,23 @@ const sphere3 = usePosNoise({ size: 1.5, speed: 0.0004, amplitude: 175 })
 
 /* TransitionGroup styles */
 .ttasks-item {
-    transition: all 0.3s ease;
+    transition: all 0.1s ease;
 }
 
 .ttasks-move,
 .ttasks-enter-active,
 .ttasks-leave-active {
-    transition: all 0.3s ease;
+    transition: all 0.1s ease;
 }
 
 .ttasks-enter-from {
     opacity: 0;
-    transform: translateX(30px);
+    transform: translateY(30px);
 }
 
 .ttasks-leave-to {
     opacity: 0;
-    transform: translateX(-30px);
+    transform: translateX(0px);
 }
 
 .ttasks-leave-active {

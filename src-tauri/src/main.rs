@@ -2,5 +2,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    demo2_lib::run()
+    giant_batch_renamer_lib::run()
 }

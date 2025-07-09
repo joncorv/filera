@@ -1,5 +1,4 @@
 use std::fs::{rename};
-
 use notify_rust::Notification;
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
@@ -10,7 +9,6 @@ struct WorkingFile {
     active: bool,
 }
 
-
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 struct RevertData {
     original: WorkingFile,
@@ -19,20 +17,51 @@ struct RevertData {
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 enum Task {
-    Prefix {
+    CustomText {
         text: String,
-        active: bool,
-    },
-    Postfix{
-        text: String,
+        at_start: bool,
         active: bool,
     },
     FindAndReplace {
         find_text: String,
         replace_text: String,
         active: bool,
-    }
+    },
+    ClearAll {
+        active: bool,
+    },
+    ChangeCase {
+        case_choice: u8,
+        active: bool,
+    },
+    NumSequence {
+        start_num: u64,
+        num_padding: u64,
+        active: bool,
+    },
+    Date {
+        year: bool,
+        month: bool,
+        day: bool,
+        year_4: bool,
+        separator: String,
+        active: bool,
+    },
+    Time {
+        hour_24: bool,
+        ampm: bool,
+        separator: String,
+        active: bool,
+    },
+}
 
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+enum Metadata {
+    Name,
+    DateCreated,
+    DateModified,
+    Type,
+    Size,
 }
 
 // App Entry Point
@@ -43,17 +72,6 @@ pub fn run() {
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![greet, print_something_to_console, open_files, test_working_file, rename_files])
-        .setup(|app| {
-            use tauri_plugin_notification::NotificationExt;
-            app.notification()
-                .builder()
-                .title("Tauri")
-                .body("Tauri is awesome")
-                .show()
-                .unwrap();
-
-            Ok(())
-        })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
@@ -104,21 +122,38 @@ fn process_tasks_on_working_files(mut all_working_files: Vec<WorkingFile>, task_
     for file in &mut all_working_files{
         for task in &task_list {
             match task {
-                Task::Prefix { text, active } => {
+                Task::CustomText { text, at_start, active } => 
+                {
                     if *active {
                         file.new_file_name = format!("{}{}", text, file.new_file_name);
                     };
                 },
-                Task::Postfix { text, active } => {
-                    if *active{
-                        file.new_file_name = format!("{}{}", file.new_file_name, text);
-                    };
-                },
-                Task::FindAndReplace { find_text, replace_text, active } => {
+                Task::FindAndReplace { find_text, replace_text, active } => 
+                {
                     if *active {
                         file.new_file_name = file.new_file_name.replace(find_text, replace_text);
                     }
                 },
+                Task::ClearAll { active } =>
+                {
+
+                },
+                Task::ChangeCase { case_choice, active } =>
+                {
+
+                },
+                Task::NumSequence { start_num, num_padding, active } =>
+                {
+
+                },
+                Task::Date { year, month, day, year_4, separator, active } =>
+                {
+
+                },
+                Task::Time { hour_24, ampm, separator, active } =>
+                {
+                    
+                }
             }
         }
     };
@@ -130,7 +165,7 @@ fn process_tasks_on_working_files(mut all_working_files: Vec<WorkingFile>, task_
 
 #[tauri::command]
 fn open_files(file_names: Vec<String>, task_list: Vec<Task>) -> Vec<WorkingFile> {
-    println!("{:?}", &task_list);
+    // println!("{:?}", &task_list);
 
     let mut all_working_files = file_names_to_working_files(file_names);
     all_working_files = process_tasks_on_working_files(all_working_files, task_list);
@@ -143,30 +178,38 @@ fn rename_files( file_names: Vec<String>, task_list: Vec<Task>) -> String  {
 
     // convert the file_names data to a Vec of WorkingFiles
     let mut all_working_files = file_names_to_working_files(file_names);
-
-    all_working_files = process_tasks_on_working_files(all_working_files, task_list);
     
+    // process tasks on working files
+    all_working_files = process_tasks_on_working_files(all_working_files, task_list);
+
+    let mut rename_errors: Vec<String> = Vec::new();
+    
+    // construct files and write to disk
     for file in &all_working_files {
 
         let path = std::path::Path::new(&file.path);
 
-        // I do need to wrap an error for this.
-        // None() should return an empty string
-        let parent = path.parent().unwrap().to_str().unwrap();
-        let destination = format!("{}/{}", parent, &file.new_file_name);
+        let parent: String;
+        let parent_calc = path.parent();
+        match parent_calc {
+            Some(t) =>  parent = t.to_str().unwrap().to_string(),
+            None => parent = "".to_string(),
+        };
 
-        println!("We weill rename this file: {}", &file.path);
-        println!("To be this file: {}", &destination);
+        let destination = format!("{}/{}", parent, &file.new_file_name);
 
         let rename_result = rename(&file.path, destination);
         match rename_result {
-            Ok(_) => println!("File converted Successfully!"),
-            Err(e) => println!("Rename Error: {}", e),
-        }
+            
+            // If successfully, we do nothing.
+            Ok(_) => {},
 
+            // Log errors to an Array of errors.
+            Err(e) => rename_errors.push(format!("Rename Error: {} \n", e)),
+        }
     };
 
-    return "ok this was a success".to_string();
+    return "Files successfully converted.".to_string();
  
 }
 
@@ -176,11 +219,10 @@ fn rename_files( file_names: Vec<String>, task_list: Vec<Task>) -> String  {
 fn test_working_file(working_file: WorkingFile) -> WorkingFile {
     // let incoming_info = format!("well this is what we got: {:?}", &working_file);
     working_file
-
 }
 
-
 // This should print to the fucking console but it doesn't.
+// This seems to be a linux only issue.
 #[tauri::command]
 fn print_something_to_console(console_title: &str, console_text: &str) -> String {
     let my_line: String = format!("{}\n{}", console_title, console_text);

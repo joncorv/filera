@@ -1,11 +1,11 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "demo2",
+  "productName": "Giant Batch Renamer",
   "version": "0.1.0",
-  "identifier": "com.demo2.app",
+  "identifier": "com.giantbatchrenamer.app",
   "build": {
     "beforeDevCommand": "npm run dev",
-    "devUrl": "http://localhost:1420",
+    "devUrl": "http://localhost:8000",
     "beforeBuildCommand": "npm run build",
     "frontendDist": "../dist"
   },
