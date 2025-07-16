@@ -1,6 +1,9 @@
 use notify_rust::Notification;
+use std::any::Any;
+use std::io::Cursor;
 use std::sync::Mutex;
 use std::{fs::rename, path::PathBuf};
+use tauri::utils::config::parse::EXTENSIONS_SUPPORTED;
 use tauri::{Manager, State};
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
@@ -84,7 +87,7 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![user_open_files])
+        .invoke_handler(tauri::generate_handler![user_open_files, user_update_tasks])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
@@ -96,16 +99,29 @@ fn user_open_files(file_names: Vec<String>, state: State<'_, Mutex<AppState>>) -
     solve_duplicates(file_names, &state);
     // sort_file_names();
     convert_file_names_to_working_files_(&state);
-    // process_tasks_on_working_files_();
-    let file_statuses = convert_working_files_to_file_status(&state);
-    file_statuses
+    process_tasks_on_working_files_(&state);
+    convert_working_files_to_file_status(&state)
 }
+
+#[tauri::command]
 fn user_open_folders() {}
+
+#[tauri::command]
 fn user_sort() {}
-fn user_tasks_update() {}
+
+#[tauri::command]
+fn user_update_tasks(task_list: Vec<Task>, state: State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
+    println!("1st user_update_tasks: {:?}", &task_list);
+    state_update_tasks(task_list, &state);
+    convert_file_names_to_working_files_(&state);
+    process_tasks_on_working_files_(&state);
+    convert_working_files_to_file_status(&state)
+}
+
 fn user_change_target_directory() {}
 fn user_rename_files() {}
 
+#[tauri::command]
 fn solve_duplicates(file_names: Vec<String>, state: &State<'_, Mutex<AppState>>) {
     let mut state = state.lock().unwrap();
     let mut file_names = file_names;
@@ -116,7 +132,15 @@ fn solve_duplicates(file_names: Vec<String>, state: &State<'_, Mutex<AppState>>)
 
 fn state_update_sort() {}
 fn sort_file_names() {}
-fn state_update_tasks() {}
+
+#[tauri::command]
+fn state_update_tasks(task_list: Vec<Task>, state: &State<'_, Mutex<AppState>>) {
+    let mut state = state.lock().unwrap();
+    state.tasks = task_list.clone();
+    println!("2nd state_update_tasks: {:?}", state.tasks);
+}
+
+#[tauri::command]
 fn convert_file_names_to_working_files_(state: &State<'_, Mutex<AppState>>) {
     let mut state = state.lock().unwrap();
     let mut new_working_files: Vec<WorkingFile> = Vec::with_capacity(state.file_names.len());
@@ -134,7 +158,100 @@ fn convert_file_names_to_working_files_(state: &State<'_, Mutex<AppState>>) {
 }
 
 fn state_update_target_directory() {}
-fn process_tasks_on_working_files_() {}
+
+#[tauri::command]
+fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
+    let mut state = state.lock().unwrap();
+    let tasks = &state.tasks;
+    // println!("3rd state_process_tasks: {:?}", &tasks);
+    println!("3rd working_files_begin: {:?}", &state.working_files);
+
+    // if tasks.first() == Task::CustomText {};
+
+    // if tasks.type == TaskType::CustomText
+    let mut my_type = "fuck".to_string();
+    for task in tasks {
+        if let Task::CustomText {
+            text,
+            at_start,
+            active,
+        } = task
+        {
+            my_type = text.clone();
+        }
+    }
+
+    println!("{}", my_type);
+
+    for file in &mut state.working_files {
+        let file_stem = file.target.file_stem().unwrap().to_str().unwrap();
+        let file_extension = file.target.extension().unwrap().to_str().unwrap();
+
+        file.target
+            .set_file_name(format!("{}{}.{}", my_type, file_stem, file_extension))
+    }
+
+    // for file in &mut state.working_files {
+    //     for task in &tasks {
+    //         match task {
+    //             Task::CustomText {
+    //                 text,
+    //                 at_start,
+    //                 active,
+    //             } => {
+    //                 if *active {
+    //                     // let parent = file.target.parent().unwrap();
+    //                     let file_stem = file.target.file_stem().unwrap().to_str().unwrap();
+    //                     let file_extension = file.target.extension().unwrap().to_str().unwrap();
+
+    //                     if *at_start {
+    //                         file.target
+    //                             .set_file_name(format!("{}{}.{}", text, file_stem, file_extension))
+    //                     } else {
+    //                         file.target
+    //                             .set_file_name(format!("{}{}.{}", file_stem, text, file_extension))
+    //                     };
+    //                 }
+    //             }
+    //             Task::FindAndReplace {
+    //                 find_text,
+    //                 replace_text,
+    //                 active,
+    //             } => {
+    //                 // if *active {
+    //                 //     file.new_file_name = file.new_file_name.replace(find_text, replace_text);
+    //                 // }
+    //             }
+    //             Task::ClearAll { active } => {}
+    //             Task::ChangeCase {
+    //                 case_choice,
+    //                 active,
+    //             } => {}
+    //             Task::NumSequence {
+    //                 start_num,
+    //                 num_padding,
+    //                 active,
+    //             } => {}
+    //             Task::Date {
+    //                 year,
+    //                 month,
+    //                 day,
+    //                 year_4,
+    //                 separator,
+    //                 active,
+    //             } => {}
+    //             Task::Time {
+    //                 hour_24,
+    //                 ampm,
+    //                 separator,
+    //                 active,
+    //             } => {}
+    //         }
+    //     }
+    // }
+    println!("3rd working_files_end: {:?}", &state.working_files);
+}
+
 fn state_update_working_files() {}
 fn convert_working_files_to_file_status(state: &State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
     let state = state.lock().unwrap();

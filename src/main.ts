@@ -1,20 +1,17 @@
 import { createApp } from "vue";
 import App from "./App.vue";
-import PrimeVue from 'primevue/config';
-import Aura from '@primeuix/themes/aura'
-import Lara from '@primeuix/themes/lara'
-import Material from '@primeuix/themes/material'
+import PrimeVue from "primevue/config";
+import Aura from "@primeuix/themes/aura";
 
-
-const app = createApp(App)
+const app = createApp(App);
 
 app.use(PrimeVue, {
-    theme: {
-        preset: Aura,
-        options: {
-            darkModeSelector: true,
-        }
-    }
+  theme: {
+    preset: Aura,
+    options: {
+      darkModeSelector: true,
+    },
+  },
 });
 
 app.mount("#app");

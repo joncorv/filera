@@ -21,14 +21,41 @@ interface FileStatus {
 
 //  <-- === Task Type. Contains all Sub Tasks within === -->
 type Task =
-    | { Prefix: { text: string; active: boolean } }
-    | { Postfix: { text: string; active: boolean } }
+    | { CustomText: { text: string; at_start: boolean; active: boolean } }
     | {
-          FindAndReplace: {
-              find_text: string;
-              replace_text: string;
-              active: boolean;
-          };
+          FindAndReplace:
+              | {
+                    find_text: string;
+                    replace_text: string;
+                    active: boolean;
+                }
+              | { ClearAll: { active: boolean } }
+              | { ChangeCase: { case_choice: number; active: boolean } }
+              | {
+                    NumSequence: {
+                        start_num: number;
+                        num_padding: number;
+                        active: boolean;
+                    };
+                }
+              | {
+                    Date: {
+                        year: boolean;
+                        month: boolean;
+                        day: boolean;
+                        year_4: boolean;
+                        separator: string;
+                        active: boolean;
+                    };
+                }
+              | {
+                    Time: {
+                        hour_24: boolean;
+                        ampm: boolean;
+                        separator: string;
+                        active: boolean;
+                    };
+                };
       };
 
 const sortChoice = ref();
@@ -47,10 +74,12 @@ interface TaskWithId {
 }
 
 //  <-- === Type Guards === -->
-const isPrefixTask = (
+const isCustomTextTask = (
     task: Task,
-): task is { Prefix: { text: string; active: boolean } } => {
-    return "Prefix" in task;
+): task is {
+    CustomText: { text: string; at_start: boolean; active: boolean };
+} => {
+    return "CustomText" in task;
 };
 
 const isFindAndReplaceTask = (
@@ -65,23 +94,34 @@ const isFindAndReplaceTask = (
     return "FindAndReplace" in task;
 };
 
+// const isClearAllTask = (
+//     task: Task,
+// ): task is {
+//     ClearAll: {
+//         active: boolean;
+//     };
+// } => {
+//     return "ClearAll" in task;
+// };
+
 //  <-- === Create an array of TaskWithId === -->
 const taskList = ref<TaskWithId[]>([]);
 
 //  <-- === Counter for generating unique IDs === -->
 let taskIdCounter = 0;
 
-const addPrefix = () => {
+const addCustomText = () => {
     taskList.value.push({
         id: taskIdCounter++,
         task: {
-            Prefix: {
+            CustomText: {
                 text: "",
+                at_start: true,
                 active: true,
             },
         },
     });
-    update_files();
+    user_update_tasks();
 };
 
 const addFindReplace = () => {
@@ -95,7 +135,7 @@ const addFindReplace = () => {
             },
         },
     });
-    update_files();
+    user_update_tasks();
 };
 
 let dirtyFilesSelection: string[] | null = null;
@@ -121,10 +161,9 @@ async function open_files() {
 }
 
 //  <-- === Update interface to show latest files === -->
-async function update_files() {
-    if (dirtyFilesSelection) {
-        fileStatusReturn.value = await invoke("open_files", {
-            fileNames: dirtyFilesSelection,
+async function user_update_tasks() {
+    if (taskList.value.length > 0) {
+        fileStatusReturn.value = await invoke("user_update_tasks", {
             taskList: taskList.value.map((t) => t.task),
         });
     }
@@ -160,24 +199,24 @@ async function clearTasks() {
             await new Promise((resolve) => setTimeout(resolve, 40));
         }
     }
-    update_files();
+    user_update_tasks();
 }
 function deleteSelectedTask(index: number) {
     taskList.value.splice(index, 1);
-    update_files();
+    user_update_tasks();
 }
 function moveSelectedTaskUp(index: number) {
     if (index > 0) {
         const [item] = taskList.value.splice(index, 1);
         taskList.value.splice(index - 1, 0, item);
-        update_files();
+        user_update_tasks();
     }
 }
 function moveSelectedTaskDown(index: number) {
     if (index < taskList.value.length - 1) {
         const [item] = taskList.value.splice(index, 1);
         taskList.value.splice(index + 1, 0, item);
-        update_files();
+        user_update_tasks();
     }
 }
 
@@ -343,7 +382,7 @@ const sphere3 = usePosNoise({ size: 1.5, speed: 0.0004, amplitude: 175 });
                         class="reg-button"
                         unstyled
                         severity="primary"
-                        @click="addPrefix"
+                        @click="addCustomText"
                         label="Add Prefix"
                         icon="pi pi-arrow-circle-left"
                     />
@@ -372,7 +411,7 @@ const sphere3 = usePosNoise({ size: 1.5, speed: 0.0004, amplitude: 175 });
                         class="ttasks-item mx-4 my-2"
                     >
                         <!-- === Prefix Task === -->
-                        <template v-if="isPrefixTask(item.task)">
+                        <template v-if="isCustomTextTask(item.task)">
                             <div
                                 class="flex flex-row gap-4 border-2 border-white/30 bg-white/40 rounded-lg p-2 backdrop-blur-lg shadow-lg"
                             >
@@ -401,19 +440,19 @@ const sphere3 = usePosNoise({ size: 1.5, speed: 0.0004, amplitude: 175 });
                                     fluid
                                     size="small"
                                     :id="`input-text-${index}`"
-                                    v-model="item.task.Prefix.text"
+                                    v-model="item.task.CustomText.text"
                                     variant="filled"
-                                    @input="update_files"
+                                    @input="user_update_tasks"
                                 />
 
                                 <!-- === Checkbox === -->
                                 <div class="flex items-center gap-2">
                                     <ToggleSwitch
-                                        v-model="item.task.Prefix.active"
+                                        v-model="item.task.CustomText.active"
                                         :inputId="`checkbox-${index}`"
                                         :name="`active-checkbox${index}`"
                                         binary
-                                        @change="update_files"
+                                        @change="user_update_tasks"
                                     />
                                 </div>
 
@@ -462,7 +501,7 @@ const sphere3 = usePosNoise({ size: 1.5, speed: 0.0004, amplitude: 175 });
                                     size="small"
                                     v-model="item.task.FindAndReplace.find_text"
                                     variant="filled"
-                                    @input="update_files"
+                                    @input="user_update_tasks"
                                 />
 
                                 <!-- ===Replace Text Field === -->
@@ -475,7 +514,7 @@ const sphere3 = usePosNoise({ size: 1.5, speed: 0.0004, amplitude: 175 });
                                         item.task.FindAndReplace.replace_text
                                     "
                                     variant="filled"
-                                    @input="update_files"
+                                    @input="user_update_tasks"
                                 />
 
                                 <!-- === Checkbox === -->
@@ -487,7 +526,7 @@ const sphere3 = usePosNoise({ size: 1.5, speed: 0.0004, amplitude: 175 });
                                         :inputId="`active-${index}`"
                                         name="namefindreplaceactive"
                                         binary
-                                        @change="update_files"
+                                        @change="user_update_tasks"
                                     />
                                 </div>
 
