@@ -242,7 +242,8 @@ async function rename_files() {
 
 //  <-- === All Task Functions === -->
 async function clearFiles() {
-    fileStatusReturn.value = await invoke("user_clear_files");
+    fileStatusReturn.value = [];
+    await invoke("user_clear_files");
 }
 
 async function clearTasks() {

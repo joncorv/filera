@@ -108,11 +108,13 @@ fn user_open_files(file_names: Vec<String>, state: State<'_, Mutex<AppState>>) -
 fn user_open_folders() {}
 
 #[tauri::command]
-fn user_clear_files(state: State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
+fn user_clear_files(state: State<'_, Mutex<AppState>>) {
     let mut state = state.lock().unwrap();
     state.file_names.clear();
     state.working_files.clear();
-    convert_working_files_to_file_status(&state)
+
+    // let empty_file_status: Vec<FileStatus> = Vec::new();
+    // convert_working_files_to_file_status(&state)
 }
 
 #[tauri::command]
