@@ -84,7 +84,11 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![user_open_files, user_update_tasks])
+        .invoke_handler(tauri::generate_handler![
+            user_open_files,
+            user_update_tasks,
+            user_clear_files
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
@@ -102,6 +106,14 @@ fn user_open_files(file_names: Vec<String>, state: State<'_, Mutex<AppState>>) -
 
 #[tauri::command]
 fn user_open_folders() {}
+
+#[tauri::command]
+fn user_clear_files(state: State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
+    let mut state = state.lock().unwrap();
+    state.file_names.clear();
+    state.working_files.clear();
+    convert_working_files_to_file_status(&state)
+}
 
 #[tauri::command]
 fn user_sort() {}
