@@ -104,8 +104,8 @@ fn user_open_files(file_names: Vec<String>, state: State<'_, Mutex<AppState>>) -
     convert_working_files_to_file_status(&state)
 }
 
-#[tauri::command]
-fn user_open_folders() {}
+// #[tauri::command]
+// fn user_open_folders() {}
 
 #[tauri::command]
 fn user_clear_files(state: State<'_, Mutex<AppState>>) {
@@ -117,8 +117,8 @@ fn user_clear_files(state: State<'_, Mutex<AppState>>) {
     // convert_working_files_to_file_status(&state)
 }
 
-#[tauri::command]
-fn user_sort() {}
+// #[tauri::command]
+// fn user_sort() {}
 
 #[tauri::command]
 fn user_update_tasks(task_list: Vec<Task>, state: State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
@@ -128,8 +128,8 @@ fn user_update_tasks(task_list: Vec<Task>, state: State<'_, Mutex<AppState>>) ->
     convert_working_files_to_file_status(&state)
 }
 
-fn user_change_target_directory() {}
-fn user_rename_files() {}
+// fn user_change_target_directory() {}
+// fn user_rename_files() {}
 
 #[tauri::command]
 fn solve_duplicates(file_names: Vec<String>, state: &State<'_, Mutex<AppState>>) {
@@ -140,8 +140,8 @@ fn solve_duplicates(file_names: Vec<String>, state: &State<'_, Mutex<AppState>>)
     state.file_names.dedup();
 }
 
-fn state_update_sort() {}
-fn sort_file_names() {}
+// fn state_update_sort() {}
+// fn sort_file_names() {}
 
 #[tauri::command]
 fn state_update_tasks(task_list: Vec<Task>, state: &State<'_, Mutex<AppState>>) {
@@ -166,7 +166,7 @@ fn convert_file_names_to_working_files_(state: &State<'_, Mutex<AppState>>) {
     state.working_files = new_working_files;
 }
 
-fn state_update_target_directory() {}
+// fn state_update_target_directory() {}
 
 #[tauri::command]
 fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
@@ -186,9 +186,24 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
                     active,
                 } => {
                     if *active {
-                        // let parent = file.target.parent().unwrap();
-                        let file_stem = file.target.file_stem().unwrap().to_string_lossy();
-                        let file_extension = file.target.extension().unwrap().to_string_lossy();
+
+                        // instantiate empty strings for processing
+                        let file_stem: String;
+                        let file_extension: String;
+
+                        // calculate the file_stem with error handling
+                        let file_stem_calc = file.target.file_stem();
+                        match file_stem_calc {
+                            Some(t) => file_stem = t.to_string_lossy().to_string(),
+                            None => file_stem = "".to_string(),
+                        };
+
+                        // calculate the file_extension with error handling
+                        let file_extension_calc = file.target.extension();
+                        match file_extension_calc {
+                            Some(t) => file_extension =  t.to_string_lossy().to_string(),
+                            None => file_extension = "".to_string(),
+                        }
 
                         if *at_start {
                             file.target
@@ -205,6 +220,16 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
                     active,
                 } => {
                     if *active {
+                        // instantiate a new file name 
+                        // let file_name: String;
+
+                        // let file_name_calc = file.target.file_name();
+
+                        // match file_name_calc {
+                        //     Some(t) => t,
+                        //     None => ,
+                        // };
+                        
                         let new_file_name = file
                             .target
                             .file_name()

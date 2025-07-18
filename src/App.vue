@@ -22,12 +22,40 @@ interface FileStatus {
 //  <-- === Task Type. Contains all Sub Tasks within === -->
 type Task =
     | { CustomText: { text: string; at_start: boolean; active: boolean } }
-    | { FindAndReplace: { find_text: string; replace_text: string; active: boolean } }
+    | {
+          FindAndReplace: {
+              find_text: string;
+              replace_text: string;
+              active: boolean;
+          };
+      }
     | { ClearAll: { active: boolean } }
     | { ChangeCase: { case_choice: number; active: boolean } }
-    | { NumSequence: { start_num: number; num_padding: number; active: boolean } }
-    | { Date: { year: boolean; month: boolean; day: boolean; year_4: boolean; separator: string; active: boolean } }
-    | { Time: { hour_24: boolean; ampm: boolean; separator: string; active: boolean } };
+    | {
+          NumSequence: {
+              start_num: number;
+              num_padding: number;
+              active: boolean;
+          };
+      }
+    | {
+          Date: {
+              year: boolean;
+              month: boolean;
+              day: boolean;
+              year_4: boolean;
+              separator: string;
+              active: boolean;
+          };
+      }
+    | {
+          Time: {
+              hour_24: boolean;
+              ampm: boolean;
+              separator: string;
+              active: boolean;
+          };
+      };
 
 const sortChoice = ref();
 const metadata = ref([
@@ -46,7 +74,7 @@ interface TaskWithId {
 
 //  <-- === Type Guards === -->
 const isCustomTextTask = (
-    task: Task,
+    task: Task
 ): task is {
     CustomText: { text: string; at_start: boolean; active: boolean };
 } => {
@@ -54,15 +82,19 @@ const isCustomTextTask = (
 };
 
 const isFindAndReplaceTask = (
-    task: Task,
+    task: Task
 ): task is {
-    FindAndReplace: { find_text: string; replace_text: string; active: boolean };
+    FindAndReplace: {
+        find_text: string;
+        replace_text: string;
+        active: boolean;
+    };
 } => {
     return "FindAndReplace" in task;
 };
 
 const isClearAllTask = (
-    task: Task,
+    task: Task
 ): task is {
     ClearAll: { active: boolean };
 } => {
@@ -70,7 +102,7 @@ const isClearAllTask = (
 };
 
 const isChangeCaseTask = (
-    task: Task,
+    task: Task
 ): task is {
     ChangeCase: { case_choice: number; active: boolean };
 } => {
@@ -78,7 +110,7 @@ const isChangeCaseTask = (
 };
 
 const isNumSequenceTask = (
-    task: Task,
+    task: Task
 ): task is {
     NumSequence: { start_num: number; num_padding: number; active: boolean };
 } => {
@@ -86,17 +118,29 @@ const isNumSequenceTask = (
 };
 
 const isDateTask = (
-    task: Task,
+    task: Task
 ): task is {
-    Date: { year: boolean; month: boolean; day: boolean; year_4: boolean; separator: string; active: boolean };
+    Date: {
+        year: boolean;
+        month: boolean;
+        day: boolean;
+        year_4: boolean;
+        separator: string;
+        active: boolean;
+    };
 } => {
     return "Date" in task;
 };
 
 const isTimeTask = (
-    task: Task,
+    task: Task
 ): task is {
-    Time: { hour_24: boolean; ampm: boolean; separator: string; active: boolean };
+    Time: {
+        hour_24: boolean;
+        ampm: boolean;
+        separator: string;
+        active: boolean;
+    };
 } => {
     return "Time" in task;
 };
@@ -169,7 +213,7 @@ const addDate = () => {
     taskList.value.push({
         id: taskIdCounter++,
         task: {
-            NumSequence: {
+            Date: {
                 year: true,
                 month: true,
                 day: true,
@@ -315,29 +359,13 @@ function moveSelectedTaskDown(index: number) {
         <!-- === Master Splitter Panel === -->
         <Splitter style="flex: 1; overflow: hidden; background-color: transparent; z-index: 40">
             <!-- === Left Splitter Panel === -->
-            <SplitterPanel
-                class="flex flex-col gap-0 m-4 rounded-2xl p-4 border-2 border-white/30 bg-white/20 backdrop-blur-lg shadow-lg z-50"
-            >
+            <SplitterPanel class="flex flex-col gap-0 m-4 rounded-2xl p-4 border-2 border-white/30 bg-white/20 backdrop-blur-lg shadow-lg z-50">
                 <!-- === File Buttons === -->
                 <div id="file_buttons" class="flex flex-row items-center justify-start mb-4">
                     <!-- <Button class="mr-4" label="Open A Folder" severity="primary" @click="open_folder" icon="pi pi-folder-open" /> -->
                     <Button class="reg-button" unstyled label="Open Files" @click="open_files" icon="pi pi-file" />
-                    <Button
-                        class="reg-button"
-                        unstyled
-                        label="Clear All Files"
-                        severity="danger"
-                        @click="clearFiles"
-                        icon="pi pi-trash"
-                    />
-                    <Select
-                        v-model="sortChoice"
-                        :options="metadata"
-                        optionLabel="name"
-                        placeholder="Sort By"
-                        optionValue="code"
-                        class="w-full md:w-56"
-                    />
+                    <Button class="reg-button" unstyled label="Clear All Files" severity="danger" @click="clearFiles" icon="pi pi-trash" />
+                    <Select v-model="sortChoice" :options="metadata" optionLabel="name" placeholder="Sort By" optionValue="code" class="w-full md:w-56" />
                 </div>
 
                 <!-- <hr class="border-1 border-white/30 my-4" /> -->
@@ -349,11 +377,7 @@ function moveSelectedTaskDown(index: number) {
                     </div>
 
                     <!-- === File Table === -->
-                    <div
-                        v-else
-                        id="table-container"
-                        class="flex-1 flex flex-col mb-2 min-h-0 text-sm bg-white/50 rounded-sm border-1 border-black/10"
-                    >
+                    <div v-else id="table-container" class="flex-1 flex flex-col mb-2 min-h-0 text-sm bg-white/50 rounded-sm border-1 border-black/10">
                         <table class="w-full">
                             <thead>
                                 <tr>
@@ -392,46 +416,19 @@ function moveSelectedTaskDown(index: number) {
             <!-- === Right Splitter Panel === -->
             <SplitterPanel class="flex flex-col flex-1">
                 <div class="flex flex-row mt-4 mb-2 ml-4">
-                    <Button
-                        class="reg-button"
-                        unstyled
-                        severity="primary"
-                        @click="addCustomText"
-                        label="Add Custom Text"
-                        icon="pi pi-arrow-circle-left"
-                    />
-                    <Button
-                        class="reg-button"
-                        unstyled
-                        severity="primary"
-                        @click="addFindReplace"
-                        label="Add Find & Replace"
-                        icon="pi pi-search"
-                    />
-                    <Button
-                        class="reg-button shadow-xl"
-                        unstyled
-                        severity="danger"
-                        @click="clearTasks"
-                        label="Clear All Tasks"
-                        icon="pi pi-trash"
-                    />
+                    <Button class="reg-button" unstyled severity="primary" @click="addCustomText" label="Add Custom Text" icon="pi pi-arrow-circle-left" />
+                    <Button class="reg-button" unstyled severity="primary" @click="addFindReplace" label="Add Find & Replace" icon="pi pi-search" />
+                    <Button class="reg-button shadow-xl" unstyled severity="danger" @click="clearTasks" label="Clear All Tasks" icon="pi pi-trash" />
                 </div>
 
                 <TransitionGroup tag="div" name="ttasks" class="relative">
                     <div v-for="(item, index) in taskList" :key="item.id" class="ttasks-item mx-4 my-2">
                         <!-- === CustomText Task === -->
                         <template v-if="isCustomTextTask(item.task)">
-                            <div
-                                class="flex flex-row gap-4 border-2 border-white/30 bg-white/40 rounded-lg p-2 backdrop-blur-lg shadow-lg"
-                            >
+                            <div class="flex flex-row gap-4 border-2 border-white/30 bg-white/40 rounded-lg p-2 backdrop-blur-lg shadow-lg">
                                 <!-- === Drag Buttons === -->
                                 <div class="flex flex-col items-center ml-2 mr-1 gap-1">
-                                    <i
-                                        class="pi pi-angle-up hover:cursor-pointer text-xs"
-                                        :class="{ 'opacity-30': index === 0 }"
-                                        @click="moveSelectedTaskUp(index)"
-                                    ></i>
+                                    <i class="pi pi-angle-up hover:cursor-pointer text-xs" :class="{ 'opacity-30': index === 0 }" @click="moveSelectedTaskUp(index)"></i>
                                     <i
                                         class="pi pi-angle-down hover:cursor-pointer text-xs"
                                         :class="{
@@ -442,49 +439,26 @@ function moveSelectedTaskDown(index: number) {
                                 </div>
 
                                 <!-- === Prefix Text === -->
-                                <InputText
-                                    placeholder="Prefix Text"
-                                    fluid
-                                    size="small"
-                                    :id="`input-text-${index}`"
-                                    v-model="item.task.CustomText.text"
-                                    variant="filled"
-                                    @input="user_update_tasks"
-                                />
+                                <InputText placeholder="Prefix Text" fluid size="small" :id="`input-text-${index}`" v-model="item.task.CustomText.text" variant="filled" @input="user_update_tasks" />
 
                                 <!-- === Checkbox === -->
                                 <div class="flex items-center gap-2">
-                                    <ToggleSwitch
-                                        v-model="item.task.CustomText.active"
-                                        :inputId="`checkbox-${index}`"
-                                        :name="`active-checkbox${index}`"
-                                        binary
-                                        @change="user_update_tasks"
-                                    />
+                                    <ToggleSwitch v-model="item.task.CustomText.active" :inputId="`checkbox-${index}`" :name="`active-checkbox${index}`" binary @change="user_update_tasks" />
                                 </div>
 
                                 <!-- === Delete Button === -->
                                 <div class="flex items-center ml-0 mr-2" @click="deleteSelectedTask(index)">
-                                    <i
-                                        class="pi pi-trash hover:cursor-pointer"
-                                        style="font-size: 1.1rem; color: red"
-                                    ></i>
+                                    <i class="pi pi-trash hover:cursor-pointer" style="font-size: 1.1rem; color: red"></i>
                                 </div>
                             </div>
                         </template>
 
                         <!-- === Find & Replace Task === -->
                         <template v-else-if="isFindAndReplaceTask(item.task)">
-                            <div
-                                class="flex flex-row gap-4 border-2 border-white/30 bg-white/40 rounded-lg p-2 backdrop-blur-lg shadow-lg"
-                            >
+                            <div class="flex flex-row gap-4 border-2 border-white/30 bg-white/40 rounded-lg p-2 backdrop-blur-lg shadow-lg">
                                 <!-- === Drag Buttons === -->
                                 <div class="flex flex-col items-center ml-2 mr-1 gap-1">
-                                    <i
-                                        class="pi pi-angle-up hover:cursor-pointer text-xs"
-                                        :class="{ 'opacity-30': index === 0 }"
-                                        @click="moveSelectedTaskUp(index)"
-                                    ></i>
+                                    <i class="pi pi-angle-up hover:cursor-pointer text-xs" :class="{ 'opacity-30': index === 0 }" @click="moveSelectedTaskUp(index)"></i>
                                     <i
                                         class="pi pi-angle-down hover:cursor-pointer text-xs"
                                         :class="{
@@ -495,60 +469,29 @@ function moveSelectedTaskDown(index: number) {
                                 </div>
 
                                 <!-- === Find Text Field === -->
-                                <InputText
-                                    id="in_label"
-                                    placeholder="Find"
-                                    fluid
-                                    size="small"
-                                    v-model="item.task.FindAndReplace.find_text"
-                                    variant="filled"
-                                    @input="user_update_tasks"
-                                />
+                                <InputText id="in_label" placeholder="Find" fluid size="small" v-model="item.task.FindAndReplace.find_text" variant="filled" @input="user_update_tasks" />
 
                                 <!-- ===Replace Text Field === -->
-                                <InputText
-                                    id="in_label"
-                                    placeholder="Replace"
-                                    fluid
-                                    size="small"
-                                    v-model="item.task.FindAndReplace.replace_text"
-                                    variant="filled"
-                                    @input="user_update_tasks"
-                                />
+                                <InputText id="in_label" placeholder="Replace" fluid size="small" v-model="item.task.FindAndReplace.replace_text" variant="filled" @input="user_update_tasks" />
 
                                 <!-- === Checkbox === -->
                                 <div class="flex items-center gap-2">
-                                    <ToggleSwitch
-                                        v-model="item.task.FindAndReplace.active"
-                                        :inputId="`active-${index}`"
-                                        name="namefindreplaceactive"
-                                        binary
-                                        @change="user_update_tasks"
-                                    />
+                                    <ToggleSwitch v-model="item.task.FindAndReplace.active" :inputId="`active-${index}`" name="namefindreplaceactive" binary @change="user_update_tasks" />
                                 </div>
 
                                 <!-- === Delete Button === -->
                                 <div class="flex items-center ml-0 mr-2" @click="deleteSelectedTask(index)">
-                                    <i
-                                        class="pi pi-trash hover:cursor-pointer"
-                                        style="font-size: 1.1rem; color: red"
-                                    ></i>
+                                    <i class="pi pi-trash hover:cursor-pointer" style="font-size: 1.1rem; color: red"></i>
                                 </div>
                             </div>
                         </template>
 
                         <!-- === ClearAll Task === -->
                         <template v-else-if="isClearAllTask(item.task)">
-                            <div
-                                class="flex flex-row gap-4 border-2 border-white/30 bg-white/40 rounded-lg p-2 backdrop-blur-lg shadow-lg"
-                            >
+                            <div class="flex flex-row gap-4 border-2 border-white/30 bg-white/40 rounded-lg p-2 backdrop-blur-lg shadow-lg">
                                 <!-- === Drag Buttons === -->
                                 <div class="flex flex-col items-center ml-2 mr-1 gap-1">
-                                    <i
-                                        class="pi pi-angle-up hover:cursor-pointer text-xs"
-                                        :class="{ 'opacity-30': index === 0 }"
-                                        @click="moveSelectedTaskUp(index)"
-                                    ></i>
+                                    <i class="pi pi-angle-up hover:cursor-pointer text-xs" :class="{ 'opacity-30': index === 0 }" @click="moveSelectedTaskUp(index)"></i>
                                     <i
                                         class="pi pi-angle-down hover:cursor-pointer text-xs"
                                         :class="{
@@ -560,37 +503,22 @@ function moveSelectedTaskDown(index: number) {
 
                                 <!-- === Checkbox === -->
                                 <div class="flex items-center gap-2">
-                                    <ToggleSwitch
-                                        v-model="item.task.FindAndReplace.active"
-                                        :inputId="`active-${index}`"
-                                        name="namefindreplaceactive"
-                                        binary
-                                        @change="user_update_tasks"
-                                    />
+                                    <ToggleSwitch v-model="item.task.ClearAll.active" :inputId="`active-${index}`" name="namefindreplaceactive" binary @change="user_update_tasks" />
                                 </div>
 
                                 <!-- === Delete Button === -->
                                 <div class="flex items-center ml-0 mr-2" @click="deleteSelectedTask(index)">
-                                    <i
-                                        class="pi pi-trash hover:cursor-pointer"
-                                        style="font-size: 1.1rem; color: red"
-                                    ></i>
+                                    <i class="pi pi-trash hover:cursor-pointer" style="font-size: 1.1rem; color: red"></i>
                                 </div>
                             </div>
                         </template>
 
                         <!-- === ChangeCase Task === -->
                         <template v-else-if="isChangeCaseTask(item.task)">
-                            <div
-                                class="flex flex-row gap-4 border-2 border-white/30 bg-white/40 rounded-lg p-2 backdrop-blur-lg shadow-lg"
-                            >
+                            <div class="flex flex-row gap-4 border-2 border-white/30 bg-white/40 rounded-lg p-2 backdrop-blur-lg shadow-lg">
                                 <!-- === Drag Buttons === -->
                                 <div class="flex flex-col items-center ml-2 mr-1 gap-1">
-                                    <i
-                                        class="pi pi-angle-up hover:cursor-pointer text-xs"
-                                        :class="{ 'opacity-30': index === 0 }"
-                                        @click="moveSelectedTaskUp(index)"
-                                    ></i>
+                                    <i class="pi pi-angle-up hover:cursor-pointer text-xs" :class="{ 'opacity-30': index === 0 }" @click="moveSelectedTaskUp(index)"></i>
                                     <i
                                         class="pi pi-angle-down hover:cursor-pointer text-xs"
                                         :class="{
@@ -602,26 +530,17 @@ function moveSelectedTaskDown(index: number) {
 
                                 <!-- === Delete Button === -->
                                 <div class="flex items-center ml-0 mr-2" @click="deleteSelectedTask(index)">
-                                    <i
-                                        class="pi pi-trash hover:cursor-pointer"
-                                        style="font-size: 1.1rem; color: red"
-                                    ></i>
+                                    <i class="pi pi-trash hover:cursor-pointer" style="font-size: 1.1rem; color: red"></i>
                                 </div>
                             </div>
                         </template>
 
                         <!-- === NumSequence Task === -->
                         <template v-else-if="isNumSequenceTask(item.task)">
-                            <div
-                                class="flex flex-row gap-4 border-2 border-white/30 bg-white/40 rounded-lg p-2 backdrop-blur-lg shadow-lg"
-                            >
+                            <div class="flex flex-row gap-4 border-2 border-white/30 bg-white/40 rounded-lg p-2 backdrop-blur-lg shadow-lg">
                                 <!-- === Drag Buttons === -->
                                 <div class="flex flex-col items-center ml-2 mr-1 gap-1">
-                                    <i
-                                        class="pi pi-angle-up hover:cursor-pointer text-xs"
-                                        :class="{ 'opacity-30': index === 0 }"
-                                        @click="moveSelectedTaskUp(index)"
-                                    ></i>
+                                    <i class="pi pi-angle-up hover:cursor-pointer text-xs" :class="{ 'opacity-30': index === 0 }" @click="moveSelectedTaskUp(index)"></i>
                                     <i
                                         class="pi pi-angle-down hover:cursor-pointer text-xs"
                                         :class="{
@@ -633,26 +552,17 @@ function moveSelectedTaskDown(index: number) {
 
                                 <!-- === Delete Button === -->
                                 <div class="flex items-center ml-0 mr-2" @click="deleteSelectedTask(index)">
-                                    <i
-                                        class="pi pi-trash hover:cursor-pointer"
-                                        style="font-size: 1.1rem; color: red"
-                                    ></i>
+                                    <i class="pi pi-trash hover:cursor-pointer" style="font-size: 1.1rem; color: red"></i>
                                 </div>
                             </div>
                         </template>
 
                         <!-- === Date Task === -->
                         <template v-else-if="isDateTask(item.task)">
-                            <div
-                                class="flex flex-row gap-4 border-2 border-white/30 bg-white/40 rounded-lg p-2 backdrop-blur-lg shadow-lg"
-                            >
+                            <div class="flex flex-row gap-4 border-2 border-white/30 bg-white/40 rounded-lg p-2 backdrop-blur-lg shadow-lg">
                                 <!-- === Drag Buttons === -->
                                 <div class="flex flex-col items-center ml-2 mr-1 gap-1">
-                                    <i
-                                        class="pi pi-angle-up hover:cursor-pointer text-xs"
-                                        :class="{ 'opacity-30': index === 0 }"
-                                        @click="moveSelectedTaskUp(index)"
-                                    ></i>
+                                    <i class="pi pi-angle-up hover:cursor-pointer text-xs" :class="{ 'opacity-30': index === 0 }" @click="moveSelectedTaskUp(index)"></i>
                                     <i
                                         class="pi pi-angle-down hover:cursor-pointer text-xs"
                                         :class="{
@@ -664,26 +574,17 @@ function moveSelectedTaskDown(index: number) {
 
                                 <!-- === Delete Button === -->
                                 <div class="flex items-center ml-0 mr-2" @click="deleteSelectedTask(index)">
-                                    <i
-                                        class="pi pi-trash hover:cursor-pointer"
-                                        style="font-size: 1.1rem; color: red"
-                                    ></i>
+                                    <i class="pi pi-trash hover:cursor-pointer" style="font-size: 1.1rem; color: red"></i>
                                 </div>
                             </div>
                         </template>
 
                         <!-- === Time Task === -->
                         <template v-else-if="isTimeTask(item.task)">
-                            <div
-                                class="flex flex-row gap-4 border-2 border-white/30 bg-white/40 rounded-lg p-2 backdrop-blur-lg shadow-lg"
-                            >
+                            <div class="flex flex-row gap-4 border-2 border-white/30 bg-white/40 rounded-lg p-2 backdrop-blur-lg shadow-lg">
                                 <!-- === Drag Buttons === -->
                                 <div class="flex flex-col items-center ml-2 mr-1 gap-1">
-                                    <i
-                                        class="pi pi-angle-up hover:cursor-pointer text-xs"
-                                        :class="{ 'opacity-30': index === 0 }"
-                                        @click="moveSelectedTaskUp(index)"
-                                    ></i>
+                                    <i class="pi pi-angle-up hover:cursor-pointer text-xs" :class="{ 'opacity-30': index === 0 }" @click="moveSelectedTaskUp(index)"></i>
                                     <i
                                         class="pi pi-angle-down hover:cursor-pointer text-xs"
                                         :class="{
@@ -695,10 +596,7 @@ function moveSelectedTaskDown(index: number) {
 
                                 <!-- === Delete Button === -->
                                 <div class="flex items-center ml-0 mr-2" @click="deleteSelectedTask(index)">
-                                    <i
-                                        class="pi pi-trash hover:cursor-pointer"
-                                        style="font-size: 1.1rem; color: red"
-                                    ></i>
+                                    <i class="pi pi-trash hover:cursor-pointer" style="font-size: 1.1rem; color: red"></i>
                                 </div>
                             </div>
                         </template>
@@ -709,19 +607,9 @@ function moveSelectedTaskDown(index: number) {
 
         <!-- === App Footer === -->
         <!-- <div id="footer" class="flex flex-row-reverse m-4 "> -->
-        <div
-            id="footer"
-            class="flex flex-row-reverse gap-0 m-4 rounded-2xl p-4 border-2 border-white/30 bg-white/20 backdrop-blur-lg shadow-lg z-50"
-        >
+        <div id="footer" class="flex flex-row-reverse gap-0 m-4 rounded-2xl p-4 border-2 border-white/30 bg-white/20 backdrop-blur-lg shadow-lg z-50">
             <!-- === Batch Rename All Files Button === -->
-            <Button
-                unstyled
-                icon="pi pi-trash"
-                class="big-button"
-                label="Batch Rename All Files"
-                size="large"
-                @click="rename_files"
-            />
+            <Button unstyled icon="pi pi-trash" class="big-button" label="Batch Rename All Files" size="large" @click="rename_files" />
         </div>
     </body>
 </template>
@@ -804,10 +692,7 @@ function moveSelectedTaskDown(index: number) {
     font-size: var(--text-sm);
     line-height: var(--tw-leading, var(--text-sm--line-height));
     background-color: color-mix(in oklab, var(--color-white) 80%, transparent);
-    box-shadow:
-        black 0px 0px 0px 0px,
-        rgba(0, 0, 0, 0.05) 0px 4px 6px -1px,
-        rgba(0, 0, 0, 0.1) 0px 2px 4px -1px;
+    box-shadow: black 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -1px;
     transition: background-color 0.2s ease;
     backdrop-filter: blur(10px);
 
@@ -832,10 +717,7 @@ function moveSelectedTaskDown(index: number) {
     font-size: var(--text-med);
     line-height: var(--tw-leading, var(--text-sm--line-height));
     background-color: color-mix(in oklab, var(--color-green-400) 80%, transparent);
-    box-shadow:
-        black 0px 0px 0px 0px,
-        rgba(0, 0, 0, 0.05) 0px 4px 6px -1px,
-        rgba(0, 0, 0, 0.1) 0px 2px 4px -1px;
+    box-shadow: black 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -1px;
     transition: background-color 0.2s ease;
     backdrop-filter: blur(10px);
 
