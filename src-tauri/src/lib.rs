@@ -186,23 +186,26 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
                     active,
                 } => {
                     if *active {
-
                         // instantiate empty strings for processing
                         let file_stem: String;
                         let file_extension: String;
 
                         // calculate the file_stem with error handling
                         let file_stem_calc = file.target.file_stem();
-                        match file_stem_calc {
-                            Some(t) => file_stem = t.to_string_lossy().to_string(),
-                            None => file_stem = "".to_string(),
-                        };
+
+                        if let Some(t) = file_stem_calc {
+                            file_stem = t.to_string_lossy().to_string();
+                        } else {
+                            file_stem = "".to_string();
+                        }
 
                         // calculate the file_extension with error handling
                         let file_extension_calc = file.target.extension();
-                        match file_extension_calc {
-                            Some(t) => file_extension =  t.to_string_lossy().to_string(),
-                            None => file_extension = "".to_string(),
+
+                        if let Some(t) = file_extension_calc {
+                            file_extension = t.to_string_lossy().to_string();
+                        } else {
+                            file_extension = "".to_string();
                         }
 
                         if *at_start {
@@ -220,32 +223,33 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
                     active,
                 } => {
                     if *active {
-                        // instantiate a new file name 
-                        // let file_name: String;
+                        // instantiate a new file name
+                        let new_file_name: String;
+                        // get file_name
+                        let file_name_calc = file.target.file_name();
 
-                        // let file_name_calc = file.target.file_name();
+                        if let Some(t) = file_name_calc {
+                            new_file_name = t
+                                .to_string_lossy()
+                                .to_string()
+                                .replace(find_text, replace_text);
+                        } else {
+                            new_file_name = "".to_string();
+                        }
 
-                        // match file_name_calc {
-                        //     Some(t) => t,
-                        //     None => ,
-                        // };
-                        
-                        let new_file_name = file
-                            .target
-                            .file_name()
-                            .unwrap()
-                            .to_str()
-                            .unwrap()
-                            .to_string()
-                            .replace(find_text, replace_text);
                         file.target.set_file_name(new_file_name);
                     }
                 }
+
                 Task::ClearAll { active } => {}
                 Task::ChangeCase {
                     case_choice,
                     active,
-                } => {}
+                } => {
+                    if *active {
+                        let new_file_name: &str;
+                    }
+                }
                 Task::NumSequence {
                     start_num,
                     num_padding,
