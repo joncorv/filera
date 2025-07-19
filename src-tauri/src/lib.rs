@@ -38,6 +38,8 @@ enum Task {
     NumSequence {
         start_num: u64,
         num_padding: u64,
+        at_start: bool,
+        separator: String,
         active: bool,
     },
     Date {
@@ -173,7 +175,7 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
     let mut state = state.lock().unwrap();
     let tasks = &state.tasks.clone();
 
-    for file in &mut state.working_files {
+    for (index, file) in &mut state.working_files.iter_mut().enumerate() {
         // for each WorkingFile in the array, copy from source => target
         file.target = file.source.clone();
 
@@ -186,23 +188,16 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
                     active,
                 } => {
                     if *active {
-                        // instantiate empty strings for processing
                         let file_stem: String;
                         let file_extension: String;
 
-                        // calculate the file_stem with error handling
-                        let file_stem_calc = file.target.file_stem();
-
-                        if let Some(t) = file_stem_calc {
+                        if let Some(t) = file.target.file_stem() {
                             file_stem = t.to_string_lossy().to_string();
                         } else {
                             file_stem = "".to_string();
                         }
 
-                        // calculate the file_extension with error handling
-                        let file_extension_calc = file.target.extension();
-
-                        if let Some(t) = file_extension_calc {
+                        if let Some(t) = file.target.extension() {
                             file_extension = t.to_string_lossy().to_string();
                         } else {
                             file_extension = "".to_string();
@@ -223,12 +218,9 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
                     active,
                 } => {
                     if *active {
-                        // instantiate a new file name
                         let new_file_name: String;
-                        // get file_name
-                        let file_name_calc = file.target.file_name();
 
-                        if let Some(t) = file_name_calc {
+                        if let Some(t) = file.target.file_name() {
                             new_file_name = t
                                 .to_string_lossy()
                                 .to_string()
@@ -242,19 +234,72 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
                 }
 
                 Task::ClearAll { active } => {}
+
                 Task::ChangeCase {
                     case_choice,
                     active,
                 } => {
                     if *active {
-                        let new_file_name: &str;
+                        let new_file_name: String;
+
+                        if let Some(t) = file.target.file_name() {
+                            new_file_name = t.to_string_lossy().to_string();
+                        } else {
+                            new_file_name = "".to_string();
+                        }
+
+                        match *case_choice {
+                            0_u8 => {
+                                // UPPERCASE
+                                file.target.set_file_name(new_file_name.to_uppercase());
+                            }
+                            1_u8 => {
+                                // lowercase
+                                file.target.set_file_name(new_file_name.to_lowercase());
+                            }
+                            2_u8..=u8::MAX => {
+                                // figure out other case options later
+                                // file.target.set_file_name(new_file_name);
+                            }
+                        }
                     }
                 }
                 Task::NumSequence {
                     start_num,
                     num_padding,
+                    separator,
+                    at_start,
                     active,
-                } => {}
+                } => {
+                    if *active {
+                        let file_stem: String;
+                        let file_extension: String;
+                        let index_u64 = u64::try_from(index).unwrap();
+                        let num_padding_usize: usize = usize::try_from(*num_padding).unwrap();
+
+                        if let Some(t) = file.target.file_stem() {
+                            file_stem = t.to_string_lossy().to_string();
+                        } else {
+                            file_stem = "".to_string();
+                        }
+
+                        //
+                        let raw_sequence_num = index_u64 + start_num;
+                        let sequence_num = format!("{:01$}", raw_sequence_num, num_padding_usize);
+
+                        if let Some(t) = file.target.extension() {
+                            file_extension = t.to_string_lossy().to_string();
+
+                            if *at_start {
+                                // file.target.set_file_name(format!("{}{}.{}"),);
+                            } else {
+                                // do something else
+                            }
+                        } else {
+                            file_extension = "".to_string();
+                        }
+                    }
+                }
                 Task::Date {
                     year,
                     month,
