@@ -27,4 +27,5 @@ notify-rust = "4.11.7"
 tauri-plugin-devtools = "2.0.0"
 tauri-plugin-dialog = "2"
 clippy = "0.0.302"
+time = "0.3.41"
 

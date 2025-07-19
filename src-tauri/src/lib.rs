@@ -1,7 +1,9 @@
 use notify_rust::Notification;
+use std::fs::{self, metadata, Metadata};
 use std::sync::Mutex;
 use std::{fs::rename, path::PathBuf};
 use tauri::{Manager, State};
+use time::OffsetDateTime;
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 struct WorkingFile {
@@ -59,7 +61,7 @@ enum Task {
 }
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, Default)]
-enum Metadata {
+enum SortMetadata {
     #[default]
     Name,
     DateCreated,
@@ -72,7 +74,7 @@ struct AppState {
     file_names: Vec<String>,
     working_files: Vec<WorkingFile>,
     tasks: Vec<Task>,
-    sort: Metadata,
+    sort: SortMetadata,
 }
 
 // App Entry Point
@@ -233,7 +235,18 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
                     }
                 }
 
-                Task::ClearAll { active } => {}
+                Task::ClearAll { active } => {
+                    if *active {
+                        let file_extension: String;
+
+                        if let Some(t) = file.target.extension() {
+                            file_extension = t.to_string_lossy().to_string();
+                            file.target.set_file_name(format!(".{}", file_extension));
+                        } else {
+                            file.target.set_file_name("");
+                        }
+                    }
+                }
 
                 Task::ChangeCase {
                     case_choice,
@@ -283,20 +296,41 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
                             file_stem = "".to_string();
                         }
 
-                        //
                         let raw_sequence_num = index_u64 + start_num;
                         let sequence_num = format!("{:01$}", raw_sequence_num, num_padding_usize);
 
                         if let Some(t) = file.target.extension() {
                             file_extension = t.to_string_lossy().to_string();
 
+                            // build the file name with extension, and number at start
                             if *at_start {
-                                // file.target.set_file_name(format!("{}{}.{}"),);
-                            } else {
-                                // do something else
+                                file.target.set_file_name(format!(
+                                    "{}{}{}.{}",
+                                    sequence_num, separator, file_stem, file_extension
+                                ));
+                            } else
+                            // build the file name with extension, and number at the end
+                            {
+                                file.target.set_file_name(format!(
+                                    "{}{}{}.{}",
+                                    file_stem, separator, sequence_num, file_extension
+                                ));
                             }
                         } else {
-                            file_extension = "".to_string();
+                            // build the file name without extension, and number at start
+                            if *at_start {
+                                file.target.set_file_name(format!(
+                                    "{}{}{}",
+                                    sequence_num, separator, file_stem
+                                ));
+                            } else
+                            // build the file name without an extension, and number at the end
+                            {
+                                file.target.set_file_name(format!(
+                                    "{}{}{}",
+                                    file_stem, separator, sequence_num
+                                ));
+                            }
                         }
                     }
                 }
@@ -307,7 +341,28 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
                     year_4,
                     separator,
                     active,
-                } => {}
+                } => {
+                    if *active {
+                        let file_metadata = file.source.metadata();
+
+                        if let Ok(t) = file_metadata {
+                            // create SystemTime Instance from metadata
+                            let systime = t.modified();
+
+                            if let Ok(j) = systime {
+                                // able to access metadata and file modified info
+                                let datetime = OffsetDateTime::from(j);
+                                let datetime_year = datetime.year();
+                                let datetime_month = datetime.month();
+                                let datetime_day = datetime.day();
+                            } else {
+                                // able to access metadata but not file modified info
+                            }
+                        } else {
+                            // This means we can't access metadata on file at all
+                        }
+                    }
+                }
                 Task::Time {
                     hour_24,
                     ampm,
