@@ -1,5 +1,5 @@
-use notify_rust::Notification;
-use std::fs::{self, metadata, Metadata};
+// use notify_rust::Notification;
+// use std::fs::{self, metadata, Metadata};
 use std::sync::Mutex;
 use std::{fs::rename, path::PathBuf};
 use tauri::{Manager, State};
@@ -54,7 +54,6 @@ enum Task {
     },
     Time {
         hour_24: bool,
-        ampm: bool,
         separator: String,
         active: bool,
     },
@@ -355,26 +354,133 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
                                 let datetime_year = datetime.year();
                                 let datetime_month = datetime.month();
                                 let datetime_day = datetime.day();
+
+                                // now that we have system time, let's build the file
+                                // get file_stem and file_extension
+                                let file_stem: String;
+                                let file_extension: String;
+
+                                // if there is a file stem, use it, or make it blank
+                                if let Some(t) = file.target.file_stem() {
+                                    file_stem = t.to_string_lossy().to_string();
+                                } else {
+                                    file_stem = "".to_string();
+                                }
+
+                                // if there isn't an extension, we do need to change how we approach building here
+                                if let Some(t) = file.target.extension() {
+                                    file_extension = t.to_string_lossy().to_string();
+                                    file.target.set_file_name(format!(
+                                        "{}{}{}{}{}{}{}.{}",
+                                        datetime_year,
+                                        separator,
+                                        datetime_month,
+                                        separator,
+                                        datetime_day,
+                                        separator,
+                                        file_stem,
+                                        file_extension
+                                    ));
+                                } else {
+                                    file.target.set_file_name(format!(
+                                        "{}{}{}{}{}{}{}",
+                                        datetime_year,
+                                        separator,
+                                        datetime_month,
+                                        separator,
+                                        datetime_day,
+                                        separator,
+                                        file_stem
+                                    ));
+                                }
                             } else {
                                 // able to access metadata but not file modified info
+                                // i guess we just skip this step altogether for now
+                                // should probably bubble up an error to the user
                             }
                         } else {
                             // This means we can't access metadata on file at all
+                            // i guess we just skip this step altogether for now
+                            // should probably bubble up an error to the user
                         }
                     }
                 }
                 Task::Time {
                     hour_24,
-                    ampm,
                     separator,
                     active,
-                } => {}
+                } => {
+                    if *active {
+                        let file_metadata = file.source.metadata();
+
+                        if let Ok(t) = file_metadata {
+                            // create SystemTime Instance from metadata
+                            let systime = t.modified();
+
+                            if let Ok(j) = systime {
+                                // able to access metadata and file modified info
+                                let datetime = OffsetDateTime::from(j);
+                                let datetime_hour = datetime.hour();
+                                let datetime_minute = datetime.minute();
+                                let datetime_second = datetime.second();
+
+                                // now that we have system time, let's build the file
+                                // get file_stem and file_extension
+                                let file_stem: String;
+                                let file_extension: String;
+
+                                // if there is a file stem, use it, or make it blank
+                                if let Some(t) = file.target.file_stem() {
+                                    file_stem = t.to_string_lossy().to_string();
+                                } else {
+                                    file_stem = "".to_string();
+                                }
+
+                                // if there isn't an extension, we do need to change how we approach building here
+                                if let Some(t) = file.target.extension() {
+                                    file_extension = t.to_string_lossy().to_string();
+                                    file.target.set_file_name(format!(
+                                        "{}{}{}{}{}{}{}.{}",
+                                        datetime_hour,
+                                        separator,
+                                        datetime_minute,
+                                        separator,
+                                        datetime_second,
+                                        separator,
+                                        file_stem,
+                                        file_extension
+                                    ));
+                                } else {
+                                    file.target.set_file_name(format!(
+                                        "{}{}{}{}{}{}{}",
+                                        datetime_hour,
+                                        separator,
+                                        datetime_minute,
+                                        separator,
+                                        datetime_second,
+                                        separator,
+                                        file_stem
+                                    ));
+                                }
+                            } else {
+                                // able to access metadata but not file modified info
+                                // i guess we just skip this step altogether for now
+                                // should probably bubble up an error to the user
+                            }
+                        } else {
+                            // This means we can't access metadata on file at all
+                            // i guess we just skip this step altogether for now
+                            // should probably bubble up an error to the user
+                        }
+                    }
+                }
             }
         }
     }
 }
 
-fn state_update_working_files() {}
+// fn state_update_working_files() {}
+
 fn convert_working_files_to_file_status(state: &State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
     let state = state.lock().unwrap();
     let mut file_statuses: Vec<FileStatus> = Vec::with_capacity(state.working_files.len());
@@ -397,7 +503,8 @@ fn convert_working_files_to_file_status(state: &State<'_, Mutex<AppState>>) -> V
     }
     file_statuses
 }
-fn rename_files() {}
+
+// fn rename_files() {}
 
 // #[tauri::command]
 // fn open_files(file_names: Vec<String>, task_list: Vec<Task>) -> Vec<WorkingFile> {
