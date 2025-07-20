@@ -35,6 +35,8 @@ type Task =
           NumSequence: {
               start_num: number;
               num_padding: number;
+              at_start: boolean;
+              separator: string;
               active: boolean;
           };
       }
@@ -51,7 +53,6 @@ type Task =
     | {
           Time: {
               hour_24: boolean;
-              ampm: boolean;
               separator: string;
               active: boolean;
           };
@@ -112,7 +113,7 @@ const isChangeCaseTask = (
 const isNumSequenceTask = (
     task: Task
 ): task is {
-    NumSequence: { start_num: number; num_padding: number; active: boolean };
+    NumSequence: { start_num: number; num_padding: number; at_start: boolean; separator: string; active: boolean };
 } => {
     return "NumSequence" in task;
 };
@@ -203,7 +204,7 @@ const addNumSequence = () => {
     taskList.value.push({
         id: taskIdCounter++,
         task: {
-            NumSequence: { start_num: 0, num_padding: 4, active: true },
+            NumSequence: { start_num: 0, num_padding: 4, at_start: true, separator: "_", active: true },
         },
     });
     user_update_tasks();
@@ -232,7 +233,6 @@ const addTime = () => {
         task: {
             Time: {
                 hour_24: true,
-                ampm: false,
                 separator: "_",
                 active: true,
             },
@@ -423,6 +423,7 @@ function moveSelectedTaskDown(index: number) {
 
                 <TransitionGroup tag="div" name="ttasks" class="relative">
                     <div v-for="(item, index) in taskList" :key="item.id" class="ttasks-item mx-4 my-2">
+
                         <!-- === CustomText Task === -->
                         <template v-if="isCustomTextTask(item.task)">
                             <div class="flex flex-row gap-4 border-2 border-white/30 bg-white/40 rounded-lg p-2 backdrop-blur-lg shadow-lg">
@@ -439,7 +440,7 @@ function moveSelectedTaskDown(index: number) {
                                 </div>
 
                                 <!-- === Prefix Text === -->
-                                <InputText placeholder="Prefix Text" fluid size="small" :id="`input-text-${index}`" v-model="item.task.CustomText.text" variant="filled" @input="user_update_tasks" />
+                                <InputText placeholder="Custom Text" fluid size="small" :id="`input-text-${index}`" v-model="item.task.CustomText.text" variant="filled" @input="user_update_tasks" />
 
                                 <!-- === Checkbox === -->
                                 <div class="flex items-center gap-2">
