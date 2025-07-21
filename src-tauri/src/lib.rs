@@ -206,10 +206,10 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
 
                         if *at_start {
                             file.target
-                                .set_file_name(format!("{}{}.{}", text, file_stem, file_extension));
+                                .set_file_name(format!("{text}{file_stem}.{file_extension}"));
                         } else {
                             file.target
-                                .set_file_name(format!("{}{}.{}", file_stem, text, file_extension));
+                                .set_file_name(format!("{file_stem}{text}.{file_extension}"));
                         };
                     }
                 }
@@ -240,7 +240,7 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
 
                         if let Some(t) = file.target.extension() {
                             file_extension = t.to_string_lossy().to_string();
-                            file.target.set_file_name(format!(".{}", file_extension));
+                            file.target.set_file_name(format!(".{file_extension}"));
                         } else {
                             file.target.set_file_name("");
                         }
@@ -304,30 +304,25 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
                             // build the file name with extension, and number at start
                             if *at_start {
                                 file.target.set_file_name(format!(
-                                    "{}{}{}.{}",
-                                    sequence_num, separator, file_stem, file_extension
+                                    "{sequence_num}{separator}{file_stem}.{file_extension}"
                                 ));
                             } else
                             // build the file name with extension, and number at the end
                             {
                                 file.target.set_file_name(format!(
-                                    "{}{}{}.{}",
-                                    file_stem, separator, sequence_num, file_extension
+                                    "{file_stem}{separator}{sequence_num}.{file_extension}"
                                 ));
                             }
                         } else {
                             // build the file name without extension, and number at start
                             if *at_start {
-                                file.target.set_file_name(format!(
-                                    "{}{}{}",
-                                    sequence_num, separator, file_stem
-                                ));
+                                file.target
+                                    .set_file_name(format!("{sequence_num}{separator}{file_stem}"));
                             } else
                             // build the file name without an extension, and number at the end
                             {
                                 file.target.set_file_name(format!(
-                                    "{}{}{}",
-                                    file_stem, separator, sequence_num
+                                    "{file_stem}{separator}{sequence_num}",
                                 ));
                             }
                         }
@@ -371,26 +366,11 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
                                 if let Some(t) = file.target.extension() {
                                     file_extension = t.to_string_lossy().to_string();
                                     file.target.set_file_name(format!(
-                                        "{}{}{}{}{}{}{}.{}",
-                                        datetime_year,
-                                        separator,
-                                        datetime_month,
-                                        separator,
-                                        datetime_day,
-                                        separator,
-                                        file_stem,
-                                        file_extension
+                                        "{datetime_year}{separator}{datetime_month}{separator}{datetime_day}{separator}{file_stem}.{file_extension}"
                                     ));
                                 } else {
                                     file.target.set_file_name(format!(
-                                        "{}{}{}{}{}{}{}",
-                                        datetime_year,
-                                        separator,
-                                        datetime_month,
-                                        separator,
-                                        datetime_day,
-                                        separator,
-                                        file_stem
+                                        "{datetime_year}{separator}{datetime_month}{separator}{datetime_day}{separator}{file_stem}"
                                     ));
                                 }
                             } else {
@@ -440,26 +420,11 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
                                 if let Some(t) = file.target.extension() {
                                     file_extension = t.to_string_lossy().to_string();
                                     file.target.set_file_name(format!(
-                                        "{}{}{}{}{}{}{}.{}",
-                                        datetime_hour,
-                                        separator,
-                                        datetime_minute,
-                                        separator,
-                                        datetime_second,
-                                        separator,
-                                        file_stem,
-                                        file_extension
+                                        "{datetime_hour}{separator}{datetime_minute}{separator}{datetime_second}{separator}{file_stem}.{file_extension}"
                                     ));
                                 } else {
                                     file.target.set_file_name(format!(
-                                        "{}{}{}{}{}{}{}",
-                                        datetime_hour,
-                                        separator,
-                                        datetime_minute,
-                                        separator,
-                                        datetime_second,
-                                        separator,
-                                        file_stem
+                                        "{datetime_hour}{separator}{datetime_minute}{separator}{datetime_second}{separator}{file_stem}"
                                     ));
                                 }
                             } else {
