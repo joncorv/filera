@@ -10,6 +10,10 @@ import SplitterPanel from "primevue/splitterpanel";
 import InputText from "primevue/inputtext";
 import ToggleSwitch from "primevue/toggleswitch";
 import Select from "primevue/select";
+import Menubar from "primevue/menubar";
+import Menu from "primevue/menu";
+import Dropdown from "primevue/dropdown";
+import InputNumber from "primevue/inputnumber";
 
 import "primeicons/primeicons.css";
 
@@ -324,6 +328,142 @@ function moveSelectedTaskDown(index: number) {
 // const sphere1 = usePosNoise({ size: 1.2, speed: 0.0005, amplitude: 175 });
 // const sphere2 = usePosNoise({ size: 0.8, speed: 0.0003, amplitude: 100 });
 // const sphere3 = usePosNoise({ size: 1.5, speed: 0.0004, amplitude: 175 });
+
+// Main menubar items
+const items = ref([
+    {
+        label: "Custom Text",
+        icon: "pi pi-pencil",
+        items: [
+            {
+                label: "Custom Text",
+                icon: "pi pi-arrow-circle-left",
+                command: () => addCustomText(),
+            },
+            {
+                label: "Number Sequence",
+                icon: "pi pi-sort-numeric-down",
+                command: () => addNumSequence(),
+            },
+            {
+                label: "Date",
+                icon: "pi pi-calendar",
+                command: () => addDate(),
+            },
+            {
+                label: "Time",
+                icon: "pi pi-clock",
+                command: () => addTime(),
+            },
+        ],
+    },
+    {
+        label: "Effects",
+        icon: "pi pi-cog",
+        items: [
+            {
+                label: "Find & Replace",
+                icon: "pi pi-search",
+                command: () => addFindReplace(),
+            },
+            {
+                label: "Clear All",
+                icon: "pi pi-eraser",
+                command: () => addClearAll(),
+            },
+            {
+                label: "Change Case",
+                icon: "pi pi-sort-alpha-down",
+                command: () => addChangeCase(),
+            },
+        ],
+    },
+    {
+        label: "Templates",
+        icon: "pi pi-bookmark",
+        items: [
+            {
+                label: "Photo Rename",
+                icon: "pi pi-image",
+                command: () => applyTemplate("photo"),
+            },
+            {
+                label: "Document Cleanup",
+                icon: "pi pi-file-pdf",
+                command: () => applyTemplate("document"),
+            },
+            {
+                label: "Music Library",
+                icon: "pi pi-volume-up",
+                command: () => applyTemplate("music"),
+            },
+            { separator: true },
+            {
+                label: "Custom Template",
+                icon: "pi pi-plus",
+                command: () => createTemplate(),
+            },
+        ],
+    },
+]);
+
+// Hamburger menu items
+const hamburgerMenu = ref();
+const hamburgerItems = ref([
+    {
+        label: "Reset All Tasks",
+        icon: "pi pi-refresh",
+        command: () => clearTasks(),
+    },
+    { separator: true },
+    {
+        label: "Help",
+        icon: "pi pi-question-circle",
+        command: () => showHelp(),
+    },
+    {
+        label: "Settings",
+        icon: "pi pi-cog",
+        command: () => showSettings(),
+    },
+    { separator: true },
+    {
+        label: "Export Config",
+        icon: "pi pi-download",
+        command: () => exportConfig(),
+    },
+]);
+
+// Toggle hamburger menu
+const toggle = (event) => {
+    hamburgerMenu.value.toggle(event);
+};
+
+// Template functions - implement these as needed
+const applyTemplate = (templateType) => {
+    console.log(`Apply ${templateType} template`);
+    // TODO: Implement template functionality
+};
+
+const createTemplate = () => {
+    console.log("Create custom template");
+    // TODO: Implement custom template creation
+};
+
+const showHelp = () => {
+    console.log("Show help");
+    // TODO: Implement help functionality
+};
+
+const showSettings = () => {
+    console.log("Show settings");
+    // TODO: Implement settings functionality
+};
+
+const exportConfig = () => {
+    console.log("Export configuration");
+    // TODO: Implement config export functionality
+};
 </script>
 
 <template>
@@ -363,8 +503,8 @@ function moveSelectedTaskDown(index: number) {
                 <!-- === File Buttons === -->
                 <div id="file_buttons" class="flex flex-row items-center justify-start mb-4">
                     <!-- <Button class="mr-4" label="Open A Folder" severity="primary" @click="open_folder" icon="pi pi-folder-open" /> -->
-                    <Button class="reg-button" unstyled label="Open Files" @click="open_files" icon="pi pi-file" />
-                    <Button class="reg-button" unstyled label="Clear All Files" severity="danger" @click="clearFiles" icon="pi pi-trash" />
+                    <Button class="reg-button" label="Open Files" @click="open_files" icon="pi pi-file" />
+                    <Button class="reg-button" label="Clear All Files" severity="danger" @click="clearFiles" icon="pi pi-trash" />
                     <Select v-model="sortChoice" :options="metadata" optionLabel="name" placeholder="Sort By" optionValue="code" class="w-full md:w-56" />
                 </div>
 
@@ -415,32 +555,27 @@ function moveSelectedTaskDown(index: number) {
 
             <!-- === Right Splitter Panel === -->
             <SplitterPanel class="flex flex-col flex-1">
-                
                 <div class="flex flex-col gap-2 mt-4 mb-2 ml-4">
-                    <!-- === First Row === -->
-                    <div class="flex flex-row">
-                        <Button class="reg-button" unstyled severity="primary" @click="addCustomText" icon="pi pi-arrow-circle-left" v-tooltip="'Add Custom Text'" />
-                        <Button class="reg-button" unstyled severity="primary" @click="addFindReplace" icon="pi pi-search" v-tooltip="'Add Find & Replace'" />
-                        <Button class="reg-button" unstyled severity="primary" @click="addClearAll" icon="pi pi-eraser" v-tooltip="'Add Clear All'" />
-                        <Button class="reg-button" unstyled severity="primary" @click="addChangeCase" icon="pi pi-sort-alpha-down" v-tooltip="'Add Change Case'" />
-                    </div>
-                    
-                    <!-- === Second Row === -->
-                    <div class="flex flex-row">
-                        <Button class="reg-button" unstyled severity="primary" @click="addNumSequence" icon="pi pi-sort-numeric-down" v-tooltip="'Add Number Sequence'" />
-                        <Button class="reg-button" unstyled severity="primary" @click="addDate" icon="pi pi-calendar" v-tooltip="'Add Date'" />
-                        <Button class="reg-button" unstyled severity="primary" @click="addTime" icon="pi pi-clock" v-tooltip="'Add Time'" />
-                        <Button class="reg-button shadow-xl" unstyled severity="danger" @click="clearTasks" icon="pi pi-trash" v-tooltip="'Clear All Tasks'" />
+                    <!-- === Task Menubar === -->
+                    <div class="mx-4 mb-4">
+                        <div class="card">
+                            <Menubar :model="items">
+                                <template #end>
+                                    <div class="flex items-center">
+                                        <Button type="button" icon="pi pi-bars" @click="toggle" aria-haspopup="true" aria-controls="hamburger_menu" class="p-button-text p-button-rounded" />
+                                        <Menu ref="hamburgerMenu" id="hamburger_menu" :model="hamburgerItems" :popup="true" />
+                                    </div>
+                                </template>
+                            </Menubar>
+                        </div>
                     </div>
                 </div>
-                
+
                 <TransitionGroup tag="div" name="ttasks" class="relative">
                     <div v-for="(item, index) in taskList" :key="item.id" class="ttasks-item mx-4 my-2">
-
                         <!-- === CustomText Task === -->
                         <template v-if="isCustomTextTask(item.task)">
                             <div class="flex flex-col gap-2 border-2 border-white/30 bg-white/40 rounded-lg p-3 backdrop-blur-lg shadow-lg">
-                                
                                 <!-- === Title and Description === -->
                                 <div class="flex flex-row items-center justify-between mb-1">
                                     <div class="flex flex-row items-center gap-2">
@@ -452,7 +587,7 @@ function moveSelectedTaskDown(index: number) {
                                         <i class="pi pi-times hover:cursor-pointer text-sm text-gray-600 hover:text-red-500 transition-colors" style="font-size: 0.9rem"></i>
                                     </div>
                                 </div>
-                                
+
                                 <!-- === Main Controls === -->
                                 <div class="flex flex-row gap-3 items-center">
                                     <!-- === Drag Buttons === -->
@@ -488,7 +623,6 @@ function moveSelectedTaskDown(index: number) {
                         <!-- === Find & Replace Task === -->
                         <template v-else-if="isFindAndReplaceTask(item.task)">
                             <div class="flex flex-col gap-2 border-2 border-white/30 bg-white/40 rounded-lg p-3 backdrop-blur-lg shadow-lg">
-                                
                                 <!-- === Title and Description === -->
                                 <div class="flex flex-row items-center justify-between mb-1">
                                     <div class="flex flex-row items-center gap-2">
@@ -500,7 +634,7 @@ function moveSelectedTaskDown(index: number) {
                                         <i class="pi pi-times hover:cursor-pointer text-sm text-gray-600 hover:text-red-500 transition-colors" style="font-size: 0.9rem"></i>
                                     </div>
                                 </div>
-                                
+
                                 <!-- === Main Controls === -->
                                 <div class="flex flex-row gap-3 items-center">
                                     <!-- === Drag Buttons === -->
@@ -533,7 +667,6 @@ function moveSelectedTaskDown(index: number) {
                         <!-- === ClearAll Task === -->
                         <template v-else-if="isClearAllTask(item.task)">
                             <div class="flex flex-col gap-2 border-2 border-white/30 bg-white/40 rounded-lg p-3 backdrop-blur-lg shadow-lg">
-                                
                                 <!-- === Title and Description === -->
                                 <div class="flex flex-row items-center justify-between mb-1">
                                     <div class="flex flex-row items-center gap-2">
@@ -545,7 +678,7 @@ function moveSelectedTaskDown(index: number) {
                                         <i class="pi pi-times hover:cursor-pointer text-sm text-gray-600 hover:text-red-500 transition-colors" style="font-size: 0.9rem"></i>
                                     </div>
                                 </div>
-                                
+
                                 <!-- === Main Controls === -->
                                 <div class="flex flex-row gap-3 items-center">
                                     <!-- === Drag Buttons === -->
@@ -577,7 +710,6 @@ function moveSelectedTaskDown(index: number) {
                         <!-- === ChangeCase Task === -->
                         <template v-else-if="isChangeCaseTask(item.task)">
                             <div class="flex flex-col gap-2 border-2 border-white/30 bg-white/40 rounded-lg p-3 backdrop-blur-lg shadow-lg">
-                                
                                 <!-- === Title and Description === -->
                                 <div class="flex flex-row items-center justify-between mb-1">
                                     <div class="flex flex-row items-center gap-2">
@@ -589,7 +721,7 @@ function moveSelectedTaskDown(index: number) {
                                         <i class="pi pi-times hover:cursor-pointer text-sm text-gray-600 hover:text-red-500 transition-colors" style="font-size: 0.9rem"></i>
                                     </div>
                                 </div>
-                                
+
                                 <!-- === Main Controls === -->
                                 <div class="flex flex-row gap-3 items-center">
                                     <!-- === Drag Buttons === -->
@@ -605,15 +737,15 @@ function moveSelectedTaskDown(index: number) {
                                     </div>
 
                                     <!-- === Case Choice Dropdown === -->
-                                    <Dropdown 
-                                        v-model="item.task.ChangeCase.case_choice" 
+                                    <Dropdown
+                                        v-model="item.task.ChangeCase.case_choice"
                                         :options="[
                                             { label: 'lowercase', value: 0 },
                                             { label: 'UPPERCASE', value: 1 },
                                             { label: 'Title Case', value: 2 },
-                                            { label: 'camelCase', value: 3 }
-                                        ]" 
-                                        optionLabel="label" 
+                                            { label: 'camelCase', value: 3 },
+                                        ]"
+                                        optionLabel="label"
                                         optionValue="value"
                                         placeholder="Select case type"
                                         class="flex-1"
@@ -632,7 +764,6 @@ function moveSelectedTaskDown(index: number) {
                         <!-- === NumSequence Task === -->
                         <template v-else-if="isNumSequenceTask(item.task)">
                             <div class="flex flex-col gap-2 border-2 border-white/30 bg-white/40 rounded-lg p-3 backdrop-blur-lg shadow-lg">
-                                
                                 <!-- === Title and Description === -->
                                 <div class="flex flex-row items-center justify-between mb-1">
                                     <div class="flex flex-row items-center gap-2">
@@ -644,7 +775,7 @@ function moveSelectedTaskDown(index: number) {
                                         <i class="pi pi-times hover:cursor-pointer text-sm text-gray-600 hover:text-red-500 transition-colors" style="font-size: 0.9rem"></i>
                                     </div>
                                 </div>
-                                
+
                                 <!-- === Main Controls === -->
                                 <div class="flex flex-row gap-3 items-center">
                                     <!-- === Drag Buttons === -->
@@ -660,36 +791,13 @@ function moveSelectedTaskDown(index: number) {
                                     </div>
 
                                     <!-- === Start Number === -->
-                                    <InputNumber 
-                                        v-model="item.task.NumSequence.start_num" 
-                                        :id="`start-num-${index}`"
-                                        placeholder="Start"
-                                        size="small"
-                                        class="w-20"
-                                        @input="user_update_tasks"
-                                    />
+                                    <InputNumber v-model="item.task.NumSequence.start_num" :id="`start-num-${index}`" placeholder="Start" size="small" class="w-20" @input="user_update_tasks" />
 
                                     <!-- === Padding === -->
-                                    <InputNumber 
-                                        v-model="item.task.NumSequence.num_padding" 
-                                        :id="`padding-${index}`"
-                                        placeholder="Padding"
-                                        size="small"
-                                        class="w-20"
-                                        :min="1"
-                                        :max="10"
-                                        @input="user_update_tasks"
-                                    />
+                                    <InputNumber v-model="item.task.NumSequence.num_padding" :id="`padding-${index}`" placeholder="Padding" size="small" class="w-20" :min="1" :max="10" @input="user_update_tasks" />
 
                                     <!-- === Separator === -->
-                                    <InputText 
-                                        v-model="item.task.NumSequence.separator" 
-                                        :id="`separator-${index}`"
-                                        placeholder="Sep"
-                                        size="small"
-                                        class="w-12"
-                                        @input="user_update_tasks"
-                                    />
+                                    <InputText v-model="item.task.NumSequence.separator" :id="`separator-${index}`" placeholder="Sep" size="small" class="w-12" @input="user_update_tasks" />
 
                                     <!-- === Position Toggle === -->
                                     <div class="flex items-center gap-2 whitespace-nowrap">
@@ -709,7 +817,6 @@ function moveSelectedTaskDown(index: number) {
                         <!-- === Date Task === -->
                         <template v-else-if="isDateTask(item.task)">
                             <div class="flex flex-col gap-2 border-2 border-white/30 bg-white/40 rounded-lg p-3 backdrop-blur-lg shadow-lg">
-                                
                                 <!-- === Title and Description === -->
                                 <div class="flex flex-row items-center justify-between mb-1">
                                     <div class="flex flex-row items-center gap-2">
@@ -721,7 +828,7 @@ function moveSelectedTaskDown(index: number) {
                                         <i class="pi pi-times hover:cursor-pointer text-sm text-gray-600 hover:text-red-500 transition-colors" style="font-size: 0.9rem"></i>
                                     </div>
                                 </div>
-                                
+
                                 <!-- === Main Controls === -->
                                 <div class="flex flex-row gap-3 items-center">
                                     <!-- === Drag Buttons === -->
@@ -758,14 +865,7 @@ function moveSelectedTaskDown(index: number) {
                                     </div>
 
                                     <!-- === Separator === -->
-                                    <InputText 
-                                        v-model="item.task.Date.separator" 
-                                        :id="`separator-${index}`"
-                                        placeholder="Sep"
-                                        size="small"
-                                        class="w-12"
-                                        @input="user_update_tasks"
-                                    />
+                                    <InputText v-model="item.task.Date.separator" :id="`separator-${index}`" placeholder="Sep" size="small" class="w-12" @input="user_update_tasks" />
 
                                     <!-- === Active Toggle === -->
                                     <div class="flex items-center gap-2 whitespace-nowrap">
@@ -779,7 +879,6 @@ function moveSelectedTaskDown(index: number) {
                         <!-- === Time Task === -->
                         <template v-else-if="isTimeTask(item.task)">
                             <div class="flex flex-col gap-2 border-2 border-white/30 bg-white/40 rounded-lg p-3 backdrop-blur-lg shadow-lg">
-                                
                                 <!-- === Title and Description === -->
                                 <div class="flex flex-row items-center justify-between mb-1">
                                     <div class="flex flex-row items-center gap-2">
@@ -791,7 +890,7 @@ function moveSelectedTaskDown(index: number) {
                                         <i class="pi pi-times hover:cursor-pointer text-sm text-gray-600 hover:text-red-500 transition-colors" style="font-size: 0.9rem"></i>
                                     </div>
                                 </div>
-                                
+
                                 <!-- === Main Controls === -->
                                 <div class="flex flex-row gap-3 items-center">
                                     <!-- === Drag Buttons === -->
@@ -813,14 +912,7 @@ function moveSelectedTaskDown(index: number) {
                                     </div>
 
                                     <!-- === Separator === -->
-                                    <InputText 
-                                        v-model="item.task.Time.separator" 
-                                        :id="`separator-${index}`"
-                                        placeholder="Sep"
-                                        size="small"
-                                        class="w-12"
-                                        @input="user_update_tasks"
-                                    />
+                                    <InputText v-model="item.task.Time.separator" :id="`separator-${index}`" placeholder="Sep" size="small" class="w-12" @input="user_update_tasks" />
 
                                     <!-- === Active Toggle === -->
                                     <div class="flex items-center gap-2 whitespace-nowrap">
@@ -925,7 +1017,6 @@ function moveSelectedTaskDown(index: number) {
     box-shadow: black 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -1px;
     transition: background-color 0.2s ease;
     backdrop-filter: blur(10px);
-    
 
     &:hover {
         background-color: color-mix(in oklab, var(--color-white) 100%, transparent);
