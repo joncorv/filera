@@ -3,7 +3,7 @@ import { ref, Ref, computed } from "vue";
 import "./styles.css"; // Tailwind Stuff
 import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
-// import { usePosNoise } from "./scripts/usePosNoise";
+import { usePosNoise } from "./scripts/usePosNoise";
 import { Button } from "primevue";
 import Splitter from "primevue/splitter";
 import SplitterPanel from "primevue/splitterpanel";
@@ -325,11 +325,10 @@ function moveSelectedTaskDown(index: number) {
 }
 
 //  <-- === usePosNoise function from external file. === -->
-// const sphere1 = usePosNoise({ size: 1.2, speed: 0.0005, amplitude: 175 });
-// const sphere2 = usePosNoise({ size: 0.8, speed: 0.0003, amplitude: 100 });
-// const sphere3 = usePosNoise({ size: 1.5, speed: 0.0004, amplitude: 175 });
+const sphere1 = usePosNoise({ size: 1.2, speed: 0.0005, amplitude: 175 });
+const sphere2 = usePosNoise({ size: 0.8, speed: 0.0003, amplitude: 100 });
+const sphere3 = usePosNoise({ size: 1.5, speed: 0.0004, amplitude: 175 });
 
-// Main menubar items
 const items = ref([
     {
         label: "Custom Text",
@@ -407,38 +406,6 @@ const items = ref([
     },
 ]);
 
-// Hamburger menu items
-const hamburgerMenu = ref();
-const hamburgerItems = ref([
-    {
-        label: "Reset All Tasks",
-        icon: "pi pi-refresh",
-        command: () => clearTasks(),
-    },
-    { separator: true },
-    {
-        label: "Help",
-        icon: "pi pi-question-circle",
-        command: () => showHelp(),
-    },
-    {
-        label: "Settings",
-        icon: "pi pi-cog",
-        command: () => showSettings(),
-    },
-    { separator: true },
-    {
-        label: "Export Config",
-        icon: "pi pi-download",
-        command: () => exportConfig(),
-    },
-]);
-
-// Toggle hamburger menu
-const toggle = (event) => {
-    hamburgerMenu.value.toggle(event);
-};
-
 // Template functions - implement these as needed
 const applyTemplate = (templateType) => {
     console.log(`Apply ${templateType} template`);
@@ -468,33 +435,28 @@ const exportConfig = () => {
 
 <template>
     <body class="flex flex-col box-border w-screen h-screen m-0 p-0 overflow-hidden z-0">
-        <!-- === Green Circles === -->
-        <!-- <div
-            id="circles-random-positions"
-            class="absolute h-screen w-screen overflow-hidden"
-        >
-            <div
-                id="circle_top_left"
-                class="absolute w-30 h-30 rounded-full bg-green-400"
-                :style="{
-                    transform: `translate(${160 + sphere1.x}px, ${sphere1.y}px)`,
-                }"
-            />
-            <div
-                id="circle_right"
-                class="absolute w-40 h-40 rounded-full bg-green-200"
-                :style="{
-                    transform: `translate(${1000 + sphere2.x}px, ${sphere2.y}px)`,
-                }"
-            />
-            <div
-                id="circle_btm"
-                class="absolute w-60 h-60 rounded-full bg-green-400"
-                :style="{
-                    transform: `translate(${400 + sphere3.x}px, ${520 + sphere3.y}px)`,
-                }"
-            />
-        </div> -->
+        <!-- === Simple Menubar === -->
+        <div class="z-50">
+            <div class="card border-none rounded-none shadow-none">
+                <Menubar :model="items">
+                    <template #start>
+                        <div class="flex items-center gap-2">
+                            <Button icon="pi pi-file" label="Open Files" @click="open_files" class="p-button-outlined p-button-secondary" />
+                            <Button icon="pi pi-folder-open" label="Open Folders" @click="open_files" class="p-button-outlined p-button-secondary" />
+                            <div class="border-l border-gray-300 h-8 mx-3"></div>
+                        </div>
+                    </template>
+
+                    <template #end>
+                        <div class="flex items-center gap-2">
+                            <Button type="button" icon="pi pi-bookmark" @click="showTemplates" v-tooltip="'Templates'" class="p-button-outlined p-button-secondary p-button-rounded" />
+                            <Button type="button" icon="pi pi-cog" @click="showSettings" v-tooltip="'Settings'" class="p-button-outlined p-button-secondary p-button-rounded" />
+                            <Button icon="pi pi-check" label="Batch Rename" @click="rename_files" class="p-button-success" />
+                        </div>
+                    </template>
+                </Menubar>
+            </div>
+        </div>
 
         <!-- === Master Splitter Panel === -->
         <Splitter style="flex: 1; overflow: hidden; background-color: transparent; z-index: 40">
@@ -503,8 +465,8 @@ const exportConfig = () => {
                 <!-- === File Buttons === -->
                 <div id="file_buttons" class="flex flex-row items-center justify-start mb-4">
                     <!-- <Button class="mr-4" label="Open A Folder" severity="primary" @click="open_folder" icon="pi pi-folder-open" /> -->
-                    <Button class="reg-button" label="Open Files" @click="open_files" icon="pi pi-file" />
-                    <Button class="reg-button" label="Clear All Files" severity="danger" @click="clearFiles" icon="pi pi-trash" />
+                    <!-- <Button class="reg-button" label="Open Files" @click="open_files" icon="pi pi-file" />
+                    <Button class="reg-button" label="Clear All Files" severity="danger" @click="clearFiles" icon="pi pi-trash" /> -->
                     <Select v-model="sortChoice" :options="metadata" optionLabel="name" placeholder="Sort By" optionValue="code" class="w-full md:w-56" />
                 </div>
 
@@ -555,22 +517,6 @@ const exportConfig = () => {
 
             <!-- === Right Splitter Panel === -->
             <SplitterPanel class="flex flex-col flex-1">
-                <div class="flex flex-col gap-2 mt-4 mb-2 ml-4">
-                    <!-- === Task Menubar === -->
-                    <div class="mx-4 mb-4">
-                        <div class="card">
-                            <Menubar :model="items">
-                                <template #end>
-                                    <div class="flex items-center">
-                                        <Button type="button" icon="pi pi-bars" @click="toggle" aria-haspopup="true" aria-controls="hamburger_menu" class="p-button-text p-button-rounded" />
-                                        <Menu ref="hamburgerMenu" id="hamburger_menu" :model="hamburgerItems" :popup="true" />
-                                    </div>
-                                </template>
-                            </Menubar>
-                        </div>
-                    </div>
-                </div>
-
                 <TransitionGroup tag="div" name="ttasks" class="relative">
                     <div v-for="(item, index) in taskList" :key="item.id" class="ttasks-item mx-4 my-2">
                         <!-- === CustomText Task === -->
@@ -926,13 +872,6 @@ const exportConfig = () => {
                 </TransitionGroup>
             </SplitterPanel>
         </Splitter>
-
-        <!-- === App Footer === -->
-        <!-- <div id="footer" class="flex flex-row-reverse m-4 "> -->
-        <div id="footer" class="flex flex-row-reverse gap-0 m-4 rounded-2xl p-4 border-2 border-white/30 bg-white/20 backdrop-blur-lg shadow-lg z-50">
-            <!-- === Batch Rename All Files Button === -->
-            <Button unstyled icon="pi pi-trash" class="big-button" label="Batch Rename All Files" size="large" @click="rename_files" />
-        </div>
     </body>
 </template>
 
