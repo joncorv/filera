@@ -3,15 +3,14 @@ import { ref, Ref, computed } from "vue";
 import "./styles.css"; // Tailwind Stuff
 import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
-import { usePosNoise } from "./scripts/usePosNoise";
 import { Button } from "primevue";
 import Splitter from "primevue/splitter";
 import SplitterPanel from "primevue/splitterpanel";
 import InputText from "primevue/inputtext";
 import ToggleSwitch from "primevue/toggleswitch";
 import Select from "primevue/select";
-import Menubar from "primevue/menubar";
-import Menu from "primevue/menu";
+// import Menubar from "primevue/menubar";
+// import Menu from "primevue/menu";
 import Dropdown from "primevue/dropdown";
 import InputNumber from "primevue/inputnumber";
 
@@ -336,11 +335,6 @@ function moveSelectedTaskDown(index: number) {
     }
 }
 
-//  <-- === usePosNoise function from external file. === -->
-const sphere1 = usePosNoise({ size: 1.2, speed: 0.0005, amplitude: 175 });
-const sphere2 = usePosNoise({ size: 0.8, speed: 0.0003, amplitude: 100 });
-const sphere3 = usePosNoise({ size: 1.5, speed: 0.0004, amplitude: 175 });
-
 const items = ref([
     {
         label: "Custom Text",
@@ -419,9 +413,14 @@ const items = ref([
 ]);
 
 // Template functions - implement these as needed
-const applyTemplate = (templateType) => {
+const applyTemplate = (templateType: string) => {
     console.log(`Apply ${templateType} template`);
     // TODO: Implement template functionality
+};
+
+const showTemplates = () => {
+    console.log("View templates");
+    // TODO: Impliment view templates functionality
 };
 
 const createTemplate = () => {
@@ -448,52 +447,48 @@ const exportConfig = () => {
 <template>
     <body class="flex flex-col box-border w-screen h-screen m-0 p-0 overflow-hidden z-0">
         <!-- === Simple Menubar === -->
-        <div class="z-50">
-            <div class="card border-none rounded-none shadow-none">
-                <Menubar :model="items">
-                    <template #start>
-                        <div class="flex items-center gap-2">
-                            <Button
-                                icon="pi pi-file"
-                                label="Open Files"
-                                @click="open_files"
-                                class="p-button-outlined p-button-secondary"
-                            />
-                            <Button
-                                icon="pi pi-folder-open"
-                                label="Open Folders"
-                                @click="open_files"
-                                class="p-button-outlined p-button-secondary"
-                            />
-                            <div class="border-l border-gray-300 h-8 mx-3"></div>
-                        </div>
-                    </template>
+        <div id="left-menu-buttons" class="flex flex-row p-2 items-center justify-between w-full z-50 bg-black">
+            <div class="items-center gap-4">
+                <Button
+                    size="small"
+                    icon="pi pi-file"
+                    label="Open Files"
+                    @click="open_files"
+                    class="p-button-secondary mr-2"
+                />
+                <Button
+                    size="small"
+                    icon="pi pi-folder-open"
+                    label="Open Folders"
+                    @click="open_files"
+                    class="p-button-secondary"
+                />
+            </div>
 
-                    <template #end>
-                        <div class="flex items-center gap-2">
-                            <Button
-                                type="button"
-                                icon="pi pi-bookmark"
-                                @click="showTemplates"
-                                v-tooltip="'Templates'"
-                                class="p-button-outlined p-button-secondary p-button-rounded"
-                            />
-                            <Button
-                                type="button"
-                                icon="pi pi-cog"
-                                @click="showSettings"
-                                v-tooltip="'Settings'"
-                                class="p-button-outlined p-button-secondary p-button-rounded"
-                            />
-                            <Button
-                                icon="pi pi-check"
-                                label="Batch Rename"
-                                @click="rename_files"
-                                class="p-button-success"
-                            />
-                        </div>
-                    </template>
-                </Menubar>
+            <div id="right-menu-buttons" class="items-center gap-2">
+                <Button
+                    type="button"
+                    size="small"
+                    icon="pi pi-bookmark"
+                    @click="showTemplates"
+                    v-tooltip="'Templates'"
+                    class="p-button-secondary p-button-rounded mr-2"
+                />
+                <Button
+                    type="button"
+                    size="small"
+                    icon="pi pi-cog"
+                    @click="showSettings"
+                    v-tooltip="'Settings'"
+                    class="p-button-secondary p-button-rounded mr-2"
+                />
+                <Button
+                    size="small"
+                    icon="pi pi-check"
+                    label="Batch Rename Files"
+                    @click="rename_files"
+                    class="p-button-success"
+                />
             </div>
         </div>
 
@@ -501,24 +496,20 @@ const exportConfig = () => {
         <Splitter style="flex: 1; overflow: hidden; background-color: transparent; z-index: 40">
             <!-- === Left Splitter Panel === -->
             <SplitterPanel
-                class="flex flex-col gap-0 m-4 rounded-2xl p-4 border-2 border-white/30 bg-white/20 backdrop-blur-lg shadow-lg z-50"
+                class="flex flex-col gap-0 border-0 border-white/30 bg-white/20 backdrop-blur-lg shadow-lg z-50"
             >
-                <!-- === File Buttons === -->
-                <div id="file_buttons" class="flex flex-row items-center justify-start mb-4">
-                    <!-- <Button class="mr-4" label="Open A Folder" severity="primary" @click="open_folder" icon="pi pi-folder-open" /> -->
-                    <!-- <Button class="reg-button" label="Open Files" @click="open_files" icon="pi pi-file" />
-                    <Button class="reg-button" label="Clear All Files" severity="danger" @click="clearFiles" icon="pi pi-trash" /> -->
+                <!-- === Left SplitterPanel Menubar === -->
+                <div id="file_buttons" class="flex flex-row items-center justify-start">
                     <Select
                         v-model="sortChoice"
                         :options="metadata"
+                        size="small"
                         optionLabel="name"
                         placeholder="Sort By"
                         optionValue="code"
                         class="w-full md:w-56"
                     />
                 </div>
-
-                <!-- <hr class="border-1 border-white/30 my-4" /> -->
 
                 <Transition mode="out-in">
                     <!-- === No Files Selected === -->
@@ -530,7 +521,7 @@ const exportConfig = () => {
                     <div
                         v-else
                         id="table-container"
-                        class="flex-1 flex flex-col mb-2 min-h-0 text-sm bg-white/50 rounded-sm border-1 border-black/10"
+                        class="flex-1 flex flex-col mb-2 min-h-0 text-sm bg-white/50 border-1 border-black/10"
                     >
                         <table class="w-full">
                             <thead>
@@ -1142,7 +1133,8 @@ const exportConfig = () => {
 
 <style>
 :root {
-    background-image: url("src/assets/v960-ning-30.jpg");
+    /* background-image: url("src/assets/v960-ning-30.jpg"); */
+    background-image: black;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -1156,7 +1148,8 @@ const exportConfig = () => {
 }
 
 .body {
-    background-image: url("src/assets/636977f64331639884919566b3ec074a_edit1.jpg");
+    /* background-image: url("src/assets/636977f64331639884919566b3ec074a_edit1.jpg"); */
+    background-color: black;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -1257,5 +1250,9 @@ const exportConfig = () => {
         background-color: color-mix(in oklab, var(--color-green-500) 60%, transparent);
         cursor: pointer;
     }
+}
+
+.p-menubar {
+    menubar.border.radius: 0;
 }
 </style>
