@@ -13,6 +13,8 @@ import Select from "primevue/select";
 // import Menu from "primevue/menu";
 import Dropdown from "primevue/dropdown";
 import InputNumber from "primevue/inputnumber";
+import IconField from "primevue/iconfield";
+import InputIcon from "primevue/inputicon";
 
 import "primeicons/primeicons.css";
 
@@ -78,7 +80,7 @@ interface TaskWithId {
 
 //  <-- === Type Guards === -->
 const isCustomTextTask = (
-    task: Task,
+    task: Task
 ): task is {
     CustomText: { text: string; at_start: boolean; active: boolean };
 } => {
@@ -86,7 +88,7 @@ const isCustomTextTask = (
 };
 
 const isFindAndReplaceTask = (
-    task: Task,
+    task: Task
 ): task is {
     FindAndReplace: {
         find_text: string;
@@ -98,7 +100,7 @@ const isFindAndReplaceTask = (
 };
 
 const isClearAllTask = (
-    task: Task,
+    task: Task
 ): task is {
     ClearAll: { active: boolean };
 } => {
@@ -106,7 +108,7 @@ const isClearAllTask = (
 };
 
 const isChangeCaseTask = (
-    task: Task,
+    task: Task
 ): task is {
     ChangeCase: { case_choice: number; active: boolean };
 } => {
@@ -114,7 +116,7 @@ const isChangeCaseTask = (
 };
 
 const isNumSequenceTask = (
-    task: Task,
+    task: Task
 ): task is {
     NumSequence: {
         start_num: number;
@@ -128,7 +130,7 @@ const isNumSequenceTask = (
 };
 
 const isDateTask = (
-    task: Task,
+    task: Task
 ): task is {
     Date: {
         year: boolean;
@@ -143,7 +145,7 @@ const isDateTask = (
 };
 
 const isTimeTask = (
-    task: Task,
+    task: Task
 ): task is {
     Time: {
         hour_24: boolean;
@@ -335,6 +337,35 @@ function moveSelectedTaskDown(index: number) {
     }
 }
 
+const customTextMenuItems = ref([
+    {
+        label: "Custom Text",
+        icon: "pi pi-pencil",
+        items: [
+            {
+                label: "Custom Text",
+                icon: "pi pi-arrow-circle-left",
+                command: () => addCustomText(),
+            },
+            {
+                label: "Number Sequence",
+                icon: "pi pi-sort-numeric-down",
+                command: () => addNumSequence(),
+            },
+            {
+                label: "Date",
+                icon: "pi pi-calendar",
+                command: () => addDate(),
+            },
+            {
+                label: "Time",
+                icon: "pi pi-clock",
+                command: () => addTime(),
+            },
+        ],
+    },
+]);
+
 const items = ref([
     {
         label: "Custom Text",
@@ -428,10 +459,10 @@ const createTemplate = () => {
     // TODO: Implement custom template creation
 };
 
-const showHelp = () => {
-    console.log("Show help");
-    // TODO: Implement help functionality
-};
+// const showHelp = () => {
+//     console.log("Show help");
+//     // TODO: Implement help functionality
+// };
 
 const showSettings = () => {
     console.log("Show settings");
@@ -446,20 +477,25 @@ const exportConfig = () => {
 
 <template>
     <body class="flex flex-col box-border w-screen h-screen m-0 p-0 overflow-hidden z-0">
-        <!-- === Simple Menubar === -->
-        <div id="left-menu-buttons" class="flex flex-row p-2 items-center justify-between w-full z-50 bg-black">
+        <!-- === Global Top Menubar === -->
+        <div
+            id="left-menu-buttons"
+            class="flex flex-row p-2 border-b-1 border-white/30 items-center justify-between w-full z-50 bg-black"
+        >
             <div class="items-center gap-4">
                 <Button
-                    size="small"
+                    size="medium"
                     icon="pi pi-file"
                     label="Open Files"
+                    variant="outlined"
                     @click="open_files"
                     class="p-button-secondary mr-2"
                 />
                 <Button
-                    size="small"
+                    size="medium"
                     icon="pi pi-folder-open"
                     label="Open Folders"
+                    variant="outlined"
                     @click="open_files"
                     class="p-button-secondary"
                 />
@@ -468,22 +504,24 @@ const exportConfig = () => {
             <div id="right-menu-buttons" class="items-center gap-2">
                 <Button
                     type="button"
-                    size="small"
+                    size="medium"
                     icon="pi pi-bookmark"
+                    variant="outlined"
                     @click="showTemplates"
                     v-tooltip="'Templates'"
                     class="p-button-secondary p-button-rounded mr-2"
                 />
                 <Button
                     type="button"
-                    size="small"
+                    size="medium"
                     icon="pi pi-cog"
+                    variant="outlined"
                     @click="showSettings"
                     v-tooltip="'Settings'"
                     class="p-button-secondary p-button-rounded mr-2"
                 />
                 <Button
-                    size="small"
+                    size="medium"
                     icon="pi pi-check"
                     label="Batch Rename Files"
                     @click="rename_files"
@@ -496,10 +534,17 @@ const exportConfig = () => {
         <Splitter style="flex: 1; overflow: hidden; background-color: transparent; z-index: 40">
             <!-- === Left Splitter Panel === -->
             <SplitterPanel
-                class="flex flex-col gap-0 border-0 border-white/30 bg-white/20 backdrop-blur-lg shadow-lg z-50"
+                class="flex flex-col gap-0 ml-2 mr-0.5 mt-2 mb-2 border-1 rounded-t-lg border-white/30 bg-black backdrop-blur-lg shadow-sm z-50"
             >
                 <!-- === Left SplitterPanel Menubar === -->
-                <div id="file_buttons" class="flex flex-row items-center justify-start">
+                <div id="file_buttons" class="flex flex-row items-center gap-2 justify-start m-2">
+                    <!-- === Search Field === -->
+                    <IconField class="flex-3/4 w-full">
+                        <InputIcon class="pi pi-search" />
+                        <InputText v-model="value1" placeholder="Search your files..." size="small" class="w-full" />
+                    </IconField>
+
+                    <!-- === Sort Select === -->
                     <Select
                         v-model="sortChoice"
                         :options="metadata"
@@ -507,9 +552,14 @@ const exportConfig = () => {
                         optionLabel="name"
                         placeholder="Sort By"
                         optionValue="code"
-                        class="w-full md:w-56"
+                        class="w-full flex-1/4"
                     />
+
+                    <!-- === Hamburger Select === -->
+                    <Button icon="pi pi-bars" variant="outlined" severity="secondary" size="small" />
                 </div>
+
+                <hr class="border-white/30" />
 
                 <Transition mode="out-in">
                     <!-- === No Files Selected === -->
@@ -518,28 +568,24 @@ const exportConfig = () => {
                     </div>
 
                     <!-- === File Table === -->
-                    <div
-                        v-else
-                        id="table-container"
-                        class="flex-1 flex flex-col mb-2 min-h-0 text-sm bg-white/50 border-1 border-black/10"
-                    >
-                        <table class="w-full">
+                    <div v-else id="table-container" class="flex-1/2 flex flex-col mb-2 min-h-0 text-sm">
+                        <table class="w-full text-white/90">
                             <thead>
                                 <tr>
-                                    <th class="px-4 py-2 text-left border-b border-white/30">Old Name</th>
-                                    <th class="px-4 py-2 text-left border-b border-white/30">New Name</th>
+                                    <th class="px-4 pt-2.5 pb-1.5 text-left border-b border-white/30">Old Name</th>
+                                    <th class="px-4 pt-2.5 pb-1.5 text-left border-b border-white/30">New Name</th>
                                 </tr>
                             </thead>
                         </table>
 
-                        <div class="flex-1 overflow-y-auto min-h-0">
+                        <div class="flex-1/2 overflow-y-auto min-h-0 text-white/70">
                             <table class="w-full">
                                 <tbody>
                                     <tr v-for="(item, index) in fileStatusReturn" :key="index">
-                                        <td class="px-4 py-2 border-b border-black/10">
+                                        <td class="px-4 py-2 border-b border-b-white/10">
                                             {{ item.old_file_name }}
                                         </td>
-                                        <td class="px-4 py-2 border-b border-black/10">
+                                        <td class="px-4 py-2 border-b border-b-white/10">
                                             {{ item.new_file_name }}
                                         </td>
                                     </tr>
@@ -548,18 +594,30 @@ const exportConfig = () => {
                         </div>
                     </div>
                 </Transition>
-
-                <!-- === Footer -> Total Files Selected === -->
-                <div id="selection_info">
-                    <span class="font-medium">Total Files Selected:</span>
-                    <Transition mode="out-in">
-                        <span class="ml-2">{{ numFileStatusItems }}</span>
-                    </Transition>
-                </div>
             </SplitterPanel>
 
             <!-- === Right Splitter Panel === -->
-            <SplitterPanel class="flex flex-col flex-1">
+            <SplitterPanel
+                class="flex flex-col flex-1 ml-0.5 my-2 mr-2 w-full rounded-t-lg bg-black border-1 border-white/30"
+            >
+                <!-- === Right SplitterPanel Menubar === -->
+                <div id="file_buttons" class="flex flex-row m-2 gap-2 items-center justify-start">
+                    <Select
+                        v-model="sortChoice"
+                        :options="metadata"
+                        size="small"
+                        optionLabel="name"
+                        placeholder="Sort By"
+                        optionValue="code"
+                        class="flex-1"
+                    />
+
+                    <!-- === Hamburger Select === -->
+                    <Button icon="pi pi-bars" variant="outlined" severity="secondary" size="small" />
+                </div>
+
+                <hr class="border-white/30" />
+
                 <TransitionGroup tag="div" name="ttasks" class="relative">
                     <div v-for="(item, index) in taskList" :key="item.id" class="ttasks-item mx-4 my-2">
                         <!-- === CustomText Task === -->
@@ -1128,6 +1186,14 @@ const exportConfig = () => {
                 </TransitionGroup>
             </SplitterPanel>
         </Splitter>
+
+        <!-- === Footer -> Total Files Selected === -->
+        <footer class="py-2 pl-4 border-t-1 border-white/30 text-lg">
+            <span class="">Total Files Selected: </span>
+            <Transition mode="out-in">
+                <span>{{ numFileStatusItems }}</span>
+            </Transition>
+        </footer>
     </body>
 </template>
 
@@ -1144,7 +1210,7 @@ const exportConfig = () => {
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    -webkit-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 50%;
 }
 
 .body {
@@ -1154,6 +1220,22 @@ const exportConfig = () => {
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
+}
+
+/* Cross-platform CSS foundation */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    /* margin: 0;
+    padding: 0; */
+}
+
+html {
+    font-size: 15px; /* PrimeVue design system base */
+    line-height: 1.5;
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
 }
 
 /* TransitionGroup styles */
@@ -1211,10 +1293,7 @@ const exportConfig = () => {
     font-size: var(--text-sm);
     line-height: var(--tw-leading, var(--text-sm--line-height));
     background-color: color-mix(in oklab, var(--color-white) 80%, transparent);
-    box-shadow:
-        black 0px 0px 0px 0px,
-        rgba(0, 0, 0, 0.05) 0px 4px 6px -1px,
-        rgba(0, 0, 0, 0.1) 0px 2px 4px -1px;
+    box-shadow: black 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -1px;
     transition: background-color 0.2s ease;
     backdrop-filter: blur(10px);
 
@@ -1239,10 +1318,7 @@ const exportConfig = () => {
     font-size: var(--text-med);
     line-height: var(--tw-leading, var(--text-sm--line-height));
     background-color: color-mix(in oklab, var(--color-green-400) 80%, transparent);
-    box-shadow:
-        black 0px 0px 0px 0px,
-        rgba(0, 0, 0, 0.05) 0px 4px 6px -1px,
-        rgba(0, 0, 0, 0.1) 0px 2px 4px -1px;
+    box-shadow: black 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -1px;
     transition: background-color 0.2s ease;
     backdrop-filter: blur(10px);
 
@@ -1250,9 +1326,5 @@ const exportConfig = () => {
         background-color: color-mix(in oklab, var(--color-green-500) 60%, transparent);
         cursor: pointer;
     }
-}
-
-.p-menubar {
-    menubar.border.radius: 0;
 }
 </style>
