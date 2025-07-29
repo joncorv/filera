@@ -8,6 +8,7 @@ import Splitter from "primevue/splitter";
 import SplitterPanel from "primevue/splitterpanel";
 import InputText from "primevue/inputtext";
 import ToggleSwitch from "primevue/toggleswitch";
+import ToggleButton from "primevue/togglebutton";
 import Select from "primevue/select";
 // import Menubar from "primevue/menubar";
 import Menu from "primevue/menu";
@@ -261,6 +262,7 @@ const addTime = () => {
 let dirtyFilesSelection: string[] | null = null;
 const fileStatusReturn: Ref<FileStatus[]> = ref([]);
 const numFileStatusItems = computed(() => fileStatusReturn.value.length);
+const numTaskListItems = computed(() => taskList.value.length);
 
 //  <-- === Opens Files System Dialog === -->
 async function open_files() {
@@ -307,17 +309,12 @@ async function clearFiles() {
     await invoke("user_clear_files");
 }
 
+// NOTE: this used to be an iterative delete, but it's unncessary
 async function clearTasks() {
-    const loopLength = taskList.value.length;
-    for (let i = loopLength - 1; i >= 0; i--) {
-        taskList.value.pop();
-        if (i > 0) {
-            // Don't wait after the last iteration
-            await new Promise((resolve) => setTimeout(resolve, 40));
-        }
-    }
+    taskList.value = [];
     user_update_tasks();
 }
+
 function deleteSelectedTask(index: number) {
     taskList.value.splice(index, 1);
     user_update_tasks();
@@ -337,115 +334,76 @@ function moveSelectedTaskDown(index: number) {
     }
 }
 
-const customTextMenuItems = ref([
+const taskMenuItems = ref([
+    {
+        label: "Find & Replace",
+        icon: "pi pi-search",
+        command: () => addFindReplace(),
+    },
+    {
+        label: "Number Sequence",
+        icon: "pi pi-sort-numeric-down",
+        command: () => addNumSequence(),
+    },
     {
         label: "Custom Text",
-        icon: "pi pi-pencil",
-        items: [
-            {
-                label: "Custom Text",
-                icon: "pi pi-arrow-circle-left",
-                command: () => addCustomText(),
-            },
-            {
-                label: "Number Sequence",
-                icon: "pi pi-sort-numeric-down",
-                command: () => addNumSequence(),
-            },
-            {
-                label: "Date",
-                icon: "pi pi-calendar",
-                command: () => addDate(),
-            },
-            {
-                label: "Time",
-                icon: "pi pi-clock",
-                command: () => addTime(),
-            },
-        ],
+        icon: "pi pi-arrow-circle-left",
+        command: () => addCustomText(),
+    },
+    {
+        label: "Change Case",
+        icon: "pi pi-sort-alpha-down",
+        command: () => addChangeCase(),
+    },
+    {
+        label: "Date",
+        icon: "pi pi-calendar",
+        command: () => addDate(),
+    },
+    {
+        label: "Time",
+        icon: "pi pi-clock",
+        command: () => addTime(),
+    },
+    {
+        label: "Clear All",
+        icon: "pi pi-eraser",
+        command: () => addClearAll(),
     },
 ]);
 
-const items = ref([
+const templateMenuItems = ref([
     {
-        label: "Custom Text",
-        icon: "pi pi-pencil",
-        items: [
-            {
-                label: "Custom Text",
-                icon: "pi pi-arrow-circle-left",
-                command: () => addCustomText(),
-            },
-            {
-                label: "Number Sequence",
-                icon: "pi pi-sort-numeric-down",
-                command: () => addNumSequence(),
-            },
-            {
-                label: "Date",
-                icon: "pi pi-calendar",
-                command: () => addDate(),
-            },
-            {
-                label: "Time",
-                icon: "pi pi-clock",
-                command: () => addTime(),
-            },
-        ],
+        label: "Photo Rename",
+        icon: "pi pi-image",
+        command: () => applyTemplate("photo"),
     },
     {
-        label: "Effects",
-        icon: "pi pi-cog",
-        items: [
-            {
-                label: "Find & Replace",
-                icon: "pi pi-search",
-                command: () => addFindReplace(),
-            },
-            {
-                label: "Clear All",
-                icon: "pi pi-eraser",
-                command: () => addClearAll(),
-            },
-            {
-                label: "Change Case",
-                icon: "pi pi-sort-alpha-down",
-                command: () => addChangeCase(),
-            },
-        ],
+        label: "Document Cleanup",
+        icon: "pi pi-file-pdf",
+        command: () => applyTemplate("document"),
     },
     {
-        label: "Templates",
-        icon: "pi pi-bookmark",
-        items: [
-            {
-                label: "Photo Rename",
-                icon: "pi pi-image",
-                command: () => applyTemplate("photo"),
-            },
-            {
-                label: "Document Cleanup",
-                icon: "pi pi-file-pdf",
-                command: () => applyTemplate("document"),
-            },
-            {
-                label: "Music Library",
-                icon: "pi pi-volume-up",
-                command: () => applyTemplate("music"),
-            },
-            { separator: true },
-            {
-                label: "Custom Template",
-                icon: "pi pi-plus",
-                command: () => createTemplate(),
-            },
-        ],
+        label: "Music Library",
+        icon: "pi pi-volume-up",
+        command: () => applyTemplate("music"),
+    },
+    { separator: true },
+    {
+        label: "Custom Template",
+        icon: "pi pi-plus",
+        command: () => createTemplate(),
     },
 ]);
 
-const customTextMenuToggle = ref();
-const customTextMenuToggleFunction = (event) => {
-    customTextMenuToggle.value.toggle(event);
+const taskMenuToggle = ref();
+const taskMenuToggleFunction = (event: any) => {
+    taskMenuToggle.value.toggle(event);
+};
+
+const templateMenuToggle = ref();
+const templateMenuToggleFunction = (event: any) => {
+    templateMenuToggle.value.toggle(event);
 };
 
 // Template functions - implement these as needed
@@ -454,10 +412,10 @@ const applyTemplate = (templateType: string) => {
     // TODO: Implement template functionality
 };
 
-const showTemplates = () => {
-    console.log("View templates");
-    // TODO: Impliment view templates functionality
-};
+// const showTemplates = () => {
+//     console.log("View templates");
+//     // TODO: Impliment view templates functionality
+// };
 
 const createTemplate = () => {
     console.log("Create custom template");
@@ -483,36 +441,36 @@ const exportConfig = () => {
 <template>
     <body class="flex flex-col box-border w-screen h-screen m-0 p-0 overflow-hidden z-0 bg-black">
         <!-- === Global Top Menubar === -->
-        <!-- <div
-            id="left-menu-buttons"
-            class="flex flex-row p-2 border-b-1 border-white/30 items-center justify-between w-full z-50 bg-black"
-        > -->
-        <!-- <div class="items-center gap-4">
-                <Button size="small" icon="pi pi-file" label="Open Files" @click="open_files" class="mr-2" />
-                <Button size="small" icon="pi pi-folder-open" label="Open Folders" @click="open_files" />
-            </div> -->
-
-        <!-- <div id="right-menu-buttons" class="items-center gap-2">
-                <Button
-                    type="button"
-                    size="small"
-                    icon="pi pi-bookmark"
-                    variant="outlined"
-                    @click="showTemplates"
-                    v-tooltip="'Templates'"
-                    class="p-button-secondary p-button-rounded mr-2"
-                />
-                <Button
-                    type="button"
-                    size="small"
-                    icon="pi pi-cog"
-                    variant="outlined"
-                    @click="showSettings"
-                    v-tooltip="'Settings'"
-                    class="p-button-secondary p-button-rounded mr-2"
-                />
-                <Button size="small" icon="pi pi-check" label="Batch Rename Files" @click="rename_files" />
-            </div> -->
+        <!-- <div -->
+        <!--     id="left-menu-buttons" -->
+        <!--     class="flex flex-row p-2 border-b-1 border-white/30 items-center justify-between w-full z-50 bg-black" -->
+        <!-- > -->
+        <!--     <div class="items-center gap-4"> -->
+        <!--         <Button size="small" icon="pi pi-file" label="Open Files" @click="open_files" class="mr-2" /> -->
+        <!--         <Button size="small" icon="pi pi-folder-open" label="Open Folders" @click="open_files" /> -->
+        <!--     </div> -->
+        <!---->
+        <!--     <div id="right-menu-buttons" class="items-center gap-2"> -->
+        <!--         <Button -->
+        <!--             type="button" -->
+        <!--             size="small" -->
+        <!--             icon="pi pi-bookmark" -->
+        <!--             variant="outlined" -->
+        <!--             @click="showTemplates" -->
+        <!--             v-tooltip="'Templates'" -->
+        <!--             class="p-button-secondary p-button-rounded mr-2" -->
+        <!--         /> -->
+        <!--         <Button -->
+        <!--             type="button" -->
+        <!--             size="small" -->
+        <!--             icon="pi pi-cog" -->
+        <!--             variant="outlined" -->
+        <!--             @click="showSettings" -->
+        <!--             v-tooltip="'Settings'" -->
+        <!--             class="p-button-secondary p-button-rounded mr-2" -->
+        <!--         /> -->
+        <!--         <Button size="small" icon="pi pi-check" label="Batch Rename Files" @click="rename_files" /> -->
+        <!--     </div> -->
         <!-- </div> -->
 
         <!-- === Master Splitter Panel === -->
@@ -524,13 +482,7 @@ const exportConfig = () => {
                 <!-- === Left SplitterPanel Menubar === -->
                 <div id="file_buttons" class="flex flex-row items-center gap-2 justify-start m-2">
                     <!-- <div class="items-center flex flex-row gap-4"> -->
-                    <Button
-                        size="small"
-                        icon="pi pi-file"
-                        label="Open Files"
-                        @click="open_files"
-                        class="min-w-max mr-2"
-                    />
+                    <Button size="small" icon="pi pi-file" label="Open Files" @click="open_files" class="min-w-max" />
                     <Button
                         size="small"
                         icon="pi pi-folder-open"
@@ -559,6 +511,7 @@ const exportConfig = () => {
                     <!-- === Hamburger Select === -->
                     <Button
                         icon="pi pi-bars"
+                        class="whitespace-nowrap flex-none"
                         @click="clearFiles"
                         variant="outlined"
                         severity="secondary"
@@ -570,8 +523,15 @@ const exportConfig = () => {
 
                 <Transition mode="out-in">
                     <!-- === No Files Selected === -->
-                    <div v-if="!numFileStatusItems" class="flex-1 justify-items-center flex-row ml-4 mb-2">
-                        <span class="font-thin text-xs font-mono text-center text-black/50"> no files selected </span>
+                    <div
+                        v-if="!numFileStatusItems"
+                        class="flex flex-1 flex-col justify-center items-center w-full h-full whitespace-nowrap"
+                    >
+                        <span class="text-center mb-2 text-gray-400">Drag your files here.</span>
+                        <span class="text-center text-sm text-gray-600"
+                            >NOTE: drag functionality is not implimented,</span
+                        >
+                        <span class="text-center text-sm text-gray-600">Please use the add buttons above.</span>
                     </div>
 
                     <!-- === File Table === -->
@@ -604,51 +564,111 @@ const exportConfig = () => {
             </SplitterPanel>
 
             <!-- === Right Splitter Panel === -->
-            <SplitterPanel
-                class="flex flex-col flex-1 ml-0.5 my-2 mr-2 w-full rounded-t-lg bg-black border-1 border-white/30"
-            >
+            <SplitterPanel class="flex flex-col flex-1 ml-0.5 my-2 mr-2 rounded-t-lg bg-black border-1 border-white/30">
                 <!-- === Right SplitterPanel Menubar === -->
                 <div id="file_buttons" class="flex flex-row m-2 gap-2 items-center justify-start">
                     <!-- <Menu id="customTextOverlayMenu" :model="customTextMenuItems" popup="true" /> -->
 
                     <Button
                         type="button"
-                        label="Add Special Data"
+                        label="Add Filename Tasks"
                         size="small"
                         icon="pi pi-plus"
-                        @click="customTextMenuToggleFunction"
+                        class="min-w-max"
+                        @click="taskMenuToggleFunction"
                         aria-haspopup="true"
-                        aria-controls="overlay_menu"
+                        aria-controls="custom_text_menu"
                     />
-                    <Menu ref="customTextMenuToggle" id="overlay_menu" :model="customTextMenuItems" :popup="true" />
+                    <Menu ref="taskMenuToggle" id="custom_text_menu" :model="taskMenuItems" :popup="true" />
 
-                    <Select
-                        v-model="sortChoice"
-                        :options="metadata"
+                    <!-- === Separator === -->
+                    <div class="flex-1"></div>
+
+                    <Button
+                        type="button"
+                        label="Templates"
+                        variant="outlined"
+                        severity="secondary"
                         size="small"
-                        optionLabel="name"
-                        placeholder="Sort By"
-                        optionValue="code"
-                        class="flex-1"
+                        icon="pi pi-bookmark"
+                        class="min-w-max"
+                        @click="templateMenuToggleFunction"
+                        aria-haspopup="true"
+                        aria-controls="custom_text_menu"
                     />
+                    <Menu ref="templateMenuToggle" id="template_menu" :model="templateMenuItems" :popup="true" />
 
                     <!-- === Hamburger Select === -->
-                    <Button icon="pi pi-bars" variant="outlined" severity="secondary" size="small" />
+                    <Button
+                        icon="pi pi-bars"
+                        class="whitespace-nowrap flex-none"
+                        @click="clearTasks"
+                        variant="outlined"
+                        severity="secondary"
+                        size="small"
+                    />
                 </div>
 
                 <hr class="border-white/30" />
 
-                <TransitionGroup tag="div" name="ttasks" class="relative">
-                    <div v-for="(item, index) in taskList" :key="item.id" class="ttasks-item mx-2 my-2">
+                <TransitionGroup tag="div" name="ttasks" class="h-full relative">
+                    <!-- === No Files Selected === -->
+                    <div
+                        v-if="!numTaskListItems"
+                        class="flex flex-1 flex-col justify-center items-center w-full h-full whitespace-nowrap"
+                    >
+                        <span class="text-center mb-2 text-gray-400">File tasks & effects go here.</span>
+                        <span class="text-center text-sm text-gray-600">Please use the add buttons above.</span>
+                    </div>
+
+                    <div
+                        v-else
+                        v-for="(item, index) in taskList"
+                        :key="item.id"
+                        class="ttasks-item mx-2 my-2 whitespace-nowrap"
+                    >
                         <!-- === CustomText Task === -->
                         <template v-if="isCustomTextTask(item.task)">
-                            <div class="flex flex-col gap-2 border-1 border-white/30 bg-black rounded-lg p-3">
+                            <div
+                                class="flex flex-col gap-2 border-1 border-white/30 bg-black rounded-lg p-3 overflow-hidden"
+                            >
                                 <!-- === Title and Description === -->
                                 <div class="flex flex-row items-center justify-between mb-1">
                                     <div class="flex flex-row items-center gap-2">
-                                        <h4 class="text-sm font-semibold text-white/80 m-0">Custom Text</h4>
-                                        <p class="text-xs text-white/60 m-0">Add text to file names</p>
+                                        <h4 class="text-sm font-semibold text-gray-200 m-0">Custom Text</h4>
+                                        <p class="text-xs text-gray-400 m-0">Add text to file names</p>
                                     </div>
+                                    <!-- === Dummy Spacer === -->
+                                    <div class="flex-1"></div>
+
+                                    <!-- <ToggleSwitch -->
+                                    <!--     v-model="item.task.CustomText.active" -->
+                                    <!--     :inputId="`active-${index}`" -->
+                                    <!--     :name="`active-checkbox${index}`" -->
+                                    <!--     binary -->
+                                    <!--     @change="user_update_tasks" -->
+                                    <!-- /> -->
+
+                                    <!-- <ToggleButton -->
+                                    <!--     v-model="item.task.CustomText.active" -->
+                                    <!--     onLabel="Enabled" -->
+                                    <!--     offLabel="Disabled" -->
+                                    <!--     @change="user_update_tasks" -->
+                                    <!-- /> -->
+
+                                    <!-- === Close Button === -->
+                                    <i
+                                        class="pi pi-angle-up hover:cursor-pointer text-sm mr-1"
+                                        :class="{ 'opacity-30': index === 0 }"
+                                        @click="moveSelectedTaskUp(index)"
+                                    ></i>
+                                    <i
+                                        class="pi pi-angle-down hover:cursor-pointer text-sm mr-1"
+                                        :class="{
+                                            'opacity-30': index === taskList.length - 1,
+                                        }"
+                                        @click="moveSelectedTaskDown(index)"
+                                    ></i>
                                     <!-- === Close Button === -->
                                     <div class="flex items-center" @click="deleteSelectedTask(index)">
                                         <i
@@ -660,22 +680,6 @@ const exportConfig = () => {
 
                                 <!-- === Main Controls === -->
                                 <div class="flex flex-row gap-3 items-center">
-                                    <!-- === Drag Buttons === -->
-                                    <div class="flex flex-col items-center ml-2 mr-1 gap-1">
-                                        <i
-                                            class="pi pi-angle-up hover:cursor-pointer text-xs"
-                                            :class="{ 'opacity-30': index === 0 }"
-                                            @click="moveSelectedTaskUp(index)"
-                                        ></i>
-                                        <i
-                                            class="pi pi-angle-down hover:cursor-pointer text-xs"
-                                            :class="{
-                                                'opacity-30': index === taskList.length - 1,
-                                            }"
-                                            @click="moveSelectedTaskDown(index)"
-                                        ></i>
-                                    </div>
-
                                     <!-- === Prefix Text === -->
                                     <InputText
                                         placeholder="Custom Text"
@@ -685,32 +689,40 @@ const exportConfig = () => {
                                         v-model="item.task.CustomText.text"
                                         variant="filled"
                                         @input="user_update_tasks"
-                                        class="flex-1"
+                                        class="flex-1 min-w-max"
                                     />
 
                                     <!-- === Position Toggle === -->
-                                    <div class="flex items-center gap-2 whitespace-nowrap">
-                                        <label :for="`at-start-${index}`" class="text-xs text-gray-600">At Start</label>
-                                        <ToggleSwitch
-                                            v-model="item.task.CustomText.at_start"
-                                            :inputId="`at-start-${index}`"
-                                            :name="`at-start-${index}`"
-                                            binary
-                                            @change="user_update_tasks"
-                                        />
-                                    </div>
+                                    <!-- <div class="flex items-center gap-2 whitespace-nowrap"> -->
+                                    <!--     <label :for="`at-start-${index}`" class="text-xs text-gray-600">At Start</label> -->
+                                    <!--     <ToggleSwitch -->
+                                    <!--         v-model="item.task.CustomText.at_start" -->
+                                    <!--         :inputId="`at-start-${index}`" -->
+                                    <!--         :name="`at-start-${index}`" -->
+                                    <!--         binary -->
+                                    <!--         @change="user_update_tasks" -->
+                                    <!--     /> -->
+                                    <!-- </div> -->
+
+                                    <ToggleButton
+                                        v-model="item.task.CustomText.at_start"
+                                        onLabel="Position at Beginning"
+                                        offLabel="Position at End"
+                                        size="small"
+                                        @change="user_update_tasks"
+                                    />
 
                                     <!-- === Active Toggle === -->
-                                    <div class="flex items-center gap-2 whitespace-nowrap">
-                                        <label :for="`active-${index}`" class="text-xs text-gray-600">Active</label>
-                                        <ToggleSwitch
-                                            v-model="item.task.CustomText.active"
-                                            :inputId="`active-${index}`"
-                                            :name="`active-checkbox${index}`"
-                                            binary
-                                            @change="user_update_tasks"
-                                        />
-                                    </div>
+                                    <!-- <div class="flex items-center gap-2 whitespace-nowrap"> -->
+                                    <!--     <label :for="`active-${index}`" class="text-xs text-gray-600">Active</label> -->
+                                    <!--     <ToggleSwitch -->
+                                    <!--         v-model="item.task.CustomText.active" -->
+                                    <!--         :inputId="`active-${index}`" -->
+                                    <!--         :name="`active-checkbox${index}`" -->
+                                    <!--         binary -->
+                                    <!--         @change="user_update_tasks" -->
+                                    <!--     /> -->
+                                    <!-- </div> -->
                                 </div>
                             </div>
                         </template>
@@ -718,14 +730,30 @@ const exportConfig = () => {
                         <!-- === Find & Replace Task === -->
                         <template v-else-if="isFindAndReplaceTask(item.task)">
                             <div
-                                class="flex flex-col gap-2 border-2 border-white/30 bg-white/40 rounded-lg p-3 backdrop-blur-lg shadow-lg"
+                                class="flex flex-col gap-2 border-1 border-white/30 bg-black rounded-lg p-3 overflow-hidden"
                             >
                                 <!-- === Title and Description === -->
                                 <div class="flex flex-row items-center justify-between mb-1">
                                     <div class="flex flex-row items-center gap-2">
-                                        <h4 class="text-sm font-semibold text-gray-800 m-0">Find & Replace</h4>
-                                        <p class="text-xs text-gray-500 m-0">Replace text in file names</p>
+                                        <h4 class="text-sm font-semibold text-gray-200 m-0">Find & Replace</h4>
+                                        <p class="text-xs text-gray-400 m-0">Replace text in file names</p>
                                     </div>
+                                    <!-- === Dummy Spacer === -->
+                                    <div class="flex-1"></div>
+
+                                    <!-- === Close Button === -->
+                                    <i
+                                        class="pi pi-angle-up hover:cursor-pointer text-sm mr-1"
+                                        :class="{ 'opacity-30': index === 0 }"
+                                        @click="moveSelectedTaskUp(index)"
+                                    ></i>
+                                    <i
+                                        class="pi pi-angle-down hover:cursor-pointer text-sm mr-1"
+                                        :class="{
+                                            'opacity-30': index === taskList.length - 1,
+                                        }"
+                                        @click="moveSelectedTaskDown(index)"
+                                    ></i>
                                     <!-- === Close Button === -->
                                     <div class="flex items-center" @click="deleteSelectedTask(index)">
                                         <i
@@ -737,22 +765,6 @@ const exportConfig = () => {
 
                                 <!-- === Main Controls === -->
                                 <div class="flex flex-row gap-3 items-center">
-                                    <!-- === Drag Buttons === -->
-                                    <div class="flex flex-col items-center ml-2 mr-1 gap-1">
-                                        <i
-                                            class="pi pi-angle-up hover:cursor-pointer text-xs"
-                                            :class="{ 'opacity-30': index === 0 }"
-                                            @click="moveSelectedTaskUp(index)"
-                                        ></i>
-                                        <i
-                                            class="pi pi-angle-down hover:cursor-pointer text-xs"
-                                            :class="{
-                                                'opacity-30': index === taskList.length - 1,
-                                            }"
-                                            @click="moveSelectedTaskDown(index)"
-                                        ></i>
-                                    </div>
-
                                     <!-- === Find Text Field === -->
                                     <InputText
                                         :id="`find-text-${index}`"
@@ -795,14 +807,30 @@ const exportConfig = () => {
                         <!-- === ClearAll Task === -->
                         <template v-else-if="isClearAllTask(item.task)">
                             <div
-                                class="flex flex-col gap-2 border-2 border-white/30 bg-white/40 rounded-lg p-3 backdrop-blur-lg shadow-lg"
+                                class="flex flex-col gap-2 border-1 border-white/30 bg-black rounded-lg p-3 overflow-hidden"
                             >
                                 <!-- === Title and Description === -->
                                 <div class="flex flex-row items-center justify-between mb-1">
                                     <div class="flex flex-row items-center gap-2">
-                                        <h4 class="text-sm font-semibold text-gray-800 m-0">Clear All</h4>
-                                        <p class="text-xs text-gray-500 m-0">Remove all text from file names</p>
+                                        <h4 class="text-sm font-semibold text-gray-200 m-0">Clear All</h4>
+                                        <p class="text-xs text-gray-400 m-0">Remove all text from file names</p>
                                     </div>
+                                    <!-- === Dummy Spacer === -->
+                                    <div class="flex-1"></div>
+
+                                    <!-- === Close Button === -->
+                                    <i
+                                        class="pi pi-angle-up hover:cursor-pointer text-sm mr-1"
+                                        :class="{ 'opacity-30': index === 0 }"
+                                        @click="moveSelectedTaskUp(index)"
+                                    ></i>
+                                    <i
+                                        class="pi pi-angle-down hover:cursor-pointer text-sm mr-1"
+                                        :class="{
+                                            'opacity-30': index === taskList.length - 1,
+                                        }"
+                                        @click="moveSelectedTaskDown(index)"
+                                    ></i>
                                     <!-- === Close Button === -->
                                     <div class="flex items-center" @click="deleteSelectedTask(index)">
                                         <i
@@ -814,22 +842,6 @@ const exportConfig = () => {
 
                                 <!-- === Main Controls === -->
                                 <div class="flex flex-row gap-3 items-center">
-                                    <!-- === Drag Buttons === -->
-                                    <div class="flex flex-col items-center ml-2 mr-1 gap-1">
-                                        <i
-                                            class="pi pi-angle-up hover:cursor-pointer text-xs"
-                                            :class="{ 'opacity-30': index === 0 }"
-                                            @click="moveSelectedTaskUp(index)"
-                                        ></i>
-                                        <i
-                                            class="pi pi-angle-down hover:cursor-pointer text-xs"
-                                            :class="{
-                                                'opacity-30': index === taskList.length - 1,
-                                            }"
-                                            @click="moveSelectedTaskDown(index)"
-                                        ></i>
-                                    </div>
-
                                     <!-- === Description Text === -->
                                     <div class="flex-1 flex items-center">
                                         <p class="text-sm text-gray-700 m-0">
@@ -855,14 +867,32 @@ const exportConfig = () => {
                         <!-- === ChangeCase Task === -->
                         <template v-else-if="isChangeCaseTask(item.task)">
                             <div
-                                class="flex flex-col gap-2 border-2 border-white/30 bg-white/40 rounded-lg p-3 backdrop-blur-lg shadow-lg"
+                                class="flex flex-col gap-2 border-1 border-white/30 bg-black rounded-lg p-3 overflow-hidden"
                             >
                                 <!-- === Title and Description === -->
                                 <div class="flex flex-row items-center justify-between mb-1">
                                     <div class="flex flex-row items-center gap-2">
-                                        <h4 class="text-sm font-semibold text-gray-800 m-0">Change Case</h4>
-                                        <p class="text-xs text-gray-500 m-0">Convert text case in file names</p>
+                                        <h4 class="min-w-max text-sm font-semibold text-gray-200 m-0">Change Case</h4>
+                                        <p class="min-w-max text-xs text-gray-400 m-0">
+                                            Convert text case in file names
+                                        </p>
                                     </div>
+                                    <!-- === Dummy Spacer === -->
+                                    <div class="flex-1"></div>
+
+                                    <!-- === Close Button === -->
+                                    <i
+                                        class="pi pi-angle-up hover:cursor-pointer text-sm mr-1"
+                                        :class="{ 'opacity-30': index === 0 }"
+                                        @click="moveSelectedTaskUp(index)"
+                                    ></i>
+                                    <i
+                                        class="pi pi-angle-down hover:cursor-pointer text-sm mr-1"
+                                        :class="{
+                                            'opacity-30': index === taskList.length - 1,
+                                        }"
+                                        @click="moveSelectedTaskDown(index)"
+                                    ></i>
                                     <!-- === Close Button === -->
                                     <div class="flex items-center" @click="deleteSelectedTask(index)">
                                         <i
@@ -874,28 +904,12 @@ const exportConfig = () => {
 
                                 <!-- === Main Controls === -->
                                 <div class="flex flex-row gap-3 items-center">
-                                    <!-- === Drag Buttons === -->
-                                    <div class="flex flex-col items-center ml-2 mr-1 gap-1">
-                                        <i
-                                            class="pi pi-angle-up hover:cursor-pointer text-xs"
-                                            :class="{ 'opacity-30': index === 0 }"
-                                            @click="moveSelectedTaskUp(index)"
-                                        ></i>
-                                        <i
-                                            class="pi pi-angle-down hover:cursor-pointer text-xs"
-                                            :class="{
-                                                'opacity-30': index === taskList.length - 1,
-                                            }"
-                                            @click="moveSelectedTaskDown(index)"
-                                        ></i>
-                                    </div>
-
                                     <!-- === Case Choice Dropdown === -->
                                     <Dropdown
                                         v-model="item.task.ChangeCase.case_choice"
                                         :options="[
-                                            { label: 'lowercase', value: 0 },
-                                            { label: 'UPPERCASE', value: 1 },
+                                            { label: 'lowercase', value: 1 },
+                                            { label: 'UPPERCASE', value: 0 },
                                             { label: 'Title Case', value: 2 },
                                             { label: 'camelCase', value: 3 },
                                         ]"
@@ -906,17 +920,17 @@ const exportConfig = () => {
                                         @change="user_update_tasks"
                                     />
 
-                                    <!-- === Active Toggle === -->
-                                    <div class="flex items-center gap-2 whitespace-nowrap">
-                                        <label :for="`active-${index}`" class="text-xs text-gray-600">Active</label>
-                                        <ToggleSwitch
-                                            v-model="item.task.ChangeCase.active"
-                                            :inputId="`active-${index}`"
-                                            :name="`change-case-active-${index}`"
-                                            binary
-                                            @change="user_update_tasks"
-                                        />
-                                    </div>
+                                    <!-- <!-- === Active Toggle === -->
+                                    <!-- <div class="flex items-center gap-2 whitespace-nowrap"> -->
+                                    <!--     <label :for="`active-${index}`" class="text-xs text-gray-600">Active</label> -->
+                                    <!--     <ToggleSwitch -->
+                                    <!--         v-model="item.task.ChangeCase.active" -->
+                                    <!--         :inputId="`active-${index}`" -->
+                                    <!--         :name="`change-case-active-${index}`" -->
+                                    <!--         binary -->
+                                    <!--         @change="user_update_tasks" -->
+                                    <!--     /> -->
+                                    <!-- </div> -->
                                 </div>
                             </div>
                         </template>
@@ -924,14 +938,31 @@ const exportConfig = () => {
                         <!-- === NumSequence Task === -->
                         <template v-else-if="isNumSequenceTask(item.task)">
                             <div
-                                class="flex flex-col gap-2 border-2 border-white/30 bg-white/40 rounded-lg p-3 backdrop-blur-lg shadow-lg"
+                                class="flex flex-col gap-2 border-1 border-white/30 bg-black rounded-lg p-3 overflow-hidden"
                             >
                                 <!-- === Title and Description === -->
                                 <div class="flex flex-row items-center justify-between mb-1">
                                     <div class="flex flex-row items-center gap-2">
-                                        <h4 class="text-sm font-semibold text-gray-800 m-0">Number Sequence</h4>
-                                        <p class="text-xs text-gray-500 m-0">Add sequential numbers to file names</p>
+                                        <h4 class="text-sm font-semibold text-gray-200 m-0">Number Sequence</h4>
+                                        <p class="text-xs text-gray-400 m-0">Add sequential numbers to file names</p>
                                     </div>
+
+                                    <!-- === Dummy Spacer === -->
+                                    <div class="flex-1"></div>
+
+                                    <!-- === Close Button === -->
+                                    <i
+                                        class="pi pi-angle-up hover:cursor-pointer text-sm mr-1"
+                                        :class="{ 'opacity-30': index === 0 }"
+                                        @click="moveSelectedTaskUp(index)"
+                                    ></i>
+                                    <i
+                                        class="pi pi-angle-down hover:cursor-pointer text-sm mr-1"
+                                        :class="{
+                                            'opacity-30': index === taskList.length - 1,
+                                        }"
+                                        @click="moveSelectedTaskDown(index)"
+                                    ></i>
                                     <!-- === Close Button === -->
                                     <div class="flex items-center" @click="deleteSelectedTask(index)">
                                         <i
@@ -943,22 +974,6 @@ const exportConfig = () => {
 
                                 <!-- === Main Controls === -->
                                 <div class="flex flex-row gap-3 items-center">
-                                    <!-- === Drag Buttons === -->
-                                    <div class="flex flex-col items-center ml-2 mr-1 gap-1">
-                                        <i
-                                            class="pi pi-angle-up hover:cursor-pointer text-xs"
-                                            :class="{ 'opacity-30': index === 0 }"
-                                            @click="moveSelectedTaskUp(index)"
-                                        ></i>
-                                        <i
-                                            class="pi pi-angle-down hover:cursor-pointer text-xs"
-                                            :class="{
-                                                'opacity-30': index === taskList.length - 1,
-                                            }"
-                                            @click="moveSelectedTaskDown(index)"
-                                        ></i>
-                                    </div>
-
                                     <!-- === Start Number === -->
                                     <InputNumber
                                         v-model="item.task.NumSequence.start_num"
@@ -1021,14 +1036,31 @@ const exportConfig = () => {
                         <!-- === Date Task === -->
                         <template v-else-if="isDateTask(item.task)">
                             <div
-                                class="flex flex-col gap-2 border-2 border-white/30 bg-white/40 rounded-lg p-3 backdrop-blur-lg shadow-lg"
+                                class="flex flex-col gap-2 border-1 border-white/30 bg-black rounded-lg p-3 overflow-hidden"
                             >
                                 <!-- === Title and Description === -->
                                 <div class="flex flex-row items-center justify-between mb-1">
                                     <div class="flex flex-row items-center gap-2">
-                                        <h4 class="text-sm font-semibold text-gray-800 m-0">Date</h4>
-                                        <p class="text-xs text-gray-500 m-0">Add current date to file names</p>
+                                        <h4 class="text-sm font-semibold text-gray-200 m-0">Date</h4>
+                                        <p class="text-xs text-gray-400 m-0">Add current date to file names</p>
                                     </div>
+
+                                    <!-- === Dummy Spacer === -->
+                                    <div class="flex-1"></div>
+
+                                    <!-- === Close Button === -->
+                                    <i
+                                        class="pi pi-angle-up hover:cursor-pointer text-sm mr-1"
+                                        :class="{ 'opacity-30': index === 0 }"
+                                        @click="moveSelectedTaskUp(index)"
+                                    ></i>
+                                    <i
+                                        class="pi pi-angle-down hover:cursor-pointer text-sm mr-1"
+                                        :class="{
+                                            'opacity-30': index === taskList.length - 1,
+                                        }"
+                                        @click="moveSelectedTaskDown(index)"
+                                    ></i>
                                     <!-- === Close Button === -->
                                     <div class="flex items-center" @click="deleteSelectedTask(index)">
                                         <i
@@ -1040,22 +1072,6 @@ const exportConfig = () => {
 
                                 <!-- === Main Controls === -->
                                 <div class="flex flex-row gap-3 items-center">
-                                    <!-- === Drag Buttons === -->
-                                    <div class="flex flex-col items-center ml-2 mr-1 gap-1">
-                                        <i
-                                            class="pi pi-angle-up hover:cursor-pointer text-xs"
-                                            :class="{ 'opacity-30': index === 0 }"
-                                            @click="moveSelectedTaskUp(index)"
-                                        ></i>
-                                        <i
-                                            class="pi pi-angle-down hover:cursor-pointer text-xs"
-                                            :class="{
-                                                'opacity-30': index === taskList.length - 1,
-                                            }"
-                                            @click="moveSelectedTaskDown(index)"
-                                        ></i>
-                                    </div>
-
                                     <!-- === Date Components === -->
                                     <div class="flex items-center gap-2 whitespace-nowrap">
                                         <label :for="`year-${index}`" class="text-xs text-gray-600">Year</label>
@@ -1129,14 +1145,31 @@ const exportConfig = () => {
                         <!-- === Time Task === -->
                         <template v-else-if="isTimeTask(item.task)">
                             <div
-                                class="flex flex-col gap-2 border-2 border-white/30 bg-white/40 rounded-lg p-3 backdrop-blur-lg shadow-lg"
+                                class="flex flex-col gap-2 border-1 border-white/30 bg-black rounded-lg p-3 overflow-hidden"
                             >
                                 <!-- === Title and Description === -->
                                 <div class="flex flex-row items-center justify-between mb-1">
                                     <div class="flex flex-row items-center gap-2">
-                                        <h4 class="text-sm font-semibold text-gray-800 m-0">Time</h4>
-                                        <p class="text-xs text-gray-500 m-0">Add current time to file names</p>
+                                        <h4 class="text-sm font-semibold text-gray-200 m-0">Time</h4>
+                                        <p class="text-xs text-gray-400 m-0">Add current time to file names</p>
                                     </div>
+
+                                    <!-- === Dummy Spacer === -->
+                                    <div class="flex-1"></div>
+
+                                    <!-- === Close Button === -->
+                                    <i
+                                        class="pi pi-angle-up hover:cursor-pointer text-sm mr-1"
+                                        :class="{ 'opacity-30': index === 0 }"
+                                        @click="moveSelectedTaskUp(index)"
+                                    ></i>
+                                    <i
+                                        class="pi pi-angle-down hover:cursor-pointer text-sm mr-1"
+                                        :class="{
+                                            'opacity-30': index === taskList.length - 1,
+                                        }"
+                                        @click="moveSelectedTaskDown(index)"
+                                    ></i>
                                     <!-- === Close Button === -->
                                     <div class="flex items-center" @click="deleteSelectedTask(index)">
                                         <i
@@ -1148,22 +1181,6 @@ const exportConfig = () => {
 
                                 <!-- === Main Controls === -->
                                 <div class="flex flex-row gap-3 items-center">
-                                    <!-- === Drag Buttons === -->
-                                    <div class="flex flex-col items-center ml-2 mr-1 gap-1">
-                                        <i
-                                            class="pi pi-angle-up hover:cursor-pointer text-xs"
-                                            :class="{ 'opacity-30': index === 0 }"
-                                            @click="moveSelectedTaskUp(index)"
-                                        ></i>
-                                        <i
-                                            class="pi pi-angle-down hover:cursor-pointer text-xs"
-                                            :class="{
-                                                'opacity-30': index === taskList.length - 1,
-                                            }"
-                                            @click="moveSelectedTaskDown(index)"
-                                        ></i>
-                                    </div>
-
                                     <!-- === Time Format === -->
                                     <div class="flex items-center gap-2 whitespace-nowrap">
                                         <label :for="`hour24-${index}`" class="text-xs text-gray-600">24 Hour</label>
@@ -1206,11 +1223,17 @@ const exportConfig = () => {
         </Splitter>
 
         <!-- === Footer -> Total Files Selected === -->
-        <footer class="py-2 pl-4 border-t-1 border-white/30 bg-black">
-            <span class="">Total Files Selected: </span>
-            <Transition mode="out-in">
-                <span>{{ numFileStatusItems }}</span>
-            </Transition>
+        <footer class="flex flex-row py-2 px-2 border-t-1 rounded-b-lg border-white/30 bg-black">
+            <div id="total-files-selected">
+                <span class="text-gray-400">Total Files Selected: </span>
+                <Transition mode="out-in">
+                    <span class="text-gray-600">{{ numFileStatusItems }}</span>
+                </Transition>
+            </div>
+
+            <div id="separator" class="flex-1"></div>
+
+            <!-- <Button size="medium" icon="pi pi-check" label="Batch Rename Files" @click="rename_files" /> -->
         </footer>
     </body>
 </template>
