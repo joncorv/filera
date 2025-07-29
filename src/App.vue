@@ -10,7 +10,7 @@ import InputText from "primevue/inputtext";
 import ToggleSwitch from "primevue/toggleswitch";
 import Select from "primevue/select";
 // import Menubar from "primevue/menubar";
-// import Menu from "primevue/menu";
+import Menu from "primevue/menu";
 import Dropdown from "primevue/dropdown";
 import InputNumber from "primevue/inputnumber";
 import IconField from "primevue/iconfield";
@@ -80,7 +80,7 @@ interface TaskWithId {
 
 //  <-- === Type Guards === -->
 const isCustomTextTask = (
-    task: Task
+    task: Task,
 ): task is {
     CustomText: { text: string; at_start: boolean; active: boolean };
 } => {
@@ -88,7 +88,7 @@ const isCustomTextTask = (
 };
 
 const isFindAndReplaceTask = (
-    task: Task
+    task: Task,
 ): task is {
     FindAndReplace: {
         find_text: string;
@@ -100,7 +100,7 @@ const isFindAndReplaceTask = (
 };
 
 const isClearAllTask = (
-    task: Task
+    task: Task,
 ): task is {
     ClearAll: { active: boolean };
 } => {
@@ -108,7 +108,7 @@ const isClearAllTask = (
 };
 
 const isChangeCaseTask = (
-    task: Task
+    task: Task,
 ): task is {
     ChangeCase: { case_choice: number; active: boolean };
 } => {
@@ -116,7 +116,7 @@ const isChangeCaseTask = (
 };
 
 const isNumSequenceTask = (
-    task: Task
+    task: Task,
 ): task is {
     NumSequence: {
         start_num: number;
@@ -130,7 +130,7 @@ const isNumSequenceTask = (
 };
 
 const isDateTask = (
-    task: Task
+    task: Task,
 ): task is {
     Date: {
         year: boolean;
@@ -145,7 +145,7 @@ const isDateTask = (
 };
 
 const isTimeTask = (
-    task: Task
+    task: Task,
 ): task is {
     Time: {
         hour_24: boolean;
@@ -443,6 +443,11 @@ const items = ref([
     },
 ]);
 
+const customTextMenuToggle = ref();
+const customTextMenuToggleFunction = (event) => {
+    customTextMenuToggle.value.toggle(event);
+};
+
 // Template functions - implement these as needed
 const applyTemplate = (templateType: string) => {
     console.log(`Apply ${templateType} template`);
@@ -476,35 +481,21 @@ const exportConfig = () => {
 </script>
 
 <template>
-    <body class="flex flex-col box-border w-screen h-screen m-0 p-0 overflow-hidden z-0">
+    <body class="flex flex-col box-border w-screen h-screen m-0 p-0 overflow-hidden z-0 bg-black">
         <!-- === Global Top Menubar === -->
-        <div
+        <!-- <div
             id="left-menu-buttons"
             class="flex flex-row p-2 border-b-1 border-white/30 items-center justify-between w-full z-50 bg-black"
-        >
-            <div class="items-center gap-4">
-                <Button
-                    size="medium"
-                    icon="pi pi-file"
-                    label="Open Files"
-                    variant="outlined"
-                    @click="open_files"
-                    class="p-button-secondary mr-2"
-                />
-                <Button
-                    size="medium"
-                    icon="pi pi-folder-open"
-                    label="Open Folders"
-                    variant="outlined"
-                    @click="open_files"
-                    class="p-button-secondary"
-                />
-            </div>
+        > -->
+        <!-- <div class="items-center gap-4">
+                <Button size="small" icon="pi pi-file" label="Open Files" @click="open_files" class="mr-2" />
+                <Button size="small" icon="pi pi-folder-open" label="Open Folders" @click="open_files" />
+            </div> -->
 
-            <div id="right-menu-buttons" class="items-center gap-2">
+        <!-- <div id="right-menu-buttons" class="items-center gap-2">
                 <Button
                     type="button"
-                    size="medium"
+                    size="small"
                     icon="pi pi-bookmark"
                     variant="outlined"
                     @click="showTemplates"
@@ -513,22 +504,16 @@ const exportConfig = () => {
                 />
                 <Button
                     type="button"
-                    size="medium"
+                    size="small"
                     icon="pi pi-cog"
                     variant="outlined"
                     @click="showSettings"
                     v-tooltip="'Settings'"
                     class="p-button-secondary p-button-rounded mr-2"
                 />
-                <Button
-                    size="medium"
-                    icon="pi pi-check"
-                    label="Batch Rename Files"
-                    @click="rename_files"
-                    class="p-button-success"
-                />
-            </div>
-        </div>
+                <Button size="small" icon="pi pi-check" label="Batch Rename Files" @click="rename_files" />
+            </div> -->
+        <!-- </div> -->
 
         <!-- === Master Splitter Panel === -->
         <Splitter style="flex: 1; overflow: hidden; background-color: transparent; z-index: 40">
@@ -538,6 +523,22 @@ const exportConfig = () => {
             >
                 <!-- === Left SplitterPanel Menubar === -->
                 <div id="file_buttons" class="flex flex-row items-center gap-2 justify-start m-2">
+                    <!-- <div class="items-center flex flex-row gap-4"> -->
+                    <Button
+                        size="small"
+                        icon="pi pi-file"
+                        label="Open Files"
+                        @click="open_files"
+                        class="min-w-max mr-2"
+                    />
+                    <Button
+                        size="small"
+                        icon="pi pi-folder-open"
+                        label="Open Folders"
+                        @click="open_files"
+                        class="min-w-max"
+                    />
+                    <!-- </div> -->
                     <!-- === Search Field === -->
                     <IconField class="flex-3/4 w-full">
                         <InputIcon class="pi pi-search" />
@@ -556,7 +557,13 @@ const exportConfig = () => {
                     />
 
                     <!-- === Hamburger Select === -->
-                    <Button icon="pi pi-bars" variant="outlined" severity="secondary" size="small" />
+                    <Button
+                        icon="pi pi-bars"
+                        @click="clearFiles"
+                        variant="outlined"
+                        severity="secondary"
+                        size="small"
+                    />
                 </div>
 
                 <hr class="border-white/30" />
@@ -602,6 +609,19 @@ const exportConfig = () => {
             >
                 <!-- === Right SplitterPanel Menubar === -->
                 <div id="file_buttons" class="flex flex-row m-2 gap-2 items-center justify-start">
+                    <!-- <Menu id="customTextOverlayMenu" :model="customTextMenuItems" popup="true" /> -->
+
+                    <Button
+                        type="button"
+                        label="Add Special Data"
+                        size="small"
+                        icon="pi pi-plus"
+                        @click="customTextMenuToggleFunction"
+                        aria-haspopup="true"
+                        aria-controls="overlay_menu"
+                    />
+                    <Menu ref="customTextMenuToggle" id="overlay_menu" :model="customTextMenuItems" :popup="true" />
+
                     <Select
                         v-model="sortChoice"
                         :options="metadata"
@@ -619,17 +639,15 @@ const exportConfig = () => {
                 <hr class="border-white/30" />
 
                 <TransitionGroup tag="div" name="ttasks" class="relative">
-                    <div v-for="(item, index) in taskList" :key="item.id" class="ttasks-item mx-4 my-2">
+                    <div v-for="(item, index) in taskList" :key="item.id" class="ttasks-item mx-2 my-2">
                         <!-- === CustomText Task === -->
                         <template v-if="isCustomTextTask(item.task)">
-                            <div
-                                class="flex flex-col gap-2 border-2 border-white/30 bg-white/40 rounded-lg p-3 backdrop-blur-lg shadow-lg"
-                            >
+                            <div class="flex flex-col gap-2 border-1 border-white/30 bg-black rounded-lg p-3">
                                 <!-- === Title and Description === -->
                                 <div class="flex flex-row items-center justify-between mb-1">
                                     <div class="flex flex-row items-center gap-2">
-                                        <h4 class="text-sm font-semibold text-gray-800 m-0">Custom Text</h4>
-                                        <p class="text-xs text-gray-500 m-0">Add text to file names</p>
+                                        <h4 class="text-sm font-semibold text-white/80 m-0">Custom Text</h4>
+                                        <p class="text-xs text-white/60 m-0">Add text to file names</p>
                                     </div>
                                     <!-- === Close Button === -->
                                     <div class="flex items-center" @click="deleteSelectedTask(index)">
@@ -1188,7 +1206,7 @@ const exportConfig = () => {
         </Splitter>
 
         <!-- === Footer -> Total Files Selected === -->
-        <footer class="py-2 pl-4 border-t-1 border-white/30 text-lg">
+        <footer class="py-2 pl-4 border-t-1 border-white/30 bg-black">
             <span class="">Total Files Selected: </span>
             <Transition mode="out-in">
                 <span>{{ numFileStatusItems }}</span>
@@ -1293,7 +1311,10 @@ html {
     font-size: var(--text-sm);
     line-height: var(--tw-leading, var(--text-sm--line-height));
     background-color: color-mix(in oklab, var(--color-white) 80%, transparent);
-    box-shadow: black 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -1px;
+    box-shadow:
+        black 0px 0px 0px 0px,
+        rgba(0, 0, 0, 0.05) 0px 4px 6px -1px,
+        rgba(0, 0, 0, 0.1) 0px 2px 4px -1px;
     transition: background-color 0.2s ease;
     backdrop-filter: blur(10px);
 
@@ -1318,7 +1339,10 @@ html {
     font-size: var(--text-med);
     line-height: var(--tw-leading, var(--text-sm--line-height));
     background-color: color-mix(in oklab, var(--color-green-400) 80%, transparent);
-    box-shadow: black 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -1px;
+    box-shadow:
+        black 0px 0px 0px 0px,
+        rgba(0, 0, 0, 0.05) 0px 4px 6px -1px,
+        rgba(0, 0, 0, 0.1) 0px 2px 4px -1px;
     transition: background-color 0.2s ease;
     backdrop-filter: blur(10px);
 
