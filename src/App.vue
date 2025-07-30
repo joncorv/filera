@@ -683,16 +683,21 @@ const exportConfig = () => {
                                 <!-- === Main Controls === -->
                                 <div class="flex flex-row gap-3 items-center">
                                     <!-- === Prefix Text === -->
-                                    <InputText
-                                        placeholder="Custom Text"
-                                        fluid
-                                        size="small"
-                                        :id="`input-text-${index}`"
-                                        v-model="item.task.CustomText.text"
-                                        variant="filled"
-                                        @input="user_update_tasks"
-                                        class="flex-1 min-w-max"
-                                    />
+
+                                    <div class="w-full min-w-36">
+                                        <FloatLabel variant="on" class="font-thin">
+                                            <InputText
+                                                fluid
+                                                size="small"
+                                                :id="`input-text-${index}`"
+                                                v-model="item.task.CustomText.text"
+                                                variant="outlined"
+                                                @input="user_update_tasks"
+                                                class=""
+                                            />
+                                            <label class="font-thin" for="`input-text-${index}`">Custom Text</label>
+                                        </FloatLabel>
+                                    </div>
 
                                     <!-- === Position Toggle === -->
                                     <!-- <div class="flex items-center gap-2 whitespace-nowrap"> -->
@@ -706,13 +711,15 @@ const exportConfig = () => {
                                     <!--     /> -->
                                     <!-- </div> -->
 
-                                    <ToggleButton
-                                        v-model="item.task.CustomText.at_start"
-                                        onLabel="Position at Beginning"
-                                        offLabel="Position at End"
-                                        size="small"
-                                        @change="user_update_tasks"
-                                    />
+                                    <div class="flex-1">
+                                        <ToggleButton
+                                            v-model="item.task.CustomText.at_start"
+                                            onLabel="Position at Beginning"
+                                            offLabel="Position at End"
+                                            size="small"
+                                            @change="user_update_tasks"
+                                        />
+                                    </div>
 
                                     <!-- === Active Toggle === -->
                                     <!-- <div class="flex items-center gap-2 whitespace-nowrap"> -->
