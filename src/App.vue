@@ -978,22 +978,21 @@ const exportConfig = () => {
                                     <InputNumber
                                         v-model="item.task.NumSequence.start_num"
                                         :id="`start-num-${index}`"
-                                        placeholder="Start"
+                                        :input-id="`start-num-inputid-${index}`"
+                                        fluid
                                         size="small"
-                                        class="w-20"
-                                        @input="user_update_tasks"
+                                        class="w-20 flex-1"
+                                        @value-change="user_update_tasks"
                                     />
 
                                     <!-- === Padding === -->
                                     <InputNumber
                                         v-model="item.task.NumSequence.num_padding"
                                         :id="`padding-${index}`"
-                                        placeholder="Padding"
+                                        :input-id="`padding-inputid-${index}`"
                                         size="small"
-                                        class="w-20"
-                                        :min="1"
-                                        :max="10"
-                                        @input="user_update_tasks"
+                                        class="w-20 flex-1"
+                                        @value-change="user_update_tasks"
                                     />
 
                                     <!-- === Separator === -->
