@@ -699,18 +699,6 @@ const exportConfig = () => {
                                         </FloatLabel>
                                     </div>
 
-                                    <!-- === Position Toggle === -->
-                                    <!-- <div class="flex items-center gap-2 whitespace-nowrap"> -->
-                                    <!--     <label :for="`at-start-${index}`" class="text-xs text-gray-600">At Start</label> -->
-                                    <!--     <ToggleSwitch -->
-                                    <!--         v-model="item.task.CustomText.at_start" -->
-                                    <!--         :inputId="`at-start-${index}`" -->
-                                    <!--         :name="`at-start-${index}`" -->
-                                    <!--         binary -->
-                                    <!--         @change="user_update_tasks" -->
-                                    <!--     /> -->
-                                    <!-- </div> -->
-
                                     <div class="flex-1">
                                         <ToggleButton
                                             v-model="item.task.CustomText.at_start"
@@ -720,18 +708,6 @@ const exportConfig = () => {
                                             @change="user_update_tasks"
                                         />
                                     </div>
-
-                                    <!-- === Active Toggle === -->
-                                    <!-- <div class="flex items-center gap-2 whitespace-nowrap"> -->
-                                    <!--     <label :for="`active-${index}`" class="text-xs text-gray-600">Active</label> -->
-                                    <!--     <ToggleSwitch -->
-                                    <!--         v-model="item.task.CustomText.active" -->
-                                    <!--         :inputId="`active-${index}`" -->
-                                    <!--         :name="`active-checkbox${index}`" -->
-                                    <!--         binary -->
-                                    <!--         @change="user_update_tasks" -->
-                                    <!--     /> -->
-                                    <!-- </div> -->
                                 </div>
                             </div>
                         </template>
@@ -775,40 +751,38 @@ const exportConfig = () => {
                                 <!-- === Main Controls === -->
                                 <div class="flex flex-row gap-3 items-center">
                                     <!-- === Find Text Field === -->
-                                    <InputText
-                                        :id="`find-text-${index}`"
-                                        placeholder="Find"
-                                        fluid
-                                        size="small"
-                                        v-model="item.task.FindAndReplace.find_text"
-                                        variant="filled"
-                                        @input="user_update_tasks"
-                                        class="flex-1"
-                                    />
+
+                                    <div class="w-full min-w-36">
+                                        <FloatLabel variant="on" class="font-thin">
+                                            <InputText
+                                                :id="`find-text-${index}`"
+                                                fluid
+                                                size="small"
+                                                v-model="item.task.FindAndReplace.find_text"
+                                                variant="filled"
+                                                @input="user_update_tasks"
+                                                class="flex-1"
+                                            />
+                                            <label class="font-thin" for="`find-text-${index}`">Find</label>
+                                        </FloatLabel>
+                                    </div>
 
                                     <!-- === Replace Text Field === -->
-                                    <InputText
-                                        :id="`replace-text-${index}`"
-                                        placeholder="Replace"
-                                        fluid
-                                        size="small"
-                                        v-model="item.task.FindAndReplace.replace_text"
-                                        variant="filled"
-                                        @input="user_update_tasks"
-                                        class="flex-1"
-                                    />
 
-                                    <!-- === Active Toggle === -->
-                                    <!-- <div class="flex items-center gap-2 whitespace-nowrap"> -->
-                                    <!--     <label :for="`active-${index}`" class="text-xs text-gray-600">Active</label> -->
-                                    <!--     <ToggleSwitch -->
-                                    <!--         v-model="item.task.FindAndReplace.active" -->
-                                    <!--         :inputId="`active-${index}`" -->
-                                    <!--         :name="`find-replace-active-${index}`" -->
-                                    <!--         binary -->
-                                    <!--         @change="user_update_tasks" -->
-                                    <!--     /> -->
-                                    <!-- </div> -->
+                                    <div class="w-full min-w-36">
+                                        <FloatLabel variant="on" class="font-thin">
+                                            <InputText
+                                                :id="`replace-text-${index}`"
+                                                fluid
+                                                size="small"
+                                                v-model="item.task.FindAndReplace.replace_text"
+                                                variant="filled"
+                                                @input="user_update_tasks"
+                                                class="flex-1"
+                                            />
+                                            <label class="font-thin" for="`replace-text-${index}`">Replace</label>
+                                        </FloatLabel>
+                                    </div>
                                 </div>
                             </div>
                         </template>
