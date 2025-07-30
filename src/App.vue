@@ -477,7 +477,7 @@ const exportConfig = () => {
         <Splitter style="flex: 1; overflow: hidden; background-color: transparent; z-index: 40">
             <!-- === Left Splitter Panel === -->
             <SplitterPanel
-                class="flex flex-col gap-0 ml-2 mr-0.5 mt-2 mb-2 border-1 rounded-t-lg border-white/30 bg-black backdrop-blur-lg shadow-sm z-50"
+                class="flex flex-2/3 flex-col gap-0 ml-2 mr-0.5 mt-2 mb-2 border-1 rounded-t-lg border-white/30 backdrop-blur-lg shadow-sm z-50"
             >
                 <!-- === Left SplitterPanel Menubar === -->
                 <div id="file_buttons" class="flex flex-row items-center gap-2 justify-start m-2">
@@ -564,14 +564,16 @@ const exportConfig = () => {
             </SplitterPanel>
 
             <!-- === Right Splitter Panel === -->
-            <SplitterPanel class="flex flex-col flex-1 ml-0.5 my-2 mr-2 rounded-t-lg bg-black border-1 border-white/30">
+            <SplitterPanel
+                class="flex flex-col flex-1/3 ml-0.5 my-2 mr-2 rounded-t-lg bg-black border-1 border-white/30"
+            >
                 <!-- === Right SplitterPanel Menubar === -->
                 <div id="file_buttons" class="flex flex-row m-2 gap-2 items-center justify-start">
                     <!-- <Menu id="customTextOverlayMenu" :model="customTextMenuItems" popup="true" /> -->
 
                     <Button
                         type="button"
-                        label="Add Filename Tasks"
+                        label="File Tasks & Effects"
                         size="small"
                         icon="pi pi-plus"
                         class="min-w-max"
@@ -790,16 +792,16 @@ const exportConfig = () => {
                                     />
 
                                     <!-- === Active Toggle === -->
-                                    <div class="flex items-center gap-2 whitespace-nowrap">
-                                        <label :for="`active-${index}`" class="text-xs text-gray-600">Active</label>
-                                        <ToggleSwitch
-                                            v-model="item.task.FindAndReplace.active"
-                                            :inputId="`active-${index}`"
-                                            :name="`find-replace-active-${index}`"
-                                            binary
-                                            @change="user_update_tasks"
-                                        />
-                                    </div>
+                                    <!-- <div class="flex items-center gap-2 whitespace-nowrap"> -->
+                                    <!--     <label :for="`active-${index}`" class="text-xs text-gray-600">Active</label> -->
+                                    <!--     <ToggleSwitch -->
+                                    <!--         v-model="item.task.FindAndReplace.active" -->
+                                    <!--         :inputId="`active-${index}`" -->
+                                    <!--         :name="`find-replace-active-${index}`" -->
+                                    <!--         binary -->
+                                    <!--         @change="user_update_tasks" -->
+                                    <!--     /> -->
+                                    <!-- </div> -->
                                 </div>
                             </div>
                         </template>
@@ -841,26 +843,25 @@ const exportConfig = () => {
                                 </div>
 
                                 <!-- === Main Controls === -->
-                                <div class="flex flex-row gap-3 items-center">
-                                    <!-- === Description Text === -->
-                                    <div class="flex-1 flex items-center">
-                                        <p class="text-sm text-gray-700 m-0">
-                                            This will remove all existing text from the file names
-                                        </p>
-                                    </div>
+                                <!-- <div class="flex flex-row gap-3 items-center"> -->
+                                <!--     <div class="flex-1 flex items-center"> -->
+                                <!--         <p class="text-sm text-gray-700 m-0"> -->
+                                <!--             This will remove all existing text from the file names -->
+                                <!--         </p> -->
+                                <!--     </div> -->
 
-                                    <!-- === Active Toggle === -->
-                                    <div class="flex items-center gap-2 whitespace-nowrap">
-                                        <label :for="`active-${index}`" class="text-xs text-gray-600">Active</label>
-                                        <ToggleSwitch
-                                            v-model="item.task.ClearAll.active"
-                                            :inputId="`active-${index}`"
-                                            :name="`clear-all-active-${index}`"
-                                            binary
-                                            @change="user_update_tasks"
-                                        />
-                                    </div>
-                                </div>
+                                <!-- <!-- === Active Toggle === -->
+                                <!-- <div class="flex items-center gap-2 whitespace-nowrap"> -->
+                                <!--     <label :for="`active-${index}`" class="text-xs text-gray-600">Active</label> -->
+                                <!--     <ToggleSwitch -->
+                                <!--         v-model="item.task.ClearAll.active" -->
+                                <!--         :inputId="`active-${index}`" -->
+                                <!--         :name="`clear-all-active-${index}`" -->
+                                <!--         binary -->
+                                <!--         @change="user_update_tasks" -->
+                                <!--     /> -->
+                                <!-- </div> -->
+                                <!-- </div> -->
                             </div>
                         </template>
 
@@ -1019,16 +1020,16 @@ const exportConfig = () => {
                                     </div>
 
                                     <!-- === Active Toggle === -->
-                                    <div class="flex items-center gap-2 whitespace-nowrap">
-                                        <label :for="`active-${index}`" class="text-xs text-gray-600">Active</label>
-                                        <ToggleSwitch
-                                            v-model="item.task.NumSequence.active"
-                                            :inputId="`active-${index}`"
-                                            :name="`num-sequence-active-${index}`"
-                                            binary
-                                            @change="user_update_tasks"
-                                        />
-                                    </div>
+                                    <!-- <div class="flex items-center gap-2 whitespace-nowrap"> -->
+                                    <!--     <label :for="`active-${index}`" class="text-xs text-gray-600">Active</label> -->
+                                    <!--     <ToggleSwitch -->
+                                    <!--         v-model="item.task.NumSequence.active" -->
+                                    <!--         :inputId="`active-${index}`" -->
+                                    <!--         :name="`num-sequence-active-${index}`" -->
+                                    <!--         binary -->
+                                    <!--         @change="user_update_tasks" -->
+                                    <!--     /> -->
+                                    <!-- </div> -->
                                 </div>
                             </div>
                         </template>
@@ -1128,16 +1129,16 @@ const exportConfig = () => {
                                     />
 
                                     <!-- === Active Toggle === -->
-                                    <div class="flex items-center gap-2 whitespace-nowrap">
-                                        <label :for="`active-${index}`" class="text-xs text-gray-600">Active</label>
-                                        <ToggleSwitch
-                                            v-model="item.task.Date.active"
-                                            :inputId="`active-${index}`"
-                                            :name="`date-active-${index}`"
-                                            binary
-                                            @change="user_update_tasks"
-                                        />
-                                    </div>
+                                    <!-- <div class="flex items-center gap-2 whitespace-nowrap"> -->
+                                    <!--     <label :for="`active-${index}`" class="text-xs text-gray-600">Active</label> -->
+                                    <!--     <ToggleSwitch -->
+                                    <!--         v-model="item.task.Date.active" -->
+                                    <!--         :inputId="`active-${index}`" -->
+                                    <!--         :name="`date-active-${index}`" -->
+                                    <!--         binary -->
+                                    <!--         @change="user_update_tasks" -->
+                                    <!--     /> -->
+                                    <!-- </div> -->
                                 </div>
                             </div>
                         </template>
@@ -1204,16 +1205,16 @@ const exportConfig = () => {
                                     />
 
                                     <!-- === Active Toggle === -->
-                                    <div class="flex items-center gap-2 whitespace-nowrap">
-                                        <label :for="`active-${index}`" class="text-xs text-gray-600">Active</label>
-                                        <ToggleSwitch
-                                            v-model="item.task.Time.active"
-                                            :inputId="`active-${index}`"
-                                            :name="`time-active-${index}`"
-                                            binary
-                                            @change="user_update_tasks"
-                                        />
-                                    </div>
+                                    <!-- <div class="flex items-center gap-2 whitespace-nowrap"> -->
+                                    <!--     <label :for="`active-${index}`" class="text-xs text-gray-600">Active</label> -->
+                                    <!--     <ToggleSwitch -->
+                                    <!--         v-model="item.task.Time.active" -->
+                                    <!--         :inputId="`active-${index}`" -->
+                                    <!--         :name="`time-active-${index}`" -->
+                                    <!--         binary -->
+                                    <!--         @change="user_update_tasks" -->
+                                    <!--     /> -->
+                                    <!-- </div> -->
                                 </div>
                             </div>
                         </template>
