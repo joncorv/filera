@@ -912,7 +912,6 @@ const exportConfig = () => {
                                             { label: 'lowercase', value: 1 },
                                             { label: 'UPPERCASE', value: 0 },
                                             { label: 'Title Case', value: 2 },
-                                            { label: 'camelCase', value: 3 },
                                         ]"
                                         optionLabel="label"
                                         optionValue="value"
