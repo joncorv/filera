@@ -16,7 +16,7 @@ import Dropdown from "primevue/dropdown";
 import InputNumber from "primevue/inputnumber";
 import IconField from "primevue/iconfield";
 import InputIcon from "primevue/inputicon";
-
+import FloatLabel from "primevue/floatlabel";
 import "primeicons/primeicons.css";
 
 //  <-- === WorkingFile Interface === -->
@@ -973,61 +973,67 @@ const exportConfig = () => {
                                 </div>
 
                                 <!-- === Main Controls === -->
-                                <div class="flex flex-row gap-3 items-center">
+                                <div class="flex flex-row gap-2 items-center">
                                     <!-- === Start Number === -->
-                                    <InputNumber
-                                        v-model="item.task.NumSequence.start_num"
-                                        :id="`start-num-${index}`"
-                                        :input-id="`start-num-inputid-${index}`"
-                                        fluid
-                                        size="small"
-                                        class="w-20 flex-1"
-                                        @value-change="user_update_tasks"
-                                    />
+                                    <div class="w-full min-w-36">
+                                        <FloatLabel variant="on" class="">
+                                            <InputNumber
+                                                v-model="item.task.NumSequence.start_num"
+                                                :id="`start-num-${index}`"
+                                                :input-id="`start-num-inputid-${index}`"
+                                                fluid
+                                                show-buttons
+                                                buttonLayout="horizontal"
+                                                size="small"
+                                                class="w-full"
+                                                @value-change="user_update_tasks"
+                                            />
+                                            <label for="`start-num-inputid-${index}`">Start #</label>
+                                        </FloatLabel>
+                                    </div>
 
                                     <!-- === Padding === -->
-                                    <InputNumber
-                                        v-model="item.task.NumSequence.num_padding"
-                                        :id="`padding-${index}`"
-                                        :input-id="`padding-inputid-${index}`"
-                                        size="small"
-                                        class="w-20 flex-1"
-                                        @value-change="user_update_tasks"
-                                    />
+                                    <div class="w-full min-w-36">
+                                        <FloatLabel variant="on" class="">
+                                            <InputNumber
+                                                v-model="item.task.NumSequence.num_padding"
+                                                :id="`padding-${index}`"
+                                                :input-id="`padding-inputid-${index}`"
+                                                size="small"
+                                                fluid
+                                                show-buttons
+                                                buttonLayout="horizontal"
+                                                class="w-full"
+                                                @value-change="user_update_tasks"
+                                            />
+                                            <label for="`padding-${index}`">Padding</label>
+                                        </FloatLabel>
+                                    </div>
 
                                     <!-- === Separator === -->
-                                    <InputText
-                                        v-model="item.task.NumSequence.separator"
-                                        :id="`separator-${index}`"
-                                        placeholder="Sep"
-                                        size="small"
-                                        class="w-12"
-                                        @input="user_update_tasks"
-                                    />
+                                    <div class="flex-1">
+                                        <FloatLabel variant="on" class="">
+                                            <InputText
+                                                v-model="item.task.NumSequence.separator"
+                                                :id="`separator-${index}`"
+                                                size="small"
+                                                class="w-21"
+                                                @input="user_update_tasks"
+                                            />
+                                            <label for="`separator-${index}`">Separator</label>
+                                        </FloatLabel>
+                                    </div>
 
-                                    <!-- === Position Toggle === -->
-                                    <div class="flex items-center gap-2 whitespace-nowrap">
-                                        <label :for="`at-start-${index}`" class="text-xs text-gray-600">At Start</label>
-                                        <ToggleSwitch
+                                    <div class="flex-1">
+                                        <ToggleButton
                                             v-model="item.task.NumSequence.at_start"
-                                            :inputId="`at-start-${index}`"
-                                            :name="`at-start-${index}`"
-                                            binary
+                                            onLabel="Position at Beginning"
+                                            offLabel="Position at End"
+                                            size="small"
+                                            class="flex-1"
                                             @change="user_update_tasks"
                                         />
                                     </div>
-
-                                    <!-- === Active Toggle === -->
-                                    <!-- <div class="flex items-center gap-2 whitespace-nowrap"> -->
-                                    <!--     <label :for="`active-${index}`" class="text-xs text-gray-600">Active</label> -->
-                                    <!--     <ToggleSwitch -->
-                                    <!--         v-model="item.task.NumSequence.active" -->
-                                    <!--         :inputId="`active-${index}`" -->
-                                    <!--         :name="`num-sequence-active-${index}`" -->
-                                    <!--         binary -->
-                                    <!--         @change="user_update_tasks" -->
-                                    <!--     /> -->
-                                    <!-- </div> -->
                                 </div>
                             </div>
                         </template>
