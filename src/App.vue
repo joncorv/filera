@@ -510,7 +510,7 @@ const exportConfig = () => {
 
                     <!-- === Hamburger Select === -->
                     <Button
-                        icon="pi pi-bars"
+                        icon="pi pi-trash"
                         class="whitespace-nowrap flex-none"
                         @click="clearFiles"
                         variant="outlined"
@@ -602,7 +602,7 @@ const exportConfig = () => {
 
                     <!-- === Hamburger Select === -->
                     <Button
-                        icon="pi pi-bars"
+                        icon="pi pi-trash"
                         class="whitespace-nowrap flex-none"
                         @click="clearTasks"
                         variant="outlined"
