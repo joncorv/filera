@@ -643,21 +643,6 @@ const exportConfig = () => {
                                     <!-- === Dummy Spacer === -->
                                     <div class="flex-1"></div>
 
-                                    <!-- <ToggleSwitch -->
-                                    <!--     v-model="item.task.CustomText.active" -->
-                                    <!--     :inputId="`active-${index}`" -->
-                                    <!--     :name="`active-checkbox${index}`" -->
-                                    <!--     binary -->
-                                    <!--     @change="user_update_tasks" -->
-                                    <!-- /> -->
-
-                                    <!-- <ToggleButton -->
-                                    <!--     v-model="item.task.CustomText.active" -->
-                                    <!--     onLabel="Enabled" -->
-                                    <!--     offLabel="Disabled" -->
-                                    <!--     @change="user_update_tasks" -->
-                                    <!-- /> -->
-
                                     <!-- === Close Button === -->
                                     <i
                                         class="pi pi-angle-up hover:cursor-pointer text-sm mr-1"
@@ -890,9 +875,9 @@ const exportConfig = () => {
                                     <Dropdown
                                         v-model="item.task.ChangeCase.case_choice"
                                         :options="[
-                                            { label: 'lowercase', value: 1 },
-                                            { label: 'UPPERCASE', value: 0 },
-                                            { label: 'Title Case', value: 2 },
+                                            { label: 'lowercase', value: 0 },
+                                            { label: 'UPPERCASE', value: 1 },
+                                            // { label: 'Title Case', value: 2 },
                                         ]"
                                         optionLabel="label"
                                         optionValue="value"

@@ -183,11 +183,7 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
         // iterate over all tasks in task_list
         for task in tasks {
             match task {
-                Task::CustomText {
-                    text,
-                    at_start,
-                    active,
-                } => {
+                Task::CustomText { text, at_start, active } => {
                     if *active {
                         let file_stem: String;
                         let file_extension: String;
@@ -205,11 +201,9 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
                         }
 
                         if *at_start {
-                            file.target
-                                .set_file_name(format!("{text}{file_stem}.{file_extension}"));
+                            file.target.set_file_name(format!("{text}{file_stem}.{file_extension}"));
                         } else {
-                            file.target
-                                .set_file_name(format!("{file_stem}{text}.{file_extension}"));
+                            file.target.set_file_name(format!("{file_stem}{text}.{file_extension}"));
                         };
                     }
                 }
@@ -222,10 +216,7 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
                         let new_file_name: String;
 
                         if let Some(t) = file.target.file_name() {
-                            new_file_name = t
-                                .to_string_lossy()
-                                .to_string()
-                                .replace(find_text, replace_text);
+                            new_file_name = t.to_string_lossy().to_string().replace(find_text, replace_text);
                         } else {
                             new_file_name = "".to_string();
                         }
@@ -253,10 +244,7 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
                 }
 
                 // TODO: Need to build in cases for TitleCase.
-                Task::ChangeCase {
-                    case_choice,
-                    active,
-                } => {
+                Task::ChangeCase { case_choice, active } => {
                     if *active {
                         let new_file_name: String;
 
@@ -268,12 +256,12 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
 
                         match *case_choice {
                             0_u8 => {
-                                // UPPERCASE
-                                file.target.set_file_name(new_file_name.to_uppercase());
-                            }
-                            1_u8 => {
                                 // lowercase
                                 file.target.set_file_name(new_file_name.to_lowercase());
+                            }
+                            1_u8 => {
+                                // UPPERCASE
+                                file.target.set_file_name(new_file_name.to_uppercase());
                             }
                             2_u8..=std::u8::MAX => {
                                 // figure out other case options later
@@ -309,15 +297,13 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
 
                             // build the file name with extension, and number at start
                             if *at_start {
-                                file.target.set_file_name(format!(
-                                    "{sequence_num}{separator}{file_stem}.{file_extension}"
-                                ));
+                                file.target
+                                    .set_file_name(format!("{sequence_num}{separator}{file_stem}.{file_extension}"));
                             } else
                             // build the file name with extension, and number at the end
                             {
-                                file.target.set_file_name(format!(
-                                    "{file_stem}{separator}{sequence_num}.{file_extension}"
-                                ));
+                                file.target
+                                    .set_file_name(format!("{file_stem}{separator}{sequence_num}.{file_extension}"));
                             }
                         } else {
                             // build the file name without extension, and number at start
@@ -327,9 +313,8 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
                             } else
                             // build the file name without an extension, and number at the end
                             {
-                                file.target.set_file_name(format!(
-                                    "{file_stem}{separator}{sequence_num}",
-                                ));
+                                file.target
+                                    .set_file_name(format!("{file_stem}{separator}{sequence_num}",));
                             }
                         }
                     }
@@ -459,18 +444,8 @@ fn convert_working_files_to_file_status(state: &State<'_, Mutex<AppState>>) -> V
     let mut file_statuses: Vec<FileStatus> = Vec::with_capacity(state.working_files.len());
     for working_file in &state.working_files {
         let file_status = FileStatus {
-            old_file_name: working_file
-                .source
-                .file_name()
-                .unwrap()
-                .to_string_lossy()
-                .into_owned(),
-            new_file_name: working_file
-                .target
-                .file_name()
-                .unwrap()
-                .to_string_lossy()
-                .into_owned(),
+            old_file_name: working_file.source.file_name().unwrap().to_string_lossy().into_owned(),
+            new_file_name: working_file.target.file_name().unwrap().to_string_lossy().into_owned(),
         };
         file_statuses.push(file_status);
     }
