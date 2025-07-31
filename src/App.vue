@@ -613,7 +613,7 @@ const exportConfig = () => {
 
                 <hr class="border-white/30" />
 
-                <TransitionGroup tag="div" name="ttasks" class="h-full relative">
+                <TransitionGroup tag="div" name="ttasks" class="h-full relative overflow-y-auto">
                     <!-- === No Files Selected === -->
                     <div
                         v-if="!numTaskListItems"
@@ -744,7 +744,7 @@ const exportConfig = () => {
                                                 fluid
                                                 size="small"
                                                 v-model="item.task.FindAndReplace.find_text"
-                                                variant="filled"
+                                                variant="outlined"
                                                 @input="user_update_tasks"
                                                 class="flex-1"
                                             />
@@ -761,7 +761,7 @@ const exportConfig = () => {
                                                 fluid
                                                 size="small"
                                                 v-model="item.task.FindAndReplace.replace_text"
-                                                variant="filled"
+                                                variant="outlined"
                                                 @input="user_update_tasks"
                                                 class="flex-1"
                                             />
@@ -882,6 +882,7 @@ const exportConfig = () => {
                                         optionLabel="label"
                                         optionValue="value"
                                         placeholder="Select case type"
+                                        size="small"
                                         class="flex-1"
                                         @change="user_update_tasks"
                                     />
