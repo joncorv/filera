@@ -439,7 +439,7 @@ const exportConfig = () => {
 </script>
 
 <template>
-    <body class="flex flex-col box-border w-screen h-screen m-0 p-0 overflow-hidden z-0 bg-black">
+    <body class="flex flex-col box-border w-screen h-screen m-0 p-0 overflow-hidden z-0 bg-white/5">
         <!-- === Global Top Menubar === -->
         <!-- <div -->
         <!--     id="left-menu-buttons" -->
@@ -477,7 +477,7 @@ const exportConfig = () => {
         <Splitter style="flex: 1; overflow: hidden; background-color: transparent; z-index: 40">
             <!-- === Left Splitter Panel === -->
             <SplitterPanel
-                class="flex flex-2/3 flex-col gap-0 ml-2 mr-0.5 mt-2 mb-2 border-1 rounded-t-lg border-white/30 backdrop-blur-lg shadow-sm z-50"
+                class="flex flex-2/3 flex-col gap-0 ml-2 mr-0.5 mt-0 mb-2 border-1 rounded-lg border-white/30 shadow-sm z-50 bg-black/40"
             >
                 <!-- === Left SplitterPanel Menubar === -->
                 <div id="file_buttons" class="flex flex-row items-center gap-2 justify-start m-2">
@@ -525,7 +525,7 @@ const exportConfig = () => {
                     <!-- === No Files Selected === -->
                     <div
                         v-if="!numFileStatusItems"
-                        class="flex flex-1 flex-col justify-center items-center w-full h-full whitespace-nowrap"
+                        class="flex flex-1 bg-white/3 flex-col justify-center items-center w-full h-full whitespace-nowrap"
                     >
                         <span class="text-center mb-2 text-gray-400">Drag your files here.</span>
                         <span class="text-center text-sm text-gray-600"
@@ -565,7 +565,7 @@ const exportConfig = () => {
 
             <!-- === Right Splitter Panel === -->
             <SplitterPanel
-                class="flex flex-col flex-1/3 ml-0.5 my-2 mr-2 rounded-t-lg bg-black border-1 border-white/30"
+                class="flex flex-col flex-1/3 ml-0.5 mb-2 mr-2 bg-black/40 rounded-lg border-1 border-white/30"
             >
                 <!-- === Right SplitterPanel Menubar === -->
                 <div id="file_buttons" class="flex flex-row m-2 gap-2 items-center justify-start">
@@ -613,7 +613,7 @@ const exportConfig = () => {
 
                 <hr class="border-white/30" />
 
-                <TransitionGroup tag="div" name="ttasks" class="h-full relative overflow-y-auto">
+                <TransitionGroup tag="div" name="ttasks" class="h-full relative overflow-y-auto bg-white/3">
                     <!-- === No Files Selected === -->
                     <div
                         v-if="!numTaskListItems"
@@ -1195,11 +1195,13 @@ const exportConfig = () => {
         </Splitter>
 
         <!-- === Footer -> Total Files Selected === -->
-        <footer class="flex flex-row py-2 px-2 border-t-1 rounded-b-lg border-white/30 bg-black">
+        <footer
+            class="flex flex-row py-2 px-2 bg-black/50 border-t-1 rounded-b-lg border-white/30 text-sm text-gray-400"
+        >
             <div id="total-files-selected">
-                <span class="text-gray-400">Total Files Selected: </span>
+                <span class="">Total Files Selected: </span>
                 <Transition mode="out-in">
-                    <span class="text-gray-600">{{ numFileStatusItems }}</span>
+                    <span>{{ numFileStatusItems }}</span>
                 </Transition>
             </div>
 
@@ -1213,7 +1215,7 @@ const exportConfig = () => {
 <style>
 :root {
     /* background-image: url("src/assets/v960-ning-30.jpg"); */
-    background-image: black;
+    /* background-image: black; */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -1228,7 +1230,7 @@ const exportConfig = () => {
 
 .body {
     /* background-image: url("src/assets/636977f64331639884919566b3ec074a_edit1.jpg"); */
-    background-color: black;
+    /* background-color: white; */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
