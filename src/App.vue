@@ -1346,4 +1346,11 @@ html {
         cursor: pointer;
     }
 }
+
+.p-floatlabel {
+    --p-floatlabel-font-weight: 400;
+    --p-floatlabel-font-size: 12rem;
+    --p-floatlabel-in-input-padding-top: 6rem;
+    --p-floatlabel-in-input-padding-bottom: 6rem;
+}
 </style>
