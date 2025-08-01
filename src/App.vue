@@ -699,6 +699,7 @@ const exportConfig = () => {
                                                 :id="`input-text-${index}`"
                                                 v-model="item.task.CustomText.text"
                                                 variant="outlined"
+                                                placeholder=""
                                                 @input="user_update_tasks"
                                                 class=""
                                             />
