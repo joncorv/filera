@@ -477,16 +477,24 @@ const exportConfig = () => {
         <Splitter style="flex: 1; overflow: hidden; background-color: transparent; z-index: 40">
             <!-- === Left Splitter Panel === -->
             <SplitterPanel
-                class="flex flex-2/3 flex-col gap-0 ml-2 mr-0.5 mt-0 mb-2 border-1 rounded-lg border-white/30 shadow-sm z-50 bg-black/40"
+                class="flex flex-2/3 flex-col gap-0 ml-2 mr-0.5 mt-0 mb-2 border-1 rounded-lg border-white/20 shadow-sm z-50 bg-black/40"
             >
                 <!-- === Left SplitterPanel Menubar === -->
                 <div id="file_buttons" class="flex flex-row items-center gap-2 justify-start m-2">
                     <!-- <div class="items-center flex flex-row gap-4"> -->
-                    <Button size="small" icon="pi pi-file" label="Open Files" @click="open_files" class="min-w-max" />
+                    <Button
+                        size="small"
+                        icon="pi pi-file"
+                        label="Open Files"
+                        @click="open_files"
+                        variant="outlined"
+                        class="min-w-max"
+                    />
                     <Button
                         size="small"
                         icon="pi pi-folder-open"
                         label="Open Folders"
+                        variant="outlined"
                         @click="open_files"
                         class="min-w-max"
                     />
@@ -510,7 +518,7 @@ const exportConfig = () => {
 
                     <!-- === Hamburger Select === -->
                     <Button
-                        icon="pi pi-trash"
+                        icon="pi pi-replay"
                         class="whitespace-nowrap flex-none"
                         @click="clearFiles"
                         variant="outlined"
@@ -539,8 +547,8 @@ const exportConfig = () => {
                         <table class="w-full text-white/90">
                             <thead>
                                 <tr>
-                                    <th class="px-4 pt-2.5 pb-1.5 text-left border-b border-white/30">Old Name</th>
-                                    <th class="px-4 pt-2.5 pb-1.5 text-left border-b border-white/30">New Name</th>
+                                    <th class="px-4 pt-2.5 pb-1.5 text-left border-b border-white/20">Old Name</th>
+                                    <th class="px-4 pt-2.5 pb-1.5 text-left border-b border-white/20">New Name</th>
                                 </tr>
                             </thead>
                         </table>
@@ -561,11 +569,24 @@ const exportConfig = () => {
                         </div>
                     </div>
                 </Transition>
+                <footer
+                    id="footer_left_panel"
+                    class="flex flex-row py-2 px-2 bg-black/50 border-t-1 rounded-b-lg border-white/20 text-sm text-gray-400"
+                >
+                    <div id="total-files-selected">
+                        <span class="">Total Files Selected: </span>
+                        <Transition mode="out-in">
+                            <span>{{ numFileStatusItems }}</span>
+                        </Transition>
+                    </div>
+
+                    <div id="separator" class="flex-1"></div>
+                </footer>
             </SplitterPanel>
 
             <!-- === Right Splitter Panel === -->
             <SplitterPanel
-                class="flex flex-col flex-1/3 ml-0.5 mb-2 mr-2 bg-black/40 rounded-lg border-1 border-white/30"
+                class="flex flex-col flex-1/3 ml-0.5 mb-2 mr-2 bg-black/40 rounded-lg border-1 border-white/20"
             >
                 <!-- === Right SplitterPanel Menubar === -->
                 <div id="file_buttons" class="flex flex-row m-2 gap-2 items-center justify-start">
@@ -577,6 +598,7 @@ const exportConfig = () => {
                         size="small"
                         icon="pi pi-plus"
                         class="min-w-max"
+                        variant="outlined"
                         @click="taskMenuToggleFunction"
                         aria-haspopup="true"
                         aria-controls="custom_text_menu"
@@ -611,7 +633,7 @@ const exportConfig = () => {
                     />
                 </div>
 
-                <hr class="border-white/30" />
+                <hr class="border-white/20" />
 
                 <TransitionGroup tag="div" name="ttasks" class="h-full relative overflow-y-auto bg-white/3">
                     <!-- === No Files Selected === -->
@@ -631,12 +653,11 @@ const exportConfig = () => {
                     >
                         <!-- === CustomText Task === -->
                         <template v-if="isCustomTextTask(item.task)">
-                            <div
-                                class="flex flex-col gap-2 border-1 border-white/30 bg-black rounded-lg p-3 overflow-hidden"
-                            >
+                            <div class="task-container">
                                 <!-- === Title and Description === -->
                                 <div class="flex flex-row items-center justify-between mb-1">
                                     <div class="flex flex-row items-center gap-2">
+                                        <span class="pi pi-pen-to-square"></span>
                                         <h4 class="text-sm font-semibold text-gray-200 m-0">Custom Text</h4>
                                         <p class="text-xs text-gray-400 m-0">Add text to file names</p>
                                     </div>
@@ -674,13 +695,14 @@ const exportConfig = () => {
                                             <InputText
                                                 fluid
                                                 size="small"
+                                                placeholder=""
                                                 :id="`input-text-${index}`"
                                                 v-model="item.task.CustomText.text"
                                                 variant="outlined"
                                                 @input="user_update_tasks"
                                                 class=""
                                             />
-                                            <label class="font-thin" for="`input-text-${index}`">Custom Text</label>
+                                            <label class="font-thin" for="`input-text-${index}`">Value</label>
                                         </FloatLabel>
                                     </div>
 
@@ -699,12 +721,11 @@ const exportConfig = () => {
 
                         <!-- === Find & Replace Task === -->
                         <template v-else-if="isFindAndReplaceTask(item.task)">
-                            <div
-                                class="flex flex-col gap-2 border-1 border-white/30 bg-black rounded-lg p-3 overflow-hidden"
-                            >
+                            <div class="task-container">
                                 <!-- === Title and Description === -->
                                 <div class="flex flex-row items-center justify-between mb-1">
                                     <div class="flex flex-row items-center gap-2">
+                                        <span class="pi pi-search"></span>
                                         <h4 class="text-sm font-semibold text-gray-200 m-0">Find & Replace</h4>
                                         <p class="text-xs text-gray-400 m-0">Replace text in file names</p>
                                     </div>
@@ -742,6 +763,7 @@ const exportConfig = () => {
                                             <InputText
                                                 :id="`find-text-${index}`"
                                                 fluid
+                                                placeholder=""
                                                 size="small"
                                                 v-model="item.task.FindAndReplace.find_text"
                                                 variant="outlined"
@@ -759,6 +781,7 @@ const exportConfig = () => {
                                             <InputText
                                                 :id="`replace-text-${index}`"
                                                 fluid
+                                                placeholder=""
                                                 size="small"
                                                 v-model="item.task.FindAndReplace.replace_text"
                                                 variant="outlined"
@@ -774,12 +797,11 @@ const exportConfig = () => {
 
                         <!-- === ClearAll Task === -->
                         <template v-else-if="isClearAllTask(item.task)">
-                            <div
-                                class="flex flex-col gap-2 border-1 border-white/30 bg-black rounded-lg p-3 overflow-hidden"
-                            >
+                            <div class="task-container">
                                 <!-- === Title and Description === -->
                                 <div class="flex flex-row items-center justify-between mb-1">
                                     <div class="flex flex-row items-center gap-2">
+                                        <span class="pi pi-eraser"></span>
                                         <h4 class="text-sm font-semibold text-gray-200 m-0">Clear All</h4>
                                         <p class="text-xs text-gray-400 m-0">Remove all text from file names</p>
                                     </div>
@@ -833,12 +855,11 @@ const exportConfig = () => {
 
                         <!-- === ChangeCase Task === -->
                         <template v-else-if="isChangeCaseTask(item.task)">
-                            <div
-                                class="flex flex-col gap-2 border-1 border-white/30 bg-black rounded-lg p-3 overflow-hidden"
-                            >
+                            <div class="task-container">
                                 <!-- === Title and Description === -->
                                 <div class="flex flex-row items-center justify-between mb-1">
                                     <div class="flex flex-row items-center gap-2">
+                                        <span class="pi pi-sort-alpha-up"></span>
                                         <h4 class="min-w-max text-sm font-semibold text-gray-200 m-0">Change Case</h4>
                                         <p class="min-w-max text-xs text-gray-400 m-0">
                                             Convert text case in file names
@@ -904,12 +925,11 @@ const exportConfig = () => {
 
                         <!-- === NumSequence Task === -->
                         <template v-else-if="isNumSequenceTask(item.task)">
-                            <div
-                                class="flex flex-col gap-2 border-1 border-white/30 bg-black rounded-lg p-3 overflow-hidden"
-                            >
+                            <div class="task-container">
                                 <!-- === Title and Description === -->
                                 <div class="flex flex-row items-center justify-between mb-1">
                                     <div class="flex flex-row items-center gap-2">
+                                        <span class="pi pi-sort-numeric-down"></span>
                                         <h4 class="text-sm font-semibold text-gray-200 m-0">Number Sequence</h4>
                                         <p class="text-xs text-gray-400 m-0">Add sequential numbers to file names</p>
                                     </div>
@@ -1007,12 +1027,11 @@ const exportConfig = () => {
 
                         <!-- === Date Task === -->
                         <template v-else-if="isDateTask(item.task)">
-                            <div
-                                class="flex flex-col gap-2 border-1 border-white/30 bg-black rounded-lg p-3 overflow-hidden"
-                            >
+                            <div class="task-container">
                                 <!-- === Title and Description === -->
                                 <div class="flex flex-row items-center justify-between mb-1">
                                     <div class="flex flex-row items-center gap-2">
+                                        <span class="pi pi-calendar"></span>
                                         <h4 class="text-sm font-semibold text-gray-200 m-0">Date</h4>
                                         <p class="text-xs text-gray-400 m-0">Add current date to file names</p>
                                     </div>
@@ -1116,12 +1135,11 @@ const exportConfig = () => {
 
                         <!-- === Time Task === -->
                         <template v-else-if="isTimeTask(item.task)">
-                            <div
-                                class="flex flex-col gap-2 border-1 border-white/30 bg-black rounded-lg p-3 overflow-hidden"
-                            >
+                            <div class="task-container">
                                 <!-- === Title and Description === -->
                                 <div class="flex flex-row items-center justify-between mb-1">
                                     <div class="flex flex-row items-center gap-2">
+                                        <span class="pi pi-clock"></span>
                                         <h4 class="text-sm font-semibold text-gray-200 m-0">Time</h4>
                                         <p class="text-xs text-gray-400 m-0">Add current time to file names</p>
                                     </div>
@@ -1191,24 +1209,45 @@ const exportConfig = () => {
                         </template>
                     </div>
                 </TransitionGroup>
+                <footer
+                    id="footer_right_panel"
+                    class="flex flex-row py-2 px-2 gap-2 bg-black/15 border-t-1 rounded-b-lg border-white/20 text-sm text-gray-400"
+                >
+                    <div id="total-files-selected" class="flex flex-col">
+                        <span class="font-bold">File Destination</span>
+                        <span class="">Files replaced in place</span>
+                    </div>
+
+                    <div id="separator" class="flex-1"></div>
+
+                    <Button
+                        size="small"
+                        icon="pi pi-folder-open"
+                        variant="outlined"
+                        label="Change Output Directory"
+                        @click="rename_files"
+                    />
+                    <Button size="small" icon="pi pi-check-square" label="Batch Rename Files" @click="rename_files" />
+                </footer>
             </SplitterPanel>
         </Splitter>
 
         <!-- === Footer -> Total Files Selected === -->
-        <footer
-            class="flex flex-row py-2 px-2 bg-black/50 border-t-1 rounded-b-lg border-white/30 text-sm text-gray-400"
-        >
-            <div id="total-files-selected">
-                <span class="">Total Files Selected: </span>
-                <Transition mode="out-in">
-                    <span>{{ numFileStatusItems }}</span>
-                </Transition>
-            </div>
-
-            <div id="separator" class="flex-1"></div>
-
-            <!-- <Button size="medium" icon="pi pi-check" label="Batch Rename Files" @click="rename_files" /> -->
-        </footer>
+        <!-- <footer -->
+        <!--     class="flex flex-row py-2 px-2 bg-black/50 border-t-1 rounded-b-lg border-white/20 text-sm text-gray-400" -->
+        <!-- > -->
+        <!--     <div id="total-files-selected"> -->
+        <!--         <span class="">Total Files Selected: </span> -->
+        <!--         <Transition mode="out-in"> -->
+        <!--             <span>{{ numFileStatusItems }}</span> -->
+        <!--         </Transition> -->
+        <!--     </div> -->
+        <!---->
+        <!--     <div id="separator" class="flex-1"></div> -->
+        <!---->
+        <!--     <!-- <Button size="medium" icon="pi pi-check" label="Batch Rename Files" @click="rename_files" /> -->
+        <!-- -->
+        <!-- </footer> -->
     </body>
 </template>
 
@@ -1354,5 +1393,16 @@ html {
     --p-floatlabel-font-size: 12rem;
     --p-floatlabel-in-input-padding-top: 6rem;
     --p-floatlabel-in-input-padding-bottom: 6rem;
+}
+
+.task-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background-color: rgba(15, 15, 15, 1);
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    overflow: hidden;
 }
 </style>
