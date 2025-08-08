@@ -409,7 +409,7 @@ const templateMenuToggleFunction = (event: any) => {
 // Template functions - implement these as needed
 const applyTemplate = (templateType: string) => {
     console.log(`Apply ${templateType} template`);
-    // TODO: Implement template functionality
+    // TODO: Low priority Implement template functionality
 };
 
 // const showTemplates = () => {
@@ -502,7 +502,7 @@ const exportConfig = () => {
                     <!-- === Search Field === -->
                     <IconField class="flex-3/4 w-full">
                         <InputIcon class="pi pi-search" />
-                        <InputText v-model="value1" placeholder="Search your files..." size="small" class="w-full" />
+                        <InputText placeholder="Search your files..." size="small" class="w-full" />
                     </IconField>
 
                     <!-- === Sort Select === -->
@@ -1213,18 +1213,21 @@ const exportConfig = () => {
                     id="footer_right_panel"
                     class="flex flex-row py-2 px-2 gap-2 bg-black/15 border-t-1 rounded-b-lg border-white/20 text-sm text-gray-400"
                 >
-                    <div id="total-files-selected" class="flex flex-col">
+                    <!-- FIX: Give real calculated destination for resulting files -->
+                    <div id="file-destination" class="flex flex-col">
                         <span class="font-bold">File Destination</span>
                         <span class="">Files replaced in place</span>
                     </div>
 
                     <div id="separator" class="flex-1"></div>
 
+                    <!-- FIX: Create a dropdown menu for how the user works with output. The user should choose between Renaming in place, copying (or moving) to a new location -->
+                    <!-- FIX: Change the visibility of the button based on the result of the output choice -->
                     <Button
                         size="small"
                         icon="pi pi-folder-open"
                         variant="outlined"
-                        label="Change Output Directory"
+                        label="Output Directory"
                         @click="rename_files"
                     />
                     <Button size="small" icon="pi pi-check-square" label="Batch Rename Files" @click="rename_files" />
