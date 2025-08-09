@@ -1,0 +1,3 @@
+Edge case test file (creation failed)
+Intended name: rm -rf *
+Error: [Errno 22] Invalid argument: 'rm -rf *'
