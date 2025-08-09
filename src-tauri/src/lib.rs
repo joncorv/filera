@@ -1,5 +1,7 @@
 // use notify_rust::Notification;
 // use std::fs::{self, metadata, Metadata};
+use natord::compare;
+use std::char::ToLowercase;
 use std::sync::Mutex;
 use std::{fs::rename, path::PathBuf};
 use tauri::{Manager, State};
@@ -101,7 +103,7 @@ pub fn run() {
 #[tauri::command]
 fn user_open_files(file_names: Vec<String>, state: State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
     solve_duplicates(file_names, &state);
-    // sort_file_names();
+    // sort_file_names(&state);
     convert_file_names_to_working_files_(&state);
     process_tasks_on_working_files_(&state);
     convert_working_files_to_file_status(&state)
@@ -140,11 +142,14 @@ fn solve_duplicates(file_names: Vec<String>, state: &State<'_, Mutex<AppState>>)
     let mut file_names = file_names;
     state.file_names.append(&mut file_names);
     state.file_names.sort_unstable();
+    state
+        .file_names
+        .sort_by(|a, b| natord::compare(&a.to_lowercase(), &b.to_lowercase()));
     state.file_names.dedup();
 }
 
 // fn state_update_sort() {}
-// fn sort_file_names() {}
+fn sort_file_names(state: State<'_, Mutex<AppState>>) {}
 
 #[tauri::command]
 fn state_update_tasks(task_list: Vec<Task>, state: &State<'_, Mutex<AppState>>) {
