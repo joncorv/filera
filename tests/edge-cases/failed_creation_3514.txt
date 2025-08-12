@@ -1,0 +1,3 @@
+Edge case test file (creation failed)
+Intended name: |pipe_start.txt
+Error: [Errno 22] Invalid argument: '|pipe_start.txt'

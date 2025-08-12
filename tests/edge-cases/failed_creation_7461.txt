@@ -1,0 +1,3 @@
+Edge case test file (creation failed)
+Intended name: format c:
+Error: [Errno 22] Invalid argument: 'format c:'

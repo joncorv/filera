@@ -1,0 +1,3 @@
+Edge case test file (creation failed)
+Intended name: "quoted_file.txt
+Error: [Errno 22] Invalid argument: '"quoted_file.txt'
