@@ -624,7 +624,7 @@ const exportConfig = () => {
 
                     <!-- === Hamburger Select === -->
                     <Button
-                        icon="pi pi-trash"
+                        icon="pi pi-replay"
                         class="whitespace-nowrap flex-none"
                         @click="clearTasks"
                         variant="outlined"
