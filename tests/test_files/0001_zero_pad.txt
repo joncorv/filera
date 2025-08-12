@@ -1,4 +1,0 @@
-Edge case test file
-Original name: 0001_zero_pad.txt
-Created for testing file renaming applications.
-Contains challenging characters or patterns.

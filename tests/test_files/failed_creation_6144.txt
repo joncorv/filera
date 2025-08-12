@@ -1,3 +1,0 @@
-Edge case test file (creation failed)
-Intended name: *asterisk_start.txt
-Error: [Errno 22] Invalid argument: '*asterisk_start.txt'

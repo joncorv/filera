@@ -1,3 +1,0 @@
-Edge case test file (creation failed)
-Intended name: ?question_mark.txt
-Error: [Errno 22] Invalid argument: '?question_mark.txt'

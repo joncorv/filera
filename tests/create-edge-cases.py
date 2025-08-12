@@ -9,7 +9,7 @@ import string
 import random
 from pathlib import Path
 
-def create_edge_case_files(output_dir="test_files"):
+def create_edge_case_files(output_dir="edge-cases"):
     """Create 100 files with challenging names for renaming apps."""
     
     # Create output directory
