@@ -119,8 +119,11 @@ fn user_open_files(file_names: Vec<String>, state: State<'_, Mutex<AppState>>) -
     } else {
         let result: Vec<FileStatus> = state
             .file_statuses
-            .retain(|&x| x.old_file_name.contains(state.search) || x.new_file_name.contains(state.search));
-        return result;
+            .iter()
+            .filter(|x| x.old_file_name.contains(&state.search) || x.new_file_name.contains(&state.search))
+            .cloned()
+            .collect();
+        result
     }
 }
 
