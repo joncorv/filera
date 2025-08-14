@@ -547,7 +547,7 @@ fn convert_working_files_to_file_status(state: &State<'_, Mutex<AppState>>) -> V
                 .to_string_lossy()
                 .contains(search_term);
 
-            if source && target {
+            if source || target {
                 let file_status = FileStatus {
                     old_file_name: working_file.source.file_name().unwrap().to_string_lossy().into_owned(),
                     new_file_name: working_file.target.file_name().unwrap().to_string_lossy().into_owned(),
