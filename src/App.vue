@@ -19,6 +19,7 @@ import InputIcon from "primevue/inputicon";
 import FloatLabel from "primevue/floatlabel";
 import "primeicons/primeicons.css";
 
+
 //  <-- === WorkingFile Interface === -->
 interface FileStatus {
     old_file_name: string;
@@ -29,40 +30,40 @@ interface FileStatus {
 type Task =
     | { CustomText: { text: string; at_start: boolean; active: boolean } }
     | {
-          FindAndReplace: {
-              find_text: string;
-              replace_text: string;
-              active: boolean;
-          };
-      }
+        FindAndReplace: {
+            find_text: string;
+            replace_text: string;
+            active: boolean;
+        };
+    }
     | { ClearAll: { active: boolean } }
     | { ChangeCase: { case_choice: number; active: boolean } }
     | {
-          NumSequence: {
-              start_num: number;
-              num_padding: number;
-              at_start: boolean;
-              separator: string;
-              active: boolean;
-          };
-      }
+        NumSequence: {
+            start_num: number;
+            num_padding: number;
+            at_start: boolean;
+            separator: string;
+            active: boolean;
+        };
+    }
     | {
-          Date: {
-              year: boolean;
-              month: boolean;
-              day: boolean;
-              year_4: boolean;
-              separator: string;
-              active: boolean;
-          };
-      }
+        Date: {
+            year: boolean;
+            month: boolean;
+            day: boolean;
+            year_4: boolean;
+            separator: string;
+            active: boolean;
+        };
+    }
     | {
-          Time: {
-              hour_24: boolean;
-              separator: string;
-              active: boolean;
-          };
-      };
+        Time: {
+            hour_24: boolean;
+            separator: string;
+            active: boolean;
+        };
+    };
 
 const sortChoice = ref();
 const metadata = ref([
@@ -259,7 +260,6 @@ const addTime = () => {
     user_update_tasks();
 };
 
-let dirtyFilesSelection: string[] | null = null;
 const fileStatusReturn: Ref<FileStatus[]> = ref([]);
 const numFileStatusItems = computed(() => fileStatusReturn.value.length);
 const numTaskListItems = computed(() => taskList.value.length);
@@ -288,19 +288,8 @@ async function user_update_tasks() {
 }
 
 //  <-- === Rename Files on the Rust Backend === -->
-async function rename_files() {
-    if (dirtyFilesSelection) {
-        let renameSuccess: string = await invoke("rename_files", {
-            fileNames: dirtyFilesSelection,
-            taskList: taskList.value.map((t) => t.task),
-        });
-
-        if (renameSuccess.startsWith("Rename Error", 0)) {
-            console.log(renameSuccess);
-        } else {
-            clearFiles();
-        }
-    }
+async function user_rename_files() {
+    fileStatusReturn.value = await invoke("user_rename_files");
 }
 
 //  <-- === All Task Functions === -->
@@ -439,6 +428,7 @@ const exportConfig = () => {
 </script>
 
 <template>
+
     <body class="flex flex-col box-border w-screen h-screen m-0 p-0 overflow-hidden z-0 bg-white/5">
         <!-- === Global Top Menubar === -->
         <!-- <div -->
@@ -477,27 +467,14 @@ const exportConfig = () => {
         <Splitter style="flex: 1; overflow: hidden; background-color: transparent; z-index: 40">
             <!-- === Left Splitter Panel === -->
             <SplitterPanel
-                class="flex flex-2/3 flex-col gap-0 ml-2 mr-0.5 mt-0 mb-2 border-1 rounded-lg border-white/20 shadow-sm z-50 bg-black/40"
-            >
+                class="flex flex-2/3 flex-col gap-0 ml-2 mr-0.5 mt-0 mb-2 border-1 rounded-lg border-white/20 shadow-sm z-50 bg-black/40">
                 <!-- === Left SplitterPanel Menubar === -->
                 <div id="file_buttons" class="flex flex-row items-center gap-2 justify-start m-2">
                     <!-- <div class="items-center flex flex-row gap-4"> -->
-                    <Button
-                        size="small"
-                        icon="pi pi-file"
-                        label="Open Files"
-                        @click="open_files"
-                        variant="outlined"
-                        class="min-w-max"
-                    />
-                    <Button
-                        size="small"
-                        icon="pi pi-folder-open"
-                        label="Open Folders"
-                        variant="outlined"
-                        @click="open_files"
-                        class="min-w-max"
-                    />
+                    <Button size="small" icon="pi pi-file" label="Open Files" @click="open_files" variant="outlined"
+                        class="min-w-max" />
+                    <Button size="small" icon="pi pi-folder-open" label="Open Folders" variant="outlined"
+                        @click="open_files" class="min-w-max" />
                     <!-- </div> -->
                     <!-- === Search Field === -->
                     <IconField class="flex-3/4 w-full">
@@ -506,39 +483,23 @@ const exportConfig = () => {
                     </IconField>
 
                     <!-- === Sort Select === -->
-                    <Select
-                        v-model="sortChoice"
-                        :options="metadata"
-                        size="small"
-                        optionLabel="name"
-                        placeholder="Sort By"
-                        optionValue="code"
-                        class="w-full flex-1/4"
-                    />
+                    <Select v-model="sortChoice" :options="metadata" size="small" optionLabel="name"
+                        placeholder="Sort By" optionValue="code" class="w-full flex-1/4" />
 
                     <!-- === Hamburger Select === -->
-                    <Button
-                        icon="pi pi-replay"
-                        class="whitespace-nowrap flex-none"
-                        @click="clearFiles"
-                        variant="outlined"
-                        severity="secondary"
-                        size="small"
-                    />
+                    <Button icon="pi pi-replay" class="whitespace-nowrap flex-none" @click="clearFiles"
+                        variant="outlined" severity="secondary" size="small" />
                 </div>
 
                 <hr class="border-white/30" />
 
                 <Transition mode="out-in">
                     <!-- === No Files Selected === -->
-                    <div
-                        v-if="!numFileStatusItems"
-                        class="flex flex-1 bg-white/3 flex-col justify-center items-center w-full h-full whitespace-nowrap"
-                    >
+                    <div v-if="!numFileStatusItems"
+                        class="flex flex-1 bg-white/3 flex-col justify-center items-center w-full h-full whitespace-nowrap">
                         <span class="text-center mb-2 text-gray-400">Drag your files here.</span>
-                        <span class="text-center text-sm text-gray-600"
-                            >NOTE: drag functionality is not implimented,</span
-                        >
+                        <span class="text-center text-sm text-gray-600">NOTE: drag functionality is not
+                            implimented,</span>
                         <span class="text-center text-sm text-gray-600">Please use the add buttons above.</span>
                     </div>
 
@@ -569,10 +530,8 @@ const exportConfig = () => {
                         </div>
                     </div>
                 </Transition>
-                <footer
-                    id="footer_left_panel"
-                    class="flex flex-row py-2 px-2 bg-black/50 border-t-1 rounded-b-lg border-white/20 text-sm text-gray-400"
-                >
+                <footer id="footer_left_panel"
+                    class="flex flex-row py-2 px-2 bg-black/50 border-t-1 rounded-b-lg border-white/20 text-sm text-gray-400">
                     <div id="total-files-selected">
                         <span class="">Total Files Selected: </span>
                         <Transition mode="out-in">
@@ -586,71 +545,41 @@ const exportConfig = () => {
 
             <!-- === Right Splitter Panel === -->
             <SplitterPanel
-                class="flex flex-col flex-1/3 ml-0.5 mb-2 mr-2 bg-black/40 rounded-lg border-1 border-white/20"
-            >
+                class="flex flex-col flex-1/3 ml-0.5 mb-2 mr-2 bg-black/40 rounded-lg border-1 border-white/20">
                 <!-- === Right SplitterPanel Menubar === -->
                 <div id="file_buttons" class="flex flex-row m-2 gap-2 items-center justify-start">
                     <!-- <Menu id="customTextOverlayMenu" :model="customTextMenuItems" popup="true" /> -->
 
-                    <Button
-                        type="button"
-                        label="File Tasks & Effects"
-                        size="small"
-                        icon="pi pi-plus"
-                        class="min-w-max"
-                        variant="outlined"
-                        @click="taskMenuToggleFunction"
-                        aria-haspopup="true"
-                        aria-controls="custom_text_menu"
-                    />
+                    <Button type="button" label="File Tasks & Effects" size="small" icon="pi pi-plus" class="min-w-max"
+                        variant="outlined" @click="taskMenuToggleFunction" aria-haspopup="true"
+                        aria-controls="custom_text_menu" />
                     <Menu ref="taskMenuToggle" id="custom_text_menu" :model="taskMenuItems" :popup="true" />
 
                     <!-- === Separator === -->
                     <div class="flex-1"></div>
 
-                    <Button
-                        type="button"
-                        label="Templates"
-                        variant="outlined"
-                        severity="secondary"
-                        size="small"
-                        icon="pi pi-bookmark"
-                        class="min-w-max"
-                        @click="templateMenuToggleFunction"
-                        aria-haspopup="true"
-                        aria-controls="custom_text_menu"
-                    />
+                    <Button type="button" label="Templates" variant="outlined" severity="secondary" size="small"
+                        icon="pi pi-bookmark" class="min-w-max" @click="templateMenuToggleFunction" aria-haspopup="true"
+                        aria-controls="custom_text_menu" />
                     <Menu ref="templateMenuToggle" id="template_menu" :model="templateMenuItems" :popup="true" />
 
                     <!-- === Hamburger Select === -->
-                    <Button
-                        icon="pi pi-replay"
-                        class="whitespace-nowrap flex-none"
-                        @click="clearTasks"
-                        variant="outlined"
-                        severity="secondary"
-                        size="small"
-                    />
+                    <Button icon="pi pi-replay" class="whitespace-nowrap flex-none" @click="clearTasks"
+                        variant="outlined" severity="secondary" size="small" />
                 </div>
 
                 <hr class="border-white/20" />
 
                 <TransitionGroup tag="div" name="ttasks" class="h-full relative overflow-y-auto bg-white/3">
                     <!-- === No Files Selected === -->
-                    <div
-                        v-if="!numTaskListItems"
-                        class="flex flex-1 flex-col justify-center items-center w-full h-full whitespace-nowrap"
-                    >
+                    <div v-if="!numTaskListItems"
+                        class="flex flex-1 flex-col justify-center items-center w-full h-full whitespace-nowrap">
                         <span class="text-center mb-2 text-gray-400">File tasks & effects go here.</span>
                         <span class="text-center text-sm text-gray-600">Please use the add buttons above.</span>
                     </div>
 
-                    <div
-                        v-else
-                        v-for="(item, index) in taskList"
-                        :key="item.id"
-                        class="ttasks-item mx-2 my-2 whitespace-nowrap"
-                    >
+                    <div v-else v-for="(item, index) in taskList" :key="item.id"
+                        class="ttasks-item mx-2 my-2 whitespace-nowrap">
                         <!-- === CustomText Task === -->
                         <template v-if="isCustomTextTask(item.task)">
                             <div class="task-container">
@@ -665,24 +594,15 @@ const exportConfig = () => {
                                     <div class="flex-1"></div>
 
                                     <!-- === Close Button === -->
-                                    <i
-                                        class="pi pi-angle-up hover:cursor-pointer text-sm mr-1"
-                                        :class="{ 'opacity-30': index === 0 }"
-                                        @click="moveSelectedTaskUp(index)"
-                                    ></i>
-                                    <i
-                                        class="pi pi-angle-down hover:cursor-pointer text-sm mr-1"
-                                        :class="{
-                                            'opacity-30': index === taskList.length - 1,
-                                        }"
-                                        @click="moveSelectedTaskDown(index)"
-                                    ></i>
+                                    <i class="pi pi-angle-up hover:cursor-pointer text-sm mr-1"
+                                        :class="{ 'opacity-30': index === 0 }" @click="moveSelectedTaskUp(index)"></i>
+                                    <i class="pi pi-angle-down hover:cursor-pointer text-sm mr-1" :class="{
+                                        'opacity-30': index === taskList.length - 1,
+                                    }" @click="moveSelectedTaskDown(index)"></i>
                                     <!-- === Close Button === -->
                                     <div class="flex items-center" @click="deleteSelectedTask(index)">
-                                        <i
-                                            class="pi pi-times hover:cursor-pointer text-sm text-gray-600 hover:text-red-500 transition-colors"
-                                            style="font-size: 0.9rem"
-                                        ></i>
+                                        <i class="pi pi-times hover:cursor-pointer text-sm text-gray-600 hover:text-red-500 transition-colors"
+                                            style="font-size: 0.9rem"></i>
                                     </div>
                                 </div>
 
@@ -692,29 +612,17 @@ const exportConfig = () => {
 
                                     <div class="w-full min-w-36">
                                         <FloatLabel variant="on" class="font-thin">
-                                            <InputText
-                                                fluid
-                                                size="small"
-                                                placeholder=""
-                                                :id="`input-text-${index}`"
-                                                v-model="item.task.CustomText.text"
-                                                variant="outlined"
-                                                placeholder=""
-                                                @input="user_update_tasks"
-                                                class=""
-                                            />
+                                            <InputText fluid size="small" placeholder="" :id="`input-text-${index}`"
+                                                v-model="item.task.CustomText.text" variant="outlined"
+                                                @input="user_update_tasks" class="" />
                                             <label class="font-thin" for="`input-text-${index}`">Value</label>
                                         </FloatLabel>
                                     </div>
 
                                     <div class="flex-1">
-                                        <ToggleButton
-                                            v-model="item.task.CustomText.at_start"
-                                            onLabel="Position at Beginning"
-                                            offLabel="Position at End"
-                                            size="small"
-                                            @change="user_update_tasks"
-                                        />
+                                        <ToggleButton v-model="item.task.CustomText.at_start"
+                                            onLabel="Position at Beginning" offLabel="Position at End" size="small"
+                                            @change="user_update_tasks" />
                                     </div>
                                 </div>
                             </div>
@@ -734,24 +642,15 @@ const exportConfig = () => {
                                     <div class="flex-1"></div>
 
                                     <!-- === Close Button === -->
-                                    <i
-                                        class="pi pi-angle-up hover:cursor-pointer text-sm mr-1"
-                                        :class="{ 'opacity-30': index === 0 }"
-                                        @click="moveSelectedTaskUp(index)"
-                                    ></i>
-                                    <i
-                                        class="pi pi-angle-down hover:cursor-pointer text-sm mr-1"
-                                        :class="{
-                                            'opacity-30': index === taskList.length - 1,
-                                        }"
-                                        @click="moveSelectedTaskDown(index)"
-                                    ></i>
+                                    <i class="pi pi-angle-up hover:cursor-pointer text-sm mr-1"
+                                        :class="{ 'opacity-30': index === 0 }" @click="moveSelectedTaskUp(index)"></i>
+                                    <i class="pi pi-angle-down hover:cursor-pointer text-sm mr-1" :class="{
+                                        'opacity-30': index === taskList.length - 1,
+                                    }" @click="moveSelectedTaskDown(index)"></i>
                                     <!-- === Close Button === -->
                                     <div class="flex items-center" @click="deleteSelectedTask(index)">
-                                        <i
-                                            class="pi pi-times hover:cursor-pointer text-sm text-gray-600 hover:text-red-500 transition-colors"
-                                            style="font-size: 0.9rem"
-                                        ></i>
+                                        <i class="pi pi-times hover:cursor-pointer text-sm text-gray-600 hover:text-red-500 transition-colors"
+                                            style="font-size: 0.9rem"></i>
                                     </div>
                                 </div>
 
@@ -761,16 +660,9 @@ const exportConfig = () => {
 
                                     <div class="w-full min-w-36">
                                         <FloatLabel variant="on" class="font-thin">
-                                            <InputText
-                                                :id="`find-text-${index}`"
-                                                fluid
-                                                placeholder=""
-                                                size="small"
-                                                v-model="item.task.FindAndReplace.find_text"
-                                                variant="outlined"
-                                                @input="user_update_tasks"
-                                                class="flex-1"
-                                            />
+                                            <InputText :id="`find-text-${index}`" fluid placeholder="" size="small"
+                                                v-model="item.task.FindAndReplace.find_text" variant="outlined"
+                                                @input="user_update_tasks" class="flex-1" />
                                             <label class="font-thin" for="`find-text-${index}`">Find</label>
                                         </FloatLabel>
                                     </div>
@@ -779,16 +671,9 @@ const exportConfig = () => {
 
                                     <div class="w-full min-w-36">
                                         <FloatLabel variant="on" class="font-thin">
-                                            <InputText
-                                                :id="`replace-text-${index}`"
-                                                fluid
-                                                placeholder=""
-                                                size="small"
-                                                v-model="item.task.FindAndReplace.replace_text"
-                                                variant="outlined"
-                                                @input="user_update_tasks"
-                                                class="flex-1"
-                                            />
+                                            <InputText :id="`replace-text-${index}`" fluid placeholder="" size="small"
+                                                v-model="item.task.FindAndReplace.replace_text" variant="outlined"
+                                                @input="user_update_tasks" class="flex-1" />
                                             <label class="font-thin" for="`replace-text-${index}`">Replace</label>
                                         </FloatLabel>
                                     </div>
@@ -810,24 +695,15 @@ const exportConfig = () => {
                                     <div class="flex-1"></div>
 
                                     <!-- === Close Button === -->
-                                    <i
-                                        class="pi pi-angle-up hover:cursor-pointer text-sm mr-1"
-                                        :class="{ 'opacity-30': index === 0 }"
-                                        @click="moveSelectedTaskUp(index)"
-                                    ></i>
-                                    <i
-                                        class="pi pi-angle-down hover:cursor-pointer text-sm mr-1"
-                                        :class="{
-                                            'opacity-30': index === taskList.length - 1,
-                                        }"
-                                        @click="moveSelectedTaskDown(index)"
-                                    ></i>
+                                    <i class="pi pi-angle-up hover:cursor-pointer text-sm mr-1"
+                                        :class="{ 'opacity-30': index === 0 }" @click="moveSelectedTaskUp(index)"></i>
+                                    <i class="pi pi-angle-down hover:cursor-pointer text-sm mr-1" :class="{
+                                        'opacity-30': index === taskList.length - 1,
+                                    }" @click="moveSelectedTaskDown(index)"></i>
                                     <!-- === Close Button === -->
                                     <div class="flex items-center" @click="deleteSelectedTask(index)">
-                                        <i
-                                            class="pi pi-times hover:cursor-pointer text-sm text-gray-600 hover:text-red-500 transition-colors"
-                                            style="font-size: 0.9rem"
-                                        ></i>
+                                        <i class="pi pi-times hover:cursor-pointer text-sm text-gray-600 hover:text-red-500 transition-colors"
+                                            style="font-size: 0.9rem"></i>
                                     </div>
                                 </div>
 
@@ -870,44 +746,27 @@ const exportConfig = () => {
                                     <div class="flex-1"></div>
 
                                     <!-- === Close Button === -->
-                                    <i
-                                        class="pi pi-angle-up hover:cursor-pointer text-sm mr-1"
-                                        :class="{ 'opacity-30': index === 0 }"
-                                        @click="moveSelectedTaskUp(index)"
-                                    ></i>
-                                    <i
-                                        class="pi pi-angle-down hover:cursor-pointer text-sm mr-1"
-                                        :class="{
-                                            'opacity-30': index === taskList.length - 1,
-                                        }"
-                                        @click="moveSelectedTaskDown(index)"
-                                    ></i>
+                                    <i class="pi pi-angle-up hover:cursor-pointer text-sm mr-1"
+                                        :class="{ 'opacity-30': index === 0 }" @click="moveSelectedTaskUp(index)"></i>
+                                    <i class="pi pi-angle-down hover:cursor-pointer text-sm mr-1" :class="{
+                                        'opacity-30': index === taskList.length - 1,
+                                    }" @click="moveSelectedTaskDown(index)"></i>
                                     <!-- === Close Button === -->
                                     <div class="flex items-center" @click="deleteSelectedTask(index)">
-                                        <i
-                                            class="pi pi-times hover:cursor-pointer text-sm text-gray-600 hover:text-red-500 transition-colors"
-                                            style="font-size: 0.9rem"
-                                        ></i>
+                                        <i class="pi pi-times hover:cursor-pointer text-sm text-gray-600 hover:text-red-500 transition-colors"
+                                            style="font-size: 0.9rem"></i>
                                     </div>
                                 </div>
 
                                 <!-- === Main Controls === -->
                                 <div class="flex flex-row gap-3 items-center">
                                     <!-- === Case Choice Dropdown === -->
-                                    <Dropdown
-                                        v-model="item.task.ChangeCase.case_choice"
-                                        :options="[
-                                            { label: 'lowercase', value: 0 },
-                                            { label: 'UPPERCASE', value: 1 },
-                                            // { label: 'Title Case', value: 2 },
-                                        ]"
-                                        optionLabel="label"
-                                        optionValue="value"
-                                        placeholder="Select case type"
-                                        size="small"
-                                        class="flex-1"
-                                        @change="user_update_tasks"
-                                    />
+                                    <Dropdown v-model="item.task.ChangeCase.case_choice" :options="[
+                                        { label: 'lowercase', value: 0 },
+                                        { label: 'UPPERCASE', value: 1 },
+                                        // { label: 'Title Case', value: 2 },
+                                    ]" optionLabel="label" optionValue="value" placeholder="Select case type"
+                                        size="small" class="flex-1" @change="user_update_tasks" />
 
                                     <!-- <!-- === Active Toggle === -->
                                     <!-- <div class="flex items-center gap-2 whitespace-nowrap"> -->
@@ -939,24 +798,15 @@ const exportConfig = () => {
                                     <div class="flex-1"></div>
 
                                     <!-- === Close Button === -->
-                                    <i
-                                        class="pi pi-angle-up hover:cursor-pointer text-sm mr-1"
-                                        :class="{ 'opacity-30': index === 0 }"
-                                        @click="moveSelectedTaskUp(index)"
-                                    ></i>
-                                    <i
-                                        class="pi pi-angle-down hover:cursor-pointer text-sm mr-1"
-                                        :class="{
-                                            'opacity-30': index === taskList.length - 1,
-                                        }"
-                                        @click="moveSelectedTaskDown(index)"
-                                    ></i>
+                                    <i class="pi pi-angle-up hover:cursor-pointer text-sm mr-1"
+                                        :class="{ 'opacity-30': index === 0 }" @click="moveSelectedTaskUp(index)"></i>
+                                    <i class="pi pi-angle-down hover:cursor-pointer text-sm mr-1" :class="{
+                                        'opacity-30': index === taskList.length - 1,
+                                    }" @click="moveSelectedTaskDown(index)"></i>
                                     <!-- === Close Button === -->
                                     <div class="flex items-center" @click="deleteSelectedTask(index)">
-                                        <i
-                                            class="pi pi-times hover:cursor-pointer text-sm text-gray-600 hover:text-red-500 transition-colors"
-                                            style="font-size: 0.9rem"
-                                        ></i>
+                                        <i class="pi pi-times hover:cursor-pointer text-sm text-gray-600 hover:text-red-500 transition-colors"
+                                            style="font-size: 0.9rem"></i>
                                     </div>
                                 </div>
 
@@ -965,17 +815,10 @@ const exportConfig = () => {
                                     <!-- === Start Number === -->
                                     <div class="w-full min-w-36">
                                         <FloatLabel variant="on" class="">
-                                            <InputNumber
-                                                v-model="item.task.NumSequence.start_num"
-                                                :id="`start-num-${index}`"
-                                                :input-id="`start-num-inputid-${index}`"
-                                                fluid
-                                                show-buttons
-                                                buttonLayout="horizontal"
-                                                size="small"
-                                                class="w-full"
-                                                @value-change="user_update_tasks"
-                                            />
+                                            <InputNumber v-model="item.task.NumSequence.start_num"
+                                                :id="`start-num-${index}`" :input-id="`start-num-inputid-${index}`"
+                                                fluid show-buttons buttonLayout="horizontal" size="small" class="w-full"
+                                                @value-change="user_update_tasks" />
                                             <label for="`start-num-inputid-${index}`">Start #</label>
                                         </FloatLabel>
                                     </div>
@@ -983,17 +826,10 @@ const exportConfig = () => {
                                     <!-- === Padding === -->
                                     <div class="w-full min-w-36">
                                         <FloatLabel variant="on" class="">
-                                            <InputNumber
-                                                v-model="item.task.NumSequence.num_padding"
-                                                :id="`padding-${index}`"
-                                                :input-id="`padding-inputid-${index}`"
-                                                size="small"
-                                                fluid
-                                                show-buttons
-                                                buttonLayout="horizontal"
-                                                class="w-full"
-                                                @value-change="user_update_tasks"
-                                            />
+                                            <InputNumber v-model="item.task.NumSequence.num_padding"
+                                                :id="`padding-${index}`" :input-id="`padding-inputid-${index}`"
+                                                size="small" fluid show-buttons buttonLayout="horizontal" class="w-full"
+                                                @value-change="user_update_tasks" />
                                             <label for="`padding-${index}`">Padding</label>
                                         </FloatLabel>
                                     </div>
@@ -1001,26 +837,17 @@ const exportConfig = () => {
                                     <!-- === Separator === -->
                                     <div class="flex-1">
                                         <FloatLabel variant="on" class="">
-                                            <InputText
-                                                v-model="item.task.NumSequence.separator"
-                                                :id="`separator-${index}`"
-                                                size="small"
-                                                class="w-21"
-                                                @input="user_update_tasks"
-                                            />
+                                            <InputText v-model="item.task.NumSequence.separator"
+                                                :id="`separator-${index}`" size="small" class="w-21"
+                                                @input="user_update_tasks" />
                                             <label for="`separator-${index}`">Separator</label>
                                         </FloatLabel>
                                     </div>
 
                                     <div class="flex-1">
-                                        <ToggleButton
-                                            v-model="item.task.NumSequence.at_start"
-                                            onLabel="Position at Beginning"
-                                            offLabel="Position at End"
-                                            size="small"
-                                            class="flex-1"
-                                            @change="user_update_tasks"
-                                        />
+                                        <ToggleButton v-model="item.task.NumSequence.at_start"
+                                            onLabel="Position at Beginning" offLabel="Position at End" size="small"
+                                            class="flex-1" @change="user_update_tasks" />
                                     </div>
                                 </div>
                             </div>
@@ -1041,24 +868,15 @@ const exportConfig = () => {
                                     <div class="flex-1"></div>
 
                                     <!-- === Close Button === -->
-                                    <i
-                                        class="pi pi-angle-up hover:cursor-pointer text-sm mr-1"
-                                        :class="{ 'opacity-30': index === 0 }"
-                                        @click="moveSelectedTaskUp(index)"
-                                    ></i>
-                                    <i
-                                        class="pi pi-angle-down hover:cursor-pointer text-sm mr-1"
-                                        :class="{
-                                            'opacity-30': index === taskList.length - 1,
-                                        }"
-                                        @click="moveSelectedTaskDown(index)"
-                                    ></i>
+                                    <i class="pi pi-angle-up hover:cursor-pointer text-sm mr-1"
+                                        :class="{ 'opacity-30': index === 0 }" @click="moveSelectedTaskUp(index)"></i>
+                                    <i class="pi pi-angle-down hover:cursor-pointer text-sm mr-1" :class="{
+                                        'opacity-30': index === taskList.length - 1,
+                                    }" @click="moveSelectedTaskDown(index)"></i>
                                     <!-- === Close Button === -->
                                     <div class="flex items-center" @click="deleteSelectedTask(index)">
-                                        <i
-                                            class="pi pi-times hover:cursor-pointer text-sm text-gray-600 hover:text-red-500 transition-colors"
-                                            style="font-size: 0.9rem"
-                                        ></i>
+                                        <i class="pi pi-times hover:cursor-pointer text-sm text-gray-600 hover:text-red-500 transition-colors"
+                                            style="font-size: 0.9rem"></i>
                                     </div>
                                 </div>
 
@@ -1067,57 +885,31 @@ const exportConfig = () => {
                                     <!-- === Date Components === -->
                                     <div class="flex items-center gap-2 whitespace-nowrap">
                                         <label :for="`year-${index}`" class="text-xs text-gray-600">Year</label>
-                                        <ToggleSwitch
-                                            v-model="item.task.Date.year"
-                                            :inputId="`year-${index}`"
-                                            :name="`year-${index}`"
-                                            binary
-                                            @change="user_update_tasks"
-                                        />
+                                        <ToggleSwitch v-model="item.task.Date.year" :inputId="`year-${index}`"
+                                            :name="`year-${index}`" binary @change="user_update_tasks" />
                                     </div>
 
                                     <div class="flex items-center gap-2 whitespace-nowrap">
                                         <label :for="`month-${index}`" class="text-xs text-gray-600">Month</label>
-                                        <ToggleSwitch
-                                            v-model="item.task.Date.month"
-                                            :inputId="`month-${index}`"
-                                            :name="`month-${index}`"
-                                            binary
-                                            @change="user_update_tasks"
-                                        />
+                                        <ToggleSwitch v-model="item.task.Date.month" :inputId="`month-${index}`"
+                                            :name="`month-${index}`" binary @change="user_update_tasks" />
                                     </div>
 
                                     <div class="flex items-center gap-2 whitespace-nowrap">
                                         <label :for="`day-${index}`" class="text-xs text-gray-600">Day</label>
-                                        <ToggleSwitch
-                                            v-model="item.task.Date.day"
-                                            :inputId="`day-${index}`"
-                                            :name="`day-${index}`"
-                                            binary
-                                            @change="user_update_tasks"
-                                        />
+                                        <ToggleSwitch v-model="item.task.Date.day" :inputId="`day-${index}`"
+                                            :name="`day-${index}`" binary @change="user_update_tasks" />
                                     </div>
 
                                     <div class="flex items-center gap-2 whitespace-nowrap">
                                         <label :for="`year4-${index}`" class="text-xs text-gray-600">4-Digit</label>
-                                        <ToggleSwitch
-                                            v-model="item.task.Date.year_4"
-                                            :inputId="`year4-${index}`"
-                                            :name="`year4-${index}`"
-                                            binary
-                                            @change="user_update_tasks"
-                                        />
+                                        <ToggleSwitch v-model="item.task.Date.year_4" :inputId="`year4-${index}`"
+                                            :name="`year4-${index}`" binary @change="user_update_tasks" />
                                     </div>
 
                                     <!-- === Separator === -->
-                                    <InputText
-                                        v-model="item.task.Date.separator"
-                                        :id="`separator-${index}`"
-                                        placeholder="Sep"
-                                        size="small"
-                                        class="w-12"
-                                        @input="user_update_tasks"
-                                    />
+                                    <InputText v-model="item.task.Date.separator" :id="`separator-${index}`"
+                                        placeholder="Sep" size="small" class="w-12" @input="user_update_tasks" />
 
                                     <!-- === Active Toggle === -->
                                     <!-- <div class="flex items-center gap-2 whitespace-nowrap"> -->
@@ -1149,24 +941,15 @@ const exportConfig = () => {
                                     <div class="flex-1"></div>
 
                                     <!-- === Close Button === -->
-                                    <i
-                                        class="pi pi-angle-up hover:cursor-pointer text-sm mr-1"
-                                        :class="{ 'opacity-30': index === 0 }"
-                                        @click="moveSelectedTaskUp(index)"
-                                    ></i>
-                                    <i
-                                        class="pi pi-angle-down hover:cursor-pointer text-sm mr-1"
-                                        :class="{
-                                            'opacity-30': index === taskList.length - 1,
-                                        }"
-                                        @click="moveSelectedTaskDown(index)"
-                                    ></i>
+                                    <i class="pi pi-angle-up hover:cursor-pointer text-sm mr-1"
+                                        :class="{ 'opacity-30': index === 0 }" @click="moveSelectedTaskUp(index)"></i>
+                                    <i class="pi pi-angle-down hover:cursor-pointer text-sm mr-1" :class="{
+                                        'opacity-30': index === taskList.length - 1,
+                                    }" @click="moveSelectedTaskDown(index)"></i>
                                     <!-- === Close Button === -->
                                     <div class="flex items-center" @click="deleteSelectedTask(index)">
-                                        <i
-                                            class="pi pi-times hover:cursor-pointer text-sm text-gray-600 hover:text-red-500 transition-colors"
-                                            style="font-size: 0.9rem"
-                                        ></i>
+                                        <i class="pi pi-times hover:cursor-pointer text-sm text-gray-600 hover:text-red-500 transition-colors"
+                                            style="font-size: 0.9rem"></i>
                                     </div>
                                 </div>
 
@@ -1175,24 +958,13 @@ const exportConfig = () => {
                                     <!-- === Time Format === -->
                                     <div class="flex items-center gap-2 whitespace-nowrap">
                                         <label :for="`hour24-${index}`" class="text-xs text-gray-600">24 Hour</label>
-                                        <ToggleSwitch
-                                            v-model="item.task.Time.hour_24"
-                                            :inputId="`hour24-${index}`"
-                                            :name="`hour24-${index}`"
-                                            binary
-                                            @change="user_update_tasks"
-                                        />
+                                        <ToggleSwitch v-model="item.task.Time.hour_24" :inputId="`hour24-${index}`"
+                                            :name="`hour24-${index}`" binary @change="user_update_tasks" />
                                     </div>
 
                                     <!-- === Separator === -->
-                                    <InputText
-                                        v-model="item.task.Time.separator"
-                                        :id="`separator-${index}`"
-                                        placeholder="Sep"
-                                        size="small"
-                                        class="w-12"
-                                        @input="user_update_tasks"
-                                    />
+                                    <InputText v-model="item.task.Time.separator" :id="`separator-${index}`"
+                                        placeholder="Sep" size="small" class="w-12" @input="user_update_tasks" />
 
                                     <!-- === Active Toggle === -->
                                     <!-- <div class="flex items-center gap-2 whitespace-nowrap"> -->
@@ -1210,10 +982,8 @@ const exportConfig = () => {
                         </template>
                     </div>
                 </TransitionGroup>
-                <footer
-                    id="footer_right_panel"
-                    class="flex flex-row py-2 px-2 gap-2 bg-black/15 border-t-1 rounded-b-lg border-white/20 text-sm text-gray-400"
-                >
+                <footer id="footer_right_panel"
+                    class="flex flex-row py-2 px-2 gap-2 bg-black/15 border-t-1 rounded-b-lg border-white/20 text-sm text-gray-400">
                     <!-- FIX: Give real calculated destination for resulting files -->
                     <div id="file-destination" class="flex flex-col">
                         <span class="font-bold">File Destination</span>
@@ -1224,14 +994,9 @@ const exportConfig = () => {
 
                     <!-- FIX: Create a dropdown menu for how the user works with output. The user should choose between Renaming in place, copying (or moving) to a new location -->
                     <!-- FIX: Change the visibility of the button based on the result of the output choice -->
-                    <Button
-                        size="small"
-                        icon="pi pi-folder-open"
-                        variant="outlined"
-                        label="Output Directory"
-                        @click="rename_files"
-                    />
-                    <Button size="small" icon="pi pi-check-square" label="Batch Rename Files" @click="rename_files" />
+                    <Button size="small" icon="pi pi-folder-open" variant="outlined" label="Output Directory" />
+                    <Button size="small" icon="pi pi-check-square" label="Batch Rename Files"
+                        @click="user_rename_files" />
                 </footer>
             </SplitterPanel>
         </Splitter>
@@ -1290,7 +1055,8 @@ const exportConfig = () => {
 }
 
 html {
-    font-size: 15px; /* PrimeVue design system base */
+    font-size: 15px;
+    /* PrimeVue design system base */
     line-height: 1.5;
     -webkit-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
