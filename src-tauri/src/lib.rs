@@ -96,7 +96,8 @@ pub fn run() {
             user_open_files,
             user_update_tasks,
             user_clear_files,
-            user_rename_files
+            user_rename_files,
+            user_update_search
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -110,21 +111,7 @@ fn user_open_files(file_names: Vec<String>, state: State<'_, Mutex<AppState>>) -
     // sort_file_names(&state);
     convert_file_names_to_working_files_(&state);
     process_tasks_on_working_files_(&state);
-    convert_working_files_to_file_status(&state);
-
-    let state = state.lock().unwrap();
-
-    if state.search.is_empty() {
-        state.file_statuses.to_owned()
-    } else {
-        let result: Vec<FileStatus> = state
-            .file_statuses
-            .iter()
-            .filter(|x| x.old_file_name.contains(&state.search) || x.new_file_name.contains(&state.search))
-            .cloned()
-            .collect();
-        result
-    }
+    convert_working_files_to_file_status(&state)
 }
 
 // #[tauri::command]
@@ -135,10 +122,6 @@ fn user_clear_files(state: State<'_, Mutex<AppState>>) {
     let mut state = state.lock().unwrap();
     state.file_names.clear();
     state.working_files.clear();
-    state.file_statuses.clear();
-
-    // let empty_file_status: Vec<FileStatus> = Vec::new();
-    // convert_working_files_to_file_status(&state)
 }
 
 // #[tauri::command]
@@ -149,14 +132,20 @@ fn user_update_tasks(task_list: Vec<Task>, state: State<'_, Mutex<AppState>>) ->
     state_update_tasks(task_list, &state);
     // convert_file_names_to_working_files_(&state);
     process_tasks_on_working_files_(&state);
-    convert_working_files_to_file_status(&state);
-    return state.lock().unwrap().file_statuses.to_owned();
+    convert_working_files_to_file_status(&state)
+}
+
+#[tauri::command]
+fn user_update_search(search: String, state: State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
+    state_update_search(search, &state);
+    convert_working_files_to_file_status(&state)
 }
 
 // fn user_change_target_directory() {}
 
 #[tauri::command]
 fn user_rename_files(state: State<'_, Mutex<AppState>>, app: tauri::AppHandle) -> Vec<FileStatus> {
+    let existing_file_status = convert_working_files_to_file_status(&state);
     let mut state = state.lock().unwrap();
     let tasks_empty = state.tasks.is_empty();
     let files_empty = state.file_names.is_empty();
@@ -165,31 +154,31 @@ fn user_rename_files(state: State<'_, Mutex<AppState>>, app: tauri::AppHandle) -
     if !tasks_empty && files_empty {
         app.dialog()
             .message("Please add files to be converted first")
-            .title("Error")
+            .title("Warning")
             .buttons(MessageDialogButtons::OkCustom("Ok".to_string()))
             .blocking_show();
 
-        state.file_statuses.to_owned()
+        existing_file_status
     }
     // if there aren't tasks but there are files
     else if tasks_empty && !files_empty {
         app.dialog()
             .message("Please add file tasks first")
-            .title("Error")
+            .title("Warning")
             .buttons(MessageDialogButtons::OkCustom("Ok".to_string()))
             .blocking_show();
 
-        state.file_statuses.to_owned()
+        existing_file_status
     }
     // if there aren't tasks or files
     else if tasks_empty && files_empty {
         app.dialog()
             .message("Please add files and tasks first")
-            .title("Error")
+            .title("Warning")
             .buttons(MessageDialogButtons::OkCustom("Ok".to_string()))
             .blocking_show();
 
-        state.file_statuses.to_owned()
+        existing_file_status
     }
     // if there are tasks and files
     else {
@@ -234,6 +223,12 @@ fn solve_duplicates(file_names: Vec<String>, state: &State<'_, Mutex<AppState>>)
 fn state_update_tasks(task_list: Vec<Task>, state: &State<'_, Mutex<AppState>>) {
     let mut state = state.lock().unwrap();
     state.tasks = task_list.clone();
+}
+
+#[tauri::command]
+fn state_update_search(search: String, state: &State<'_, Mutex<AppState>>) {
+    let mut state = state.lock().unwrap();
+    state.search = search;
 }
 
 #[tauri::command]
@@ -523,26 +518,46 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
     }
 }
 
-fn convert_working_files_to_file_status(state: &State<'_, Mutex<AppState>>) {
-    let mut state = state.lock().unwrap();
+fn convert_working_files_to_file_status(state: &State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
+    let state = state.lock().unwrap();
+    let search_is_empty = state.search.is_empty();
+    let search_term = &state.search;
     let mut file_statuses: Vec<FileStatus> = Vec::with_capacity(state.working_files.len());
-    for working_file in &state.working_files {
-        let file_status = FileStatus {
-            old_file_name: working_file.source.file_name().unwrap().to_string_lossy().into_owned(),
-            new_file_name: working_file.target.file_name().unwrap().to_string_lossy().into_owned(),
-        };
-        file_statuses.push(file_status);
-    }
-    state.file_statuses = file_statuses;
-}
+    if search_is_empty {
+        for working_file in &state.working_files {
+            let file_status = FileStatus {
+                old_file_name: working_file.source.file_name().unwrap().to_string_lossy().into_owned(),
+                new_file_name: working_file.target.file_name().unwrap().to_string_lossy().into_owned(),
+            };
+            file_statuses.push(file_status);
+        }
+        file_statuses
+    } else {
+        for working_file in &state.working_files {
+            let source = working_file
+                .source
+                .file_name()
+                .unwrap()
+                .to_string_lossy()
+                .contains(search_term);
+            let target = working_file
+                .target
+                .file_name()
+                .unwrap()
+                .to_string_lossy()
+                .contains(search_term);
 
-// fn filter_file_status_by_user_search(state: &State<'_, Mutex<AppState>>) {
-//     let mut state = state.lock().unwrap();
-//
-//     for file_status in &state.file_statuses {
-//
-//     }
-// }
+            if source && target {
+                let file_status = FileStatus {
+                    old_file_name: working_file.source.file_name().unwrap().to_string_lossy().into_owned(),
+                    new_file_name: working_file.target.file_name().unwrap().to_string_lossy().into_owned(),
+                };
+                file_statuses.push(file_status);
+            }
+        }
+        file_statuses
+    }
+}
 
 // // This should print to the fucking console but it doesn't.
 // // This seems to be a linux only issue.
