@@ -77,7 +77,6 @@ struct AppState {
     working_files: Vec<WorkingFile>,
     tasks: Vec<Task>,
     sort: SortMetadata,
-    file_statuses: Vec<FileStatus>,
     search: String,
 }
 
@@ -191,7 +190,6 @@ fn user_rename_files(state: State<'_, Mutex<AppState>>, app: tauri::AppHandle) -
         }
         state.file_names.clear();
         state.working_files.clear();
-        state.file_statuses.clear();
         let blank_file_status: Vec<FileStatus> = vec![];
 
         app.dialog()
@@ -401,10 +399,10 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
 
                 // TODO: update to include number dates and all of the user data here
                 Task::Date {
-                    year,
-                    month,
-                    day,
-                    year_4,
+                    year: _,
+                    month: _,
+                    day: _,
+                    year_4: _,
                     separator,
                     active,
                 } => {
@@ -460,7 +458,7 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
 
                 // TODO: Update to use a 24 hour clock, and include am and pm automatically
                 Task::Time {
-                    hour_24,
+                    hour_24: _,
                     separator,
                     active,
                 } => {
