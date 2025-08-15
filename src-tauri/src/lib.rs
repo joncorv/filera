@@ -48,10 +48,10 @@ enum Task {
         active: bool,
     },
     Date {
-        year: bool,
+        year: u8,
         month: bool,
         day: bool,
-        year_4: bool,
+        at_start: bool,
         separator: String,
         active: bool,
     },
@@ -402,7 +402,7 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
                     year: _,
                     month: _,
                     day: _,
-                    year_4: _,
+                    at_start: _,
                     separator,
                     active,
                 } => {
@@ -417,7 +417,7 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
                                 // able to access metadata and file modified info
                                 let datetime = OffsetDateTime::from(j);
                                 let datetime_year = datetime.year();
-                                let datetime_month = datetime.month();
+                                let datetime_month = datetime.month() as u8;
                                 let datetime_day = datetime.day();
 
                                 // now that we have system time, let's build the file
