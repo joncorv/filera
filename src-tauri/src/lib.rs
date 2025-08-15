@@ -455,11 +455,11 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
                                 if let Some(t) = file.target.extension() {
                                     file_extension = t.to_string_lossy().to_string();
                                     file.target.set_file_name(format!(
-                                        "{datetime_year}{separator}{datetime_month}{separator}{datetime_day}{separator}{file_stem}.{file_extension}"
+                                        "{datetime_year}{separator}{datetime_month:02}{separator}{datetime_day:02}{separator}{file_stem}.{file_extension}"
                                     ));
                                 } else {
                                     file.target.set_file_name(format!(
-                                        "{datetime_year}{separator}{datetime_month}{separator}{datetime_day}{separator}{file_stem}"
+                                        "{datetime_year}{separator}{datetime_month:02}{separator}{datetime_day:02}{separator}{file_stem}"
                                     ));
                                 }
                             } else {
