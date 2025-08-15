@@ -399,10 +399,10 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
 
                 // TODO: update to include number dates and all of the user data here
                 Task::Date {
-                    year: _,
-                    month: _,
-                    day: _,
-                    at_start: _,
+                    year,
+                    month,
+                    day,
+                    at_start,
                     separator,
                     active,
                 } => {
@@ -415,10 +415,29 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
 
                             if let Ok(j) = systime {
                                 // able to access metadata and file modified info
+
                                 let datetime = OffsetDateTime::from(j);
-                                let datetime_year = datetime.year();
-                                let datetime_month = datetime.month() as u8;
-                                let datetime_day = datetime.day();
+
+                                let date_results: Vec<i32> = vec![];
+                                match *year {
+                                    0 => {
+                                        date_results.append(datetime.year());
+                                    }
+                                    1 => {
+                                        date_results.append(datetime.year() % 100);
+                                    }
+                                    2_u8..=u8::MAX => {}
+                                };
+
+                                if *month == 1 {
+                                    date_results.append(datetime.month());
+                                }
+
+                                if *day == 1 {
+                                    date_results.append(datetime.day());
+                                }
+
+                                let date_combined: String;
 
                                 // now that we have system time, let's build the file
                                 // get file_stem and file_extension
