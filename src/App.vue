@@ -48,11 +48,11 @@ type Task =
     }
     | {
         Date: {
-            year: boolean;
+            year: number;
             month: boolean;
             day: boolean;
-            year_4: boolean;
             separator: string;
+            at_start: boolean;
             active: boolean;
         };
     }
@@ -125,10 +125,10 @@ const isDateTask = (
     task: Task
 ): task is {
     Date: {
-        year: boolean;
+        year: number;
         month: boolean;
         day: boolean;
-        year_4: boolean;
+        at_start: boolean;
         separator: string;
         active: boolean;
     };
@@ -224,10 +224,10 @@ const addDate = () => {
         id: taskIdCounter++,
         task: {
             Date: {
-                year: true,
+                year: 0,
                 month: true,
                 day: true,
-                year_4: true,
+                at_start: true,
                 separator: "_",
                 active: true,
             },
@@ -625,10 +625,10 @@ const createTemplate = () => {
                                         </FloatLabel>
                                     </div>
 
+                                    <!-- === Position at Start or End === -->
                                     <div class="flex-1">
-                                        <ToggleButton v-model="item.task.CustomText.at_start"
-                                            onLabel="Position at Beginning" offLabel="Position at End" size="small"
-                                            @change="user_update_tasks" />
+                                        <ToggleButton v-model="item.task.CustomText.at_start" onLabel="@ Start"
+                                            offLabel="@ End" size="small" @change="user_update_tasks" />
                                     </div>
                                 </div>
                             </div>
@@ -851,9 +851,8 @@ const createTemplate = () => {
                                     </div>
 
                                     <div class="flex-1">
-                                        <ToggleButton v-model="item.task.NumSequence.at_start"
-                                            onLabel="Position at Beginning" offLabel="Position at End" size="small"
-                                            class="flex-1" @change="user_update_tasks" />
+                                        <ToggleButton v-model="item.task.NumSequence.at_start" onLabel="@ Start"
+                                            offLabel="@ End" size="small" class="flex-1" @change="user_update_tasks" />
                                     </div>
                                 </div>
                             </div>
@@ -888,46 +887,44 @@ const createTemplate = () => {
 
                                 <!-- === Main Controls === -->
                                 <div class="flex flex-row gap-3 items-center">
-                                    <!-- === Date Components === -->
-                                    <div class="flex items-center gap-2 whitespace-nowrap">
-                                        <label :for="`year-${index}`" class="text-xs text-gray-600">Year</label>
-                                        <ToggleSwitch v-model="item.task.Date.year" :inputId="`year-${index}`"
-                                            :name="`year-${index}`" binary @change="user_update_tasks" />
-                                    </div>
 
-                                    <div class="flex items-center gap-2 whitespace-nowrap">
-                                        <label :for="`month-${index}`" class="text-xs text-gray-600">Month</label>
-                                        <ToggleSwitch v-model="item.task.Date.month" :inputId="`month-${index}`"
-                                            :name="`month-${index}`" binary @change="user_update_tasks" />
-                                    </div>
+                                    <!-- === Date Dropdown === -->
+                                    <Dropdown v-model="item.task.Date.year" :options="[
+                                        { label: 'Year - 4 Digits', value: 0 },
+                                        { label: 'Year - 2 Digits', value: 1 },
+                                        { label: 'Year Disabled', value: 2 },
+                                    ]" optionLabel="label" optionValue="value" placeholder="Year Options" size="small"
+                                        class="flex-1" @change="user_update_tasks" />
 
-                                    <div class="flex items-center gap-2 whitespace-nowrap">
-                                        <label :for="`day-${index}`" class="text-xs text-gray-600">Day</label>
-                                        <ToggleSwitch v-model="item.task.Date.day" :inputId="`day-${index}`"
-                                            :name="`day-${index}`" binary @change="user_update_tasks" />
-                                    </div>
+                                    <!-- === Month Dropdown === -->
+                                    <Dropdown v-model="item.task.Date.month" :options="[
+                                        { label: 'Month Enabled', value: true },
+                                        { label: 'Month Disabled', value: false },
+                                    ]" optionLabel="label" optionValue="value" placeholder="Month Options" size="small"
+                                        class="flex-1" @change="user_update_tasks" />
 
-                                    <div class="flex items-center gap-2 whitespace-nowrap">
-                                        <label :for="`year4-${index}`" class="text-xs text-gray-600">4-Digit</label>
-                                        <ToggleSwitch v-model="item.task.Date.year_4" :inputId="`year4-${index}`"
-                                            :name="`year4-${index}`" binary @change="user_update_tasks" />
-                                    </div>
+                                    <!-- === Day Dropdown === -->
+                                    <Dropdown v-model="item.task.Date.day" :options="[
+                                        { label: 'Day Enabled', value: true },
+                                        { label: 'Day Disabled', value: false },
+                                    ]" optionLabel="label" optionValue="value" placeholder="Day Options" size="small"
+                                        class="flex-1" @change="user_update_tasks" />
 
                                     <!-- === Separator === -->
-                                    <InputText v-model="item.task.Date.separator" :id="`separator-${index}`"
-                                        placeholder="Sep" size="small" class="w-12" @input="user_update_tasks" />
+                                    <div class="flex">
+                                        <FloatLabel variant="on">
+                                            <InputText class="w-21" v-model="item.task.Date.separator"
+                                                :id="`separator-${index}`" size="small" @input="user_update_tasks" />
+                                            <label for="`separator-${index}`">Separator</label>
+                                        </FloatLabel>
+                                    </div>
 
-                                    <!-- === Active Toggle === -->
-                                    <!-- <div class="flex items-center gap-2 whitespace-nowrap"> -->
-                                    <!--     <label :for="`active-${index}`" class="text-xs text-gray-600">Active</label> -->
-                                    <!--     <ToggleSwitch -->
-                                    <!--         v-model="item.task.Date.active" -->
-                                    <!--         :inputId="`active-${index}`" -->
-                                    <!--         :name="`date-active-${index}`" -->
-                                    <!--         binary -->
-                                    <!--         @change="user_update_tasks" -->
-                                    <!--     /> -->
-                                    <!-- </div> -->
+                                    <!-- === Position at Start or End === -->
+                                    <div class="flex-1">
+                                        <ToggleButton v-model="item.task.Date.at_start" onLabel="@ Start"
+                                            offLabel="@ End" size="small" @change="user_update_tasks" />
+                                    </div>
+
                                 </div>
                             </div>
                         </template>
