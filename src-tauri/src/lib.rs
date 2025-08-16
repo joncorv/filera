@@ -1,6 +1,8 @@
 // use notify_rust::Notification;
 // use std::fs::{self, metadata, Metadata};
 // use natord::compare;
+use serde_json::to_string;
+use std::fmt::format;
 use std::sync::Mutex;
 use std::{fs::rename, path::PathBuf};
 use tauri::{Manager, State};
@@ -418,26 +420,31 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
 
                                 let datetime = OffsetDateTime::from(j);
 
-                                let date_results: Vec<i32> = vec![];
+                                let mut dates_combined_vector: Vec<String> = vec![];
+
+                                let year_val = datetime.year().to_string();
                                 match *year {
                                     0 => {
-                                        date_results.append(datetime.year());
+                                        dates_combined_vector.push(year_val);
                                     }
                                     1 => {
-                                        date_results.append(datetime.year() % 100);
+                                        dates_combined_vector
+                                            .push(year_val.chars().take(year_val.len().saturating_sub(2)).collect());
                                     }
-                                    2_u8..=u8::MAX => {}
+                                    2_u8..=std::u8::MAX => {}
                                 };
 
-                                if *month == 1 {
-                                    date_results.append(datetime.month());
+                                if *month {
+                                    let month_val = datetime.month() as u8;
+                                    dates_combined_vector.push(format!("{month_val:02}"));
                                 }
 
-                                if *day == 1 {
-                                    date_results.append(datetime.day());
+                                if *day {
+                                    let day_val = datetime.day();
+                                    dates_combined_vector.push(format!("{day_val:02}"));
                                 }
 
-                                let date_combined: String;
+                                let dates_formatted_string: String = dates_combined_vector.join(separator);
 
                                 // now that we have system time, let's build the file
                                 // get file_stem and file_extension
