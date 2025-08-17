@@ -417,9 +417,7 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
 
                             if let Ok(j) = systime {
                                 // able to access metadata and file modified info
-
                                 let datetime = OffsetDateTime::from(j);
-
                                 let mut dates_combined_vector: Vec<String> = vec![];
 
                                 let year_val = datetime.year().to_string();
@@ -438,22 +436,21 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
                                     let month_val = datetime.month() as u8;
                                     dates_combined_vector.push(format!("{month_val:02}"));
                                 }
-
                                 if *day {
                                     let day_val = datetime.day();
                                     dates_combined_vector.push(format!("{day_val:02}"));
                                 }
-
                                 let dates_formatted_string: String = dates_combined_vector.join(separator);
 
-                                // now that we have system time, let's build the file
-                                // get file_stem and file_extension
-                                // we'll need to check for a variety of edge cases
                                 //TODO: Edge Case: Leading "."
                                 //TODO: Edge Case: Contains no "."
-                                //TODO: Contains the SPECIAL_CLEAR_a432LKJ value
+                                //TODO: Contains the <<SPECIAL_CLEAR_a432LKJ>> value
+                                //OK let's write the logic here:
+                                // if *at_start -> dates + file_stem + "." + file_extension
                                 let file_stem: String;
                                 let file_extension: String;
+                                // let has_extension: bool;
+                                // let has_stem: bool;
 
                                 // if there is a file stem, use it, or make it blank
                                 if let Some(t) = file.target.file_stem() {
@@ -462,16 +459,26 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
                                     file_stem = "".to_string();
                                 }
 
-                                // if there isn't an extension, we do need to change how we approach building here
-                                if let Some(t) = file.target.extension() {
-                                    file_extension = t.to_string_lossy().to_string();
-                                    file.target.set_file_name(format!(
-                                        "{datetime_year}{separator}{datetime_month:02}{separator}{datetime_day:02}{separator}{file_stem}.{file_extension}"
-                                    ));
+                                if *at_start {
+                                    if let Some(t) = file.target.extension() {
+                                        file_extension = t.to_string_lossy().to_string();
+                                        file.target.set_file_name(format!(
+                                            "{dates_formatted_string}{file_stem}.{file_extension}"
+                                        ));
+                                    } else {
+                                        file.target
+                                            .set_file_name(format!("{dates_formatted_string}{file_stem}"));
+                                    }
                                 } else {
-                                    file.target.set_file_name(format!(
-                                        "{datetime_year}{separator}{datetime_month:02}{separator}{datetime_day:02}{separator}{file_stem}"
-                                    ));
+                                    if let Some(t) = file.target.extension() {
+                                        file_extension = t.to_string_lossy().to_string();
+                                        file.target.set_file_name(format!(
+                                            "{file_stem}{dates_formatted_string}.{file_extension}"
+                                        ));
+                                    } else {
+                                        file.target
+                                            .set_file_name(format!("{file_stem}{dates_formatted_string}"));
+                                    }
                                 }
                             } else {
                                 // able to access metadata but not file modified info
