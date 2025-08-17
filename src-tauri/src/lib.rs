@@ -448,6 +448,10 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
 
                                 // now that we have system time, let's build the file
                                 // get file_stem and file_extension
+                                // we'll need to check for a variety of edge cases
+                                //TODO: Edge Case: Leading "."
+                                //TODO: Edge Case: Contains no "."
+                                //TODO: Contains the SPECIAL_CLEAR_a432LKJ value
                                 let file_stem: String;
                                 let file_extension: String;
 
