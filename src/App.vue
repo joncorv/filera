@@ -890,24 +890,24 @@ const createTemplate = () => {
 
                                     <!-- === Date Dropdown === -->
                                     <Dropdown v-model="item.task.Date.year" :options="[
-                                        { label: 'Year - 4 Digits', value: 0 },
-                                        { label: 'Year - 2 Digits', value: 1 },
-                                        { label: 'Year Disabled', value: 2 },
-                                    ]" optionLabel="label" optionValue="value" placeholder="Year Options" size="small"
+                                        { label: 'Year YYYY', value: 0 },
+                                        { label: 'Year YY', value: 1 },
+                                        { label: 'Year Off', value: 2 },
+                                    ]" optionLabel="label" optionValue="value" placeholder="" size="small"
                                         class="flex-1" @change="user_update_tasks" />
 
                                     <!-- === Month Dropdown === -->
                                     <Dropdown v-model="item.task.Date.month" :options="[
-                                        { label: 'Month Enabled', value: true },
-                                        { label: 'Month Disabled', value: false },
-                                    ]" optionLabel="label" optionValue="value" placeholder="Month Options" size="small"
+                                        { label: 'Month On', value: true },
+                                        { label: 'Month Off', value: false },
+                                    ]" optionLabel="label" optionValue="value" placeholder="" size="small"
                                         class="flex-1" @change="user_update_tasks" />
 
                                     <!-- === Day Dropdown === -->
                                     <Dropdown v-model="item.task.Date.day" :options="[
-                                        { label: 'Day Enabled', value: true },
-                                        { label: 'Day Disabled', value: false },
-                                    ]" optionLabel="label" optionValue="value" placeholder="Day Options" size="small"
+                                        { label: 'Day On', value: true },
+                                        { label: 'Day Off', value: false },
+                                    ]" optionLabel="label" optionValue="value" placeholder="" size="small"
                                         class="flex-1" @change="user_update_tasks" />
 
                                     <!-- === Separator === -->
