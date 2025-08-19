@@ -1,8 +1,8 @@
 // use notify_rust::Notification;
 // use std::fs::{self, metadata, Metadata};
 // use natord::compare;
-use serde_json::to_string;
-use std::fmt::format;
+// use serde_json::to_string;
+// use std::fmt::format;
 use std::sync::Mutex;
 use std::{fs::rename, path::PathBuf};
 use tauri::{Manager, State};
@@ -399,7 +399,6 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
                     }
                 }
 
-                // TODO: update to include number dates and all of the user data here
                 Task::Date {
                     year,
                     month,
@@ -463,21 +462,21 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
                                     if let Some(t) = file.target.extension() {
                                         file_extension = t.to_string_lossy().to_string();
                                         file.target.set_file_name(format!(
-                                            "{dates_formatted_string}{file_stem}.{file_extension}"
+                                            "{dates_formatted_string}{separator}{file_stem}.{file_extension}"
                                         ));
                                     } else {
                                         file.target
-                                            .set_file_name(format!("{dates_formatted_string}{file_stem}"));
+                                            .set_file_name(format!("{dates_formatted_string}{separator}{file_stem}"));
                                     }
                                 } else {
                                     if let Some(t) = file.target.extension() {
                                         file_extension = t.to_string_lossy().to_string();
                                         file.target.set_file_name(format!(
-                                            "{file_stem}{dates_formatted_string}.{file_extension}"
+                                            "{file_stem}{separator}{dates_formatted_string}.{file_extension}"
                                         ));
                                     } else {
                                         file.target
-                                            .set_file_name(format!("{file_stem}{dates_formatted_string}"));
+                                            .set_file_name(format!("{file_stem}{separator}{dates_formatted_string}"));
                                     }
                                 }
                             } else {
