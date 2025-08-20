@@ -320,11 +320,7 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
                     }
                 }
 
-                // TODO: we need to make some sort of hidden token here so all other tasks know if
-                // a clear has been put in. We need to work around that circumstane. perhaps
-                // something like "<<<SPECIAL_CLEAR_a432LKJ>>>" that would be highly unlikely to be
-                // seen otherwise. I'll look online and see if there is a workflow for this that
-                // exists.
+                // TODO: if filename starts w/ or does not contain ".", we return a special "<BLANK>" token that needs to be accounted for as an edge case in the rest of the tasks
                 Task::ClearAll { active } => {
                     if *active {
                         let file_extension: String;
@@ -333,7 +329,7 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
                             file_extension = t.to_string_lossy().to_string();
                             file.target.set_file_name(format!(".{file_extension}"));
                         } else {
-                            file.target.set_file_name("");
+                            file.target.set_file_name("<BLANK>");
                         }
                     }
                 }
