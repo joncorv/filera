@@ -58,7 +58,7 @@ type Task =
     }
     | {
         Time: {
-            hour_24: boolean;
+            at_start: boolean;
             separator: string;
             active: boolean;
         };
@@ -140,7 +140,7 @@ const isTimeTask = (
     task: Task
 ): task is {
     Time: {
-        hour_24: boolean;
+        at_start: boolean;
         ampm: boolean;
         separator: string;
         active: boolean;
@@ -241,7 +241,7 @@ const addTime = () => {
         id: taskIdCounter++,
         task: {
             Time: {
-                hour_24: true,
+                at_start: true,
                 separator: "_",
                 active: true,
             },
@@ -961,7 +961,7 @@ const createTemplate = () => {
                                     <!-- === Time Format === -->
                                     <!-- <div class="flex items-center gap-2 whitespace-nowrap"> -->
                                     <!--     <label :for="`hour24-${index}`" class="text-xs text-gray-600">24 Hour</label> -->
-                                    <!--     <ToggleSwitch v-model="item.task.Time.hour_24" :inputId="`hour24-${index}`" -->
+                                    <!--     <ToggleSwitch v-model="item.task.Time.at_start" :inputId="`hour24-${index}`" -->
                                     <!--         :name="`hour24-${index}`" binary @change="user_update_tasks" /> -->
                                     <!-- </div> -->
 
@@ -972,6 +972,12 @@ const createTemplate = () => {
                                                 :id="`separator-${index}`" size="small" @input="user_update_tasks" />
                                             <label for="`separator-${index}`">Separator</label>
                                         </FloatLabel>
+                                    </div>
+
+                                    <!-- === Position at Start or End === -->
+                                    <div class="flex-1">
+                                        <ToggleButton v-model="item.task.Time.at_start" onLabel="@ Start"
+                                            offLabel="@ End" size="small" @change="user_update_tasks" />
                                     </div>
 
                                 </div>
