@@ -58,7 +58,7 @@ enum Task {
         active: bool,
     },
     Time {
-        hour_24: bool,
+        at_start: bool,
         separator: String,
         active: bool,
     },
@@ -514,7 +514,7 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
                 // TODO: Update to use a 24 hour clock, and include am and pm automatically
                 // TODO: account for <BLANK> edge case
                 Task::Time {
-                    hour_24: _,
+                    at_start: _,
                     separator,
                     active,
                 } => {
