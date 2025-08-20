@@ -264,6 +264,7 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
             match task {
                 // TODO: Custom Text does not account for files w/o a file extension, or files that
                 // start with a "."
+                // TODO: account for <BLANK> edge case
                 Task::CustomText { text, at_start, active } => {
                     if *active {
                         let file_stem: String;
@@ -302,6 +303,7 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
                         };
                     }
                 }
+                // TODO: account for <BLANK> edge case
                 Task::FindAndReplace {
                     find_text,
                     replace_text,
@@ -335,6 +337,7 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
                 }
 
                 // TODO: Need to build in cases for TitleCase.
+                // TODO: account for <BLANK> edge case
                 Task::ChangeCase { case_choice, active } => {
                     if *active {
                         let new_file_name: String;
@@ -361,6 +364,7 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
                         }
                     }
                 }
+                // TODO: account for <BLANK> edge case
                 Task::NumSequence {
                     start_num,
                     num_padding,
@@ -411,6 +415,7 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
                     }
                 }
 
+                // TODO: account for <BLANK> edge case
                 Task::Date {
                     year,
                     month,
@@ -505,6 +510,7 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
                 }
 
                 // TODO: Update to use a 24 hour clock, and include am and pm automatically
+                // TODO: account for <BLANK> edge case
                 Task::Time {
                     hour_24: _,
                     separator,
