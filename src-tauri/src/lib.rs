@@ -436,6 +436,7 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
                                 let datetime = OffsetDateTime::from(j);
                                 let mut dates_combined_vector: Vec<String> = vec![];
 
+                                // calculate year by user input
                                 let year_val = datetime.year().to_string();
                                 match *year {
                                     0 => {
@@ -448,6 +449,7 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
                                     2_u8..=std::u8::MAX => {}
                                 };
 
+                                // calculate month & day by user input
                                 if *month {
                                     let month_val = datetime.month() as u8;
                                     dates_combined_vector.push(format!("{month_val:02}"));
@@ -526,9 +528,9 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
                             if let Ok(j) = systime {
                                 // able to access metadata and file modified info
                                 let datetime = OffsetDateTime::from(j);
-                                let datetime_hour = datetime.hour();
-                                let datetime_minute = datetime.minute();
-                                let datetime_second = datetime.second();
+                                let datetime_hour = format!("{:02}", datetime.hour());
+                                let datetime_minute = format!("{:02}", datetime.minute());
+                                let datetime_second = format!("{:02}", datetime.second());
 
                                 // now that we have system time, let's build the file
                                 // get file_stem and file_extension
