@@ -7,7 +7,7 @@ import { Button } from "primevue";
 import Splitter from "primevue/splitter";
 import SplitterPanel from "primevue/splitterpanel";
 import InputText from "primevue/inputtext";
-import ToggleSwitch from "primevue/toggleswitch";
+// import ToggleSwitch from "primevue/toggleswitch";
 import ToggleButton from "primevue/togglebutton";
 import Select from "primevue/select";
 // import Menubar from "primevue/menubar";
@@ -866,7 +866,7 @@ const createTemplate = () => {
                                     <div class="flex flex-row items-center gap-2">
                                         <span class="pi pi-calendar"></span>
                                         <h4 class="text-sm font-semibold text-gray-200 m-0">Date</h4>
-                                        <p class="text-xs text-gray-400 m-0">Add current date to file names</p>
+                                        <p class="text-xs text-gray-400 m-0">Add modified date to file names</p>
                                     </div>
 
                                     <!-- === Dummy Spacer === -->
@@ -937,7 +937,7 @@ const createTemplate = () => {
                                     <div class="flex flex-row items-center gap-2">
                                         <span class="pi pi-clock"></span>
                                         <h4 class="text-sm font-semibold text-gray-200 m-0">Time</h4>
-                                        <p class="text-xs text-gray-400 m-0">Add current time to file names</p>
+                                        <p class="text-xs text-gray-400 m-0">Add modified time to file names.</p>
                                     </div>
 
                                     <!-- === Dummy Spacer === -->
@@ -959,27 +959,21 @@ const createTemplate = () => {
                                 <!-- === Main Controls === -->
                                 <div class="flex flex-row gap-3 items-center">
                                     <!-- === Time Format === -->
-                                    <div class="flex items-center gap-2 whitespace-nowrap">
-                                        <label :for="`hour24-${index}`" class="text-xs text-gray-600">24 Hour</label>
-                                        <ToggleSwitch v-model="item.task.Time.hour_24" :inputId="`hour24-${index}`"
-                                            :name="`hour24-${index}`" binary @change="user_update_tasks" />
-                                    </div>
+                                    <!-- <div class="flex items-center gap-2 whitespace-nowrap"> -->
+                                    <!--     <label :for="`hour24-${index}`" class="text-xs text-gray-600">24 Hour</label> -->
+                                    <!--     <ToggleSwitch v-model="item.task.Time.hour_24" :inputId="`hour24-${index}`" -->
+                                    <!--         :name="`hour24-${index}`" binary @change="user_update_tasks" /> -->
+                                    <!-- </div> -->
 
                                     <!-- === Separator === -->
-                                    <InputText v-model="item.task.Time.separator" :id="`separator-${index}`"
-                                        placeholder="Sep" size="small" class="w-12" @input="user_update_tasks" />
+                                    <div class="flex">
+                                        <FloatLabel variant="on">
+                                            <InputText class="w-21" v-model="item.task.Time.separator"
+                                                :id="`separator-${index}`" size="small" @input="user_update_tasks" />
+                                            <label for="`separator-${index}`">Separator</label>
+                                        </FloatLabel>
+                                    </div>
 
-                                    <!-- === Active Toggle === -->
-                                    <!-- <div class="flex items-center gap-2 whitespace-nowrap"> -->
-                                    <!--     <label :for="`active-${index}`" class="text-xs text-gray-600">Active</label> -->
-                                    <!--     <ToggleSwitch -->
-                                    <!--         v-model="item.task.Time.active" -->
-                                    <!--         :inputId="`active-${index}`" -->
-                                    <!--         :name="`time-active-${index}`" -->
-                                    <!--         binary -->
-                                    <!--         @change="user_update_tasks" -->
-                                    <!--     /> -->
-                                    <!-- </div> -->
                                 </div>
                             </div>
                         </template>
