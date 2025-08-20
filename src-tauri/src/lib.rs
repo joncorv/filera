@@ -262,6 +262,8 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
         // iterate over all tasks in task_list
         for task in tasks {
             match task {
+                // TODO: Custom Text does not account for files w/o a file extension, or files that
+                // start with a "."
                 Task::CustomText { text, at_start, active } => {
                     if *active {
                         let file_stem: String;
