@@ -268,23 +268,37 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
                     if *active {
                         let file_stem: String;
                         let file_extension: String;
+                        let file_name = file.target.file_name().unwrap().to_string_lossy();
+                        let start_period: bool = file_name.starts_with(".");
+                        let no_period: bool = file_name.contains(".");
 
+                        // NOTE: if the first char is a period, the file stem will be entire file name
                         if let Some(t) = file.target.file_stem() {
                             file_stem = t.to_string_lossy().to_string();
                         } else {
                             file_stem = "".to_string();
                         }
 
+                        // NOTE: if there are no periods, the extension is empty
                         if let Some(t) = file.target.extension() {
                             file_extension = t.to_string_lossy().to_string();
                         } else {
                             file_extension = "".to_string();
                         }
 
+                        //BUG: This is not working properly
                         if *at_start {
-                            file.target.set_file_name(format!("{text}{file_stem}.{file_extension}"));
+                            if start_period || no_period {
+                                file.target.set_file_name(format!("{text}{file_stem}"));
+                            } else {
+                                file.target.set_file_name(format!("{text}{file_stem}.{file_extension}"));
+                            }
                         } else {
-                            file.target.set_file_name(format!("{file_stem}{text}.{file_extension}"));
+                            if start_period || no_period {
+                                file.target.set_file_name(format!("{file_stem}{text}"));
+                            } else {
+                                file.target.set_file_name(format!("{file_stem}{text}.{file_extension}"));
+                            }
                         };
                     }
                 }
