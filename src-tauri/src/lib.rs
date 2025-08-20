@@ -270,7 +270,7 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
                         let file_extension: String;
                         let file_name = file.target.file_name().unwrap().to_string_lossy();
                         let start_period: bool = file_name.starts_with(".");
-                        let no_period: bool = file_name.contains(".");
+                        let has_period: bool = file_name.contains(".");
 
                         // NOTE: if the first char is a period, the file stem will be entire file name
                         if let Some(t) = file.target.file_stem() {
@@ -286,15 +286,15 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
                             file_extension = "".to_string();
                         }
 
-                        //BUG: This is not working properly
+                        // BUG: This is not working properly
                         if *at_start {
-                            if start_period || no_period {
+                            if start_period || !has_period {
                                 file.target.set_file_name(format!("{text}{file_stem}"));
                             } else {
                                 file.target.set_file_name(format!("{text}{file_stem}.{file_extension}"));
                             }
                         } else {
-                            if start_period || no_period {
+                            if start_period || !has_period {
                                 file.target.set_file_name(format!("{file_stem}{text}"));
                             } else {
                                 file.target.set_file_name(format!("{file_stem}{text}.{file_extension}"));
