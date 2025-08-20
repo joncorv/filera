@@ -514,7 +514,7 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
                 // TODO: Update to use a 24 hour clock, and include am and pm automatically
                 // TODO: account for <BLANK> edge case
                 Task::Time {
-                    at_start: _,
+                    at_start,
                     separator,
                     active,
                 } => {
@@ -545,17 +545,32 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
                                 }
 
                                 // if there isn't an extension, we do need to change how we approach building here
-                                if let Some(t) = file.target.extension() {
-                                    file_extension = t.to_string_lossy().to_string();
-                                    file.target.set_file_name(format!(
+
+                                if *at_start {
+                                    if let Some(t) = file.target.extension() {
+                                        file_extension = t.to_string_lossy().to_string();
+                                        file.target.set_file_name(format!(
                                         "{datetime_hour}{separator}{datetime_minute}{separator}{datetime_second}{separator}{file_stem}.{file_extension}"
                                     ));
-                                } else {
-                                    file.target.set_file_name(format!(
+                                    } else {
+                                        file.target.set_file_name(format!(
                                         "{datetime_hour}{separator}{datetime_minute}{separator}{datetime_second}{separator}{file_stem}"
                                     ));
+                                    }
+                                } else {
+                                    if let Some(t) = file.target.extension() {
+                                        file_extension = t.to_string_lossy().to_string();
+                                        file.target.set_file_name(format!(
+                                        "{file_stem}{separator}{datetime_hour}{separator}{datetime_minute}{separator}{datetime_second}.{file_extension}"
+                                    ));
+                                    } else {
+                                        file.target.set_file_name(format!(
+                                        "{file_stem}{separator}{datetime_hour}{separator}{datetime_minute}{separator}{datetime_second}"
+                                    ));
+                                    }
                                 }
                             } else {
+
                                 // able to access metadata but not file modified info
                                 // i guess we just skip this step altogether for now
                                 // should probably bubble up an error to the user
