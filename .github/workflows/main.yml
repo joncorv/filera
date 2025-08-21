@@ -41,6 +41,11 @@ jobs:
           node-version: lts/*
           cache: 'bun' # Set this to npm, yarn or pnpm.
 
+      - name: Install Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable # Set this to dtolnay/rust-toolchain@nightly
         with:
