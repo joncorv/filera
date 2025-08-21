@@ -15,8 +15,9 @@
         "title": "Giant Batch Renamer",
         "width": 1200,
         "height": 800,
-        "decorations": true,
-        "zoomHotkeysEnabled": false
+        "zoomHotkeysEnabled": false,
+        "resizable": true,
+        "fullscreen": false
       }
     ],
     "security": {
