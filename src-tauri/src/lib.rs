@@ -303,19 +303,36 @@ fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
                         };
                     }
                 }
-                // TODO: account for <BLANK> edge case
                 Task::FindAndReplace {
                     find_text,
                     replace_text,
                     active,
                 } => {
                     if *active {
-                        let new_file_name: String;
+                        let mut new_file_name: String;
 
-                        if let Some(t) = file.target.file_name() {
-                            new_file_name = t.to_string_lossy().to_string().replace(find_text, replace_text);
+                        let target_file_name = file.target.file_name();
+
+                        // if the file name exists
+                        if let Some(t) = target_file_name {
+                            // store the file name into temp_val string
+                            let temp_val = t.to_string_lossy().to_string();
+
+                            // if the file name is <BLANK>
+                            if temp_val == "<BLANK>".to_string() {
+                                // because the string is blank, we don't operate.
+                                new_file_name = "<BLANK>".to_string();
+                            } else {
+                                // because it's not blank, we can operate on it
+                                new_file_name = temp_val.replace(find_text, replace_text);
+                            }
                         } else {
                             new_file_name = "".to_string();
+                        }
+
+                        // return the <BLANK> token if new_file_name is empty
+                        if new_file_name.is_empty() {
+                            new_file_name = "<BLANK>".to_string();
                         }
 
                         file.target.set_file_name(new_file_name);
