@@ -251,14 +251,20 @@ const addTime = () => {
 };
 
 const search = ref("");
+// where data is stored
 const sortChoice = ref();
-const metadata = ref([
+const metadata = [
     { name: "Name", code: "name" },
     { name: "Date Created", code: "dateCreated" },
     { name: "Date Modified", code: "dateModified" },
     { name: "Type", code: "type" },
     { name: "Size", code: "size" },
-]);
+];
+
+async function user_update_sort() {
+    const fileStatusReturn = await invoke("user_update_sort", { sortChoice: sortChoice })
+}
+
 
 const fileStatusReturn: Ref<FileStatus[]> = ref([]);
 const numFileStatusItems = computed(() => fileStatusReturn.value.length);
@@ -490,7 +496,7 @@ const createTemplate = () => {
 
                     <!-- === Sort Select === -->
                     <Select v-model="sortChoice" :options="metadata" size="small" optionLabel="name"
-                        placeholder="Sort By" optionValue="code" class="w-full flex-1/4" />
+                        placeholder="Sort By" optionValue="code" class="w-full flex-1/4" @change="user_update_sort" />
 
                     <!-- === Hamburger Select === -->
                     <Button icon="pi pi-replay" class="whitespace-nowrap flex-none" @click="clearFiles"
