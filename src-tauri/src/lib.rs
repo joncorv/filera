@@ -78,7 +78,7 @@ struct AppState {
     file_names: Vec<String>,
     working_files: Vec<WorkingFile>,
     tasks: Vec<Task>,
-    sort: SortMetadata,
+    sort_choice: String,
     search: String,
 }
 
@@ -96,6 +96,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             user_open_files,
             user_update_tasks,
+            user_update_search,
             user_clear_files,
             user_rename_files,
             user_update_search
@@ -125,8 +126,13 @@ fn user_clear_files(state: State<'_, Mutex<AppState>>) {
     state.working_files.clear();
 }
 
-// #[tauri::command]
-// fn user_sort() {}
+#[tauri::command]
+fn user_update_sort(sort_choice: String, state: State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
+    sort_file_names(&state);
+    convert_file_names_to_working_files_(&state);
+    process_tasks_on_working_files_(&state);
+    convert_working_files_to_file_status(&state)
+}
 
 #[tauri::command]
 fn user_update_tasks(task_list: Vec<Task>, state: State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
@@ -216,8 +222,12 @@ fn solve_duplicates(file_names: Vec<String>, state: &State<'_, Mutex<AppState>>)
     state.file_names.dedup();
 }
 
-// fn state_update_sort() {}
-// fn sort_file_names(state: State<'_, Mutex<AppState>>) {}
+fn state_update_sort() {}
+fn sort_file_names(sort_choice: String, state: &State<'_, Mutex<AppState>>) {
+    let mut state = state.lock().unwrap();
+    // let mut file_names = file_names;
+    let mut new_file_names = state.file_names();
+}
 
 #[tauri::command]
 fn state_update_tasks(task_list: Vec<Task>, state: &State<'_, Mutex<AppState>>) {
