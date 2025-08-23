@@ -225,8 +225,8 @@ fn solve_duplicates(file_names: Vec<String>, state: &State<'_, Mutex<AppState>>)
 fn state_update_sort() {}
 fn sort_file_names(sort_choice: String, state: &State<'_, Mutex<AppState>>) {
     let mut state = state.lock().unwrap();
-    // let mut file_names = file_names;
-    let mut new_file_names = state.file_names();
+
+    // let mut new_file_names = state.file_names();
 }
 
 #[tauri::command]
