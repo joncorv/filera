@@ -1,4 +1,6 @@
+use std::any::Any;
 use std::fs::{self, metadata};
+use std::os::unix::fs::MetadataExt;
 // use notify_rust::Notification;
 // use std::fs::{self, metadata, Metadata};
 // use natord::compare;
@@ -226,13 +228,10 @@ fn solve_duplicates(file_names: Vec<String>, state: &State<'_, Mutex<AppState>>)
 
 fn sort_file_names(sort_choice: String, state: &State<'_, Mutex<AppState>>) {
     let mut state = state.lock().unwrap();
-<<<<<<< HEAD
-
     // let mut new_file_names = state.file_names();
-=======
     let mut file_sort_vector: Vec<(String, _)> = Vec::new();
+    let sort_choice: &str = &sort_choice;
 
-    const SORT_CHOICE_MODIFIED: String = "modified".to_string();
     // iterate over all files
     // if user has access to file, or and file does exist,
     // then it will be added to file_sort_vector
@@ -243,17 +242,37 @@ fn sort_file_names(sort_choice: String, state: &State<'_, Mutex<AppState>>) {
                 // so let's go ahead and do all the magic we need to do here.
 
                 match sort_choice {
-                    SORT_CHOICE_MODIFIED => todo!(),
-                    !SORT_CHOICE_MODIFIED => todo!()
+                    "modified" => {
+                        let modified = meta_data.modified().unwrap_or(SystemTime::UNIX_EPOCH);
+                        file_sort_vector.push((file.to_owned(), modified))
+                    }
+                    "created" => {
+                        let created = meta_data.created().unwrap_or(SystemTime::UNIX_EPOCH);
+                        file_sort_vector.push((file.to_owned(), created))
+                    }
+                    "size" => {
+                        let size = meta_data.size();
+                        file_sort_vector.push((file.to_owned(), size))
+                    }
+                    "type" => {
+                        let filetype = meta_data.type_id();
+                        file_sort_vector.push((file.to_owned(), filetype))
+                    }
+                    _ => {
+                        // this is an odd error, where sort_choice is not matching.
+                        // for now this defaults to name
+                        // let name = meta_data.size()
+                        file_sort_vector.push((file.to_owned(), file.to_owned()));
+                    }
                 }
-                let modified = meta_data.modified().unwrap_or(SystemTime::UNIX_EPOCH);
-                file_sort_vector.push((file.to_owned(), modified))
             }
             Err(e) => println!("Metadata error. Skipping file because: {:?}", e),
         }
     }
+
+    // now we've added all accessible files to a sortable array,
+    // so let's sourt this bitch!
     println!("This is the file sorted vector: {:?}", file_sort_vector);
->>>>>>> 57594ab (progress made on user_update_sort)
 }
 
 #[tauri::command]
