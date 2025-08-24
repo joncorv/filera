@@ -1,9 +1,11 @@
+use std::fs::{self, metadata};
 // use notify_rust::Notification;
 // use std::fs::{self, metadata, Metadata};
 // use natord::compare;
 // use serde_json::to_string;
 // use std::fmt::format;
 use std::sync::Mutex;
+use std::time::SystemTime;
 use std::{fs::rename, path::PathBuf};
 use tauri::{Manager, State};
 use tauri_plugin_dialog::{DialogExt, MessageDialogButtons};
@@ -128,7 +130,7 @@ fn user_clear_files(state: State<'_, Mutex<AppState>>) {
 
 #[tauri::command]
 fn user_update_sort(sort_choice: String, state: State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
-    sort_file_names(&state);
+    sort_file_names(sort_choice, &state);
     convert_file_names_to_working_files_(&state);
     process_tasks_on_working_files_(&state);
     convert_working_files_to_file_status(&state)
@@ -222,11 +224,36 @@ fn solve_duplicates(file_names: Vec<String>, state: &State<'_, Mutex<AppState>>)
     state.file_names.dedup();
 }
 
-fn state_update_sort() {}
 fn sort_file_names(sort_choice: String, state: &State<'_, Mutex<AppState>>) {
     let mut state = state.lock().unwrap();
+<<<<<<< HEAD
 
     // let mut new_file_names = state.file_names();
+=======
+    let mut file_sort_vector: Vec<(String, _)> = Vec::new();
+
+    const SORT_CHOICE_MODIFIED: String = "modified".to_string();
+    // iterate over all files
+    // if user has access to file, or and file does exist,
+    // then it will be added to file_sort_vector
+    for file in &state.file_names {
+        match std::fs::metadata(file) {
+            Ok(meta_data) => {
+                // Here we have declared that the metadata is in fact accessible,
+                // so let's go ahead and do all the magic we need to do here.
+
+                match sort_choice {
+                    SORT_CHOICE_MODIFIED => todo!(),
+                    !SORT_CHOICE_MODIFIED => todo!()
+                }
+                let modified = meta_data.modified().unwrap_or(SystemTime::UNIX_EPOCH);
+                file_sort_vector.push((file.to_owned(), modified))
+            }
+            Err(e) => println!("Metadata error. Skipping file because: {:?}", e),
+        }
+    }
+    println!("This is the file sorted vector: {:?}", file_sort_vector);
+>>>>>>> 57594ab (progress made on user_update_sort)
 }
 
 #[tauri::command]
