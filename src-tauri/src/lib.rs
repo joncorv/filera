@@ -1,4 +1,4 @@
-use std::any::Any;
+use std::any::{Any, TypeId};
 use std::fs::{self, metadata};
 use std::os::unix::fs::MetadataExt;
 // use notify_rust::Notification;
@@ -71,11 +71,11 @@ enum Task {
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, Default)]
 enum SortMetadata {
     #[default]
-    Name,
-    DateCreated,
-    DateModified,
-    Type,
-    Size,
+    Name(&str),
+    DateCreated(SystemTime),
+    DateModified(SystemTime),
+    Type(TypeId),
+    Size(u64),
 }
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, Default)]
 struct AppState {
@@ -228,13 +228,13 @@ fn solve_duplicates(file_names: Vec<String>, state: &State<'_, Mutex<AppState>>)
 
 fn sort_file_names(sort_choice: String, state: &State<'_, Mutex<AppState>>) {
     let mut state = state.lock().unwrap();
-    // let mut new_file_names = state.file_names();
     let mut file_sort_vector: Vec<(String, _)> = Vec::new();
     let sort_choice: &str = &sort_choice;
 
     // iterate over all files
     // if user has access to file, or and file does exist,
     // then it will be added to file_sort_vector
+    // TODO: Build in ascending and descending UX control.
     for file in &state.file_names {
         match std::fs::metadata(file) {
             Ok(meta_data) => {
@@ -244,25 +244,34 @@ fn sort_file_names(sort_choice: String, state: &State<'_, Mutex<AppState>>) {
                 match sort_choice {
                     "modified" => {
                         let modified = meta_data.modified().unwrap_or(SystemTime::UNIX_EPOCH);
-                        file_sort_vector.push((file.to_owned(), modified))
+                        let mut file_sort_vector: Vec<(String, _)> = Vec::new();
+                        file_sort_vector.push((file.to_owned(), modified));
+                        file_sort_vector.sort_by_key(|k| k.1);
                     }
                     "created" => {
                         let created = meta_data.created().unwrap_or(SystemTime::UNIX_EPOCH);
-                        file_sort_vector.push((file.to_owned(), created))
+                        let mut file_sort_vector: Vec<(String, _)> = Vec::new();
+                        file_sort_vector.push((file.to_owned(), created));
+                        file_sort_vector.sort_by_key(|k| k.1);
                     }
                     "size" => {
                         let size = meta_data.size();
-                        file_sort_vector.push((file.to_owned(), size))
+                        let mut file_sort_vector: Vec<(String, _)> = Vec::new();
+                        file_sort_vector.push((file.to_owned(), size));
+
+                        file_sort_vector.sort_by_key(|k| k.1);
                     }
                     "type" => {
                         let filetype = meta_data.type_id();
-                        file_sort_vector.push((file.to_owned(), filetype))
+                        let mut file_sort_vector: Vec<(String, _)> = Vec::new();
+                        file_sort_vector.push((file.to_owned(), filetype));
+                        file_sort_vector.sort_by_key(|k| k.1);
                     }
                     _ => {
-                        // this is an odd error, where sort_choice is not matching.
-                        // for now this defaults to name
-                        // let name = meta_data.size()
-                        file_sort_vector.push((file.to_owned(), file.to_owned()));
+                        // for now this defaults to full path alphabetical.
+                        // TODO: This sorts by the full path alphabetically, but we need to sort by
+                        // file name instead
+                        file_sort_vector.push((file.to_owned(), 0));
                     }
                 }
             }
@@ -270,9 +279,10 @@ fn sort_file_names(sort_choice: String, state: &State<'_, Mutex<AppState>>) {
         }
     }
 
-    // now we've added all accessible files to a sortable array,
-    // so let's sourt this bitch!
+    // now we've added all accessible files to a sorted array,
+    // let's revies the file_names vector
     println!("This is the file sorted vector: {:?}", file_sort_vector);
+    state.file_names = file_sort_vector.into_iter().map(|(path, _)| path).collect();
 }
 
 #[tauri::command]
