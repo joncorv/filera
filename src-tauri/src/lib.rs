@@ -73,6 +73,7 @@ enum SortMetadata {
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, Default)]
 struct AppState {
     file_names: Vec<String>,
+    file_names_sorted: Vec<String>,
     working_files: Vec<WorkingFile>,
     tasks: Vec<Task>,
     sort_choice: String,
@@ -149,66 +150,6 @@ fn user_update_search(search: String, state: State<'_, Mutex<AppState>>) -> Vec<
 // fn user_change_target_directory() {}
 
 #[tauri::command]
-fn user_rename_files(state: State<'_, Mutex<AppState>>, app: tauri::AppHandle) -> Vec<FileStatus> {
-    let existing_file_status = convert_working_files_to_file_status(&state);
-    let mut state = state.lock().unwrap();
-    let tasks_empty = state.tasks.is_empty();
-    let files_empty = state.file_names.is_empty();
-
-    // if there are tasks but no files selected
-    if !tasks_empty && files_empty {
-        app.dialog()
-            .message("Please add files to be converted first")
-            .title("Warning")
-            .buttons(MessageDialogButtons::OkCustom("Ok".to_string()))
-            .blocking_show();
-
-        existing_file_status
-    }
-    // if there aren't tasks but there are files
-    else if tasks_empty && !files_empty {
-        app.dialog()
-            .message("Please add file tasks first")
-            .title("Warning")
-            .buttons(MessageDialogButtons::OkCustom("Ok".to_string()))
-            .blocking_show();
-
-        existing_file_status
-    }
-    // if there aren't tasks or files
-    else if tasks_empty && files_empty {
-        app.dialog()
-            .message("Please add files and tasks first")
-            .title("Warning")
-            .buttons(MessageDialogButtons::OkCustom("Ok".to_string()))
-            .blocking_show();
-
-        existing_file_status
-    }
-    // if there are tasks and files
-    else {
-        for file in &mut state.working_files {
-            let rename_result = rename(&file.source, &file.target);
-
-            if let Err(t) = rename_result {
-                println!("{t}");
-            }
-        }
-        state.file_names.clear();
-        state.working_files.clear();
-        let blank_file_status: Vec<FileStatus> = vec![];
-
-        app.dialog()
-            .message("Your files have been successfully renamed")
-            .title("Success!")
-            .buttons(MessageDialogButtons::OkCustom("Ok".to_string()))
-            .blocking_show();
-
-        blank_file_status
-    }
-}
-
-#[tauri::command]
 fn solve_duplicates(file_names: Vec<String>, state: &State<'_, Mutex<AppState>>) {
     let mut state = state.lock().unwrap();
     let mut file_names = file_names;
@@ -222,13 +163,23 @@ fn solve_duplicates(file_names: Vec<String>, state: &State<'_, Mutex<AppState>>)
 
 fn sort_file_names(state: &State<'_, Mutex<AppState>>) {
     let mut state = state.lock().unwrap();
-    let mut file_sort_vector: Vec<(String, _)> = Vec::new();
     let sort_choice: &str = &state.sort_choice;
+
+    // instantiate vectors for all possible datatypes
+    let mut file_sort_name: Vec<(String, _)> = Vec::new();
+    let mut file_sort_modified: Vec<(String, _)> = Vec::new();
+    let mut file_sort_created: Vec<(String, _)> = Vec::new();
+    let mut file_sort_size: Vec<(String, _)> = Vec::new();
+    let mut file_sort_type: Vec<(String, _)> = Vec::new();
 
     // iterate over all files
     // if user has access to file, or and file does exist,
     // then it will be added to file_sort_vector
     // TODO: Build in ascending and descending UX control.
+    // FIX: The hierarchy is totally wrong here. matching on every iteration is wasteful
+    // Match sort_choice -> iter file_names -> match metadata ->
+    // -> sort -> write
+    // it's a lot of extra/repeated code, but it's way faster
     for file in &state.file_names {
         match std::fs::metadata(file) {
             Ok(meta_data) => {
@@ -236,35 +187,34 @@ fn sort_file_names(state: &State<'_, Mutex<AppState>>) {
                 // so let's go ahead and do all the magic we need to do here.
 
                 match sort_choice {
+                    "name" => {
+                        // TODO: sort by filename
+                    }
                     "modified" => {
                         let modified = meta_data.modified().unwrap_or(SystemTime::UNIX_EPOCH);
-                        let mut file_sort_vector: Vec<(String, _)> = Vec::new();
-                        file_sort_vector.push((file.to_owned(), modified));
-                        file_sort_vector.sort_by_key(|k| k.1);
+                        file_sort_modified.push((file.to_owned(), modified));
+                        file_sort_modified.sort_by_key(|k| k.1);
                     }
                     "created" => {
                         let created = meta_data.created().unwrap_or(SystemTime::UNIX_EPOCH);
-                        let mut file_sort_vector: Vec<(String, _)> = Vec::new();
-                        file_sort_vector.push((file.to_owned(), created));
-                        file_sort_vector.sort_by_key(|k| k.1);
+                        file_sort_created.push((file.to_owned(), created));
+                        file_sort_created.sort_by_key(|k| k.1);
                     }
                     "size" => {
                         let size = meta_data.len();
-                        let mut file_sort_vector: Vec<(String, _)> = Vec::new();
-                        file_sort_vector.push((file.to_owned(), size));
-                        file_sort_vector.sort_by_key(|k| k.1);
+                        file_sort_size.push((file.to_owned(), size));
+                        file_sort_size.sort_by_key(|k| k.1);
                     }
                     "type" => {
                         let filetype = meta_data.type_id();
-                        let mut file_sort_vector: Vec<(String, _)> = Vec::new();
-                        file_sort_vector.push((file.to_owned(), filetype));
-                        file_sort_vector.sort_by_key(|k| k.1);
+                        file_sort_type.push((file.to_owned(), filetype));
+                        file_sort_type.sort_by_key(|k| k.1);
                     }
                     _ => {
                         // for now this defaults to full path alphabetical.
                         // TODO: This sorts by the full path alphabetically, but we need to sort by
                         // file name instead
-                        file_sort_vector.push((file.to_owned(), 0));
+                        // file_sort_vector.push((file.to_owned(), file.to_owned()));
                     }
                 }
             }
@@ -272,10 +222,29 @@ fn sort_file_names(state: &State<'_, Mutex<AppState>>) {
         }
     }
 
-    // now we've added all accessible files to a sorted array,
-    // let's revies the file_names vector
+    match sort_choice {
+        "name" => {
+            // todo
+        }
+        "modified" => {
+            // todo
+        }
+        "created" => {
+            // todo
+        }
+        "size" => {
+            // todo
+        }
+        "type" => {
+            // todo
+        }
+        _ => {
+            // todo
+        }
+    }
+
     println!("This is the file sorted vector: {:?}", file_sort_vector);
-    state.file_names = file_sort_vector.into_iter().map(|(path, _)| path).collect();
+    state.file_names_sorted = file_sort_vector.into_iter().map(|(path, _)| path).collect();
 }
 
 fn state_update_sort(sort_choice: String, state: &State<'_, Mutex<AppState>>) {
@@ -299,7 +268,7 @@ fn state_update_search(search: String, state: &State<'_, Mutex<AppState>>) {
 fn convert_file_names_to_working_files_(state: &State<'_, Mutex<AppState>>) {
     let mut state = state.lock().unwrap();
     let mut new_working_files: Vec<WorkingFile> = Vec::with_capacity(state.file_names.len());
-    let file_paths = &state.file_names;
+    let file_paths = &state.file_names_sorted;
 
     for file_path in file_paths {
         let working_file = WorkingFile {
@@ -706,6 +675,66 @@ fn convert_working_files_to_file_status(state: &State<'_, Mutex<AppState>>) -> V
             }
         }
         file_statuses
+    }
+}
+
+#[tauri::command]
+fn user_rename_files(state: State<'_, Mutex<AppState>>, app: tauri::AppHandle) -> Vec<FileStatus> {
+    let existing_file_status = convert_working_files_to_file_status(&state);
+    let mut state = state.lock().unwrap();
+    let tasks_empty = state.tasks.is_empty();
+    let files_empty = state.file_names.is_empty();
+
+    // if there are tasks but no files selected
+    if !tasks_empty && files_empty {
+        app.dialog()
+            .message("Please add files to be converted first")
+            .title("Warning")
+            .buttons(MessageDialogButtons::OkCustom("Ok".to_string()))
+            .blocking_show();
+
+        existing_file_status
+    }
+    // if there aren't tasks but there are files
+    else if tasks_empty && !files_empty {
+        app.dialog()
+            .message("Please add file tasks first")
+            .title("Warning")
+            .buttons(MessageDialogButtons::OkCustom("Ok".to_string()))
+            .blocking_show();
+
+        existing_file_status
+    }
+    // if there aren't tasks or files
+    else if tasks_empty && files_empty {
+        app.dialog()
+            .message("Please add files and tasks first")
+            .title("Warning")
+            .buttons(MessageDialogButtons::OkCustom("Ok".to_string()))
+            .blocking_show();
+
+        existing_file_status
+    }
+    // if there are tasks and files
+    else {
+        for file in &mut state.working_files {
+            let rename_result = rename(&file.source, &file.target);
+
+            if let Err(t) = rename_result {
+                println!("{t}");
+            }
+        }
+        state.file_names.clear();
+        state.working_files.clear();
+        let blank_file_status: Vec<FileStatus> = vec![];
+
+        app.dialog()
+            .message("Your files have been successfully renamed")
+            .title("Success!")
+            .buttons(MessageDialogButtons::OkCustom("Ok".to_string()))
+            .blocking_show();
+
+        blank_file_status
     }
 }
 
