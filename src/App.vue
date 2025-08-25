@@ -255,16 +255,11 @@ const search = ref("");
 const sortChoice = ref();
 const metadata = [
     { name: "Name", code: "name" },
-    { name: "Date Created", code: "dateCreated" },
-    { name: "Date Modified", code: "dateModified" },
-    { name: "Type", code: "type" },
+    { name: "Date Created", code: "created" },
+    { name: "Date Modified", code: "modified" },
     { name: "Size", code: "size" },
+    { name: "Type", code: "type" },
 ];
-
-async function user_update_sort() {
-    const fileStatusReturn = await invoke("user_update_sort", { sortChoice: sortChoice })
-}
-
 
 const fileStatusReturn: Ref<FileStatus[]> = ref([]);
 const numFileStatusItems = computed(() => fileStatusReturn.value.length);
@@ -284,6 +279,10 @@ async function open_files() {
     } else {
         console.log("There was no previous selection or current selection. No Updates to make.");
     }
+}
+
+async function user_update_sort() {
+    fileStatusReturn.value = await invoke("user_update_sort", { sortChoice: sortChoice });
 }
 
 //  <-- === Update interface to show latest files === -->
