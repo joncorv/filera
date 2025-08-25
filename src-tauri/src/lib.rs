@@ -101,6 +101,7 @@ pub fn run() {
             user_open_files,
             user_update_tasks,
             user_update_search,
+            user_update_sort,
             user_clear_files,
             user_rename_files,
             user_update_search
@@ -130,6 +131,7 @@ fn user_clear_files(state: State<'_, Mutex<AppState>>) {
     state.working_files.clear();
 }
 
+// TODO: user_update_sort requires a state_update_sort function.
 #[tauri::command]
 fn user_update_sort(sort_choice: String, state: State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
     sort_file_names(sort_choice, &state);
