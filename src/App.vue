@@ -282,7 +282,8 @@ async function open_files() {
 }
 
 async function user_update_sort() {
-    fileStatusReturn.value = await invoke("user_update_sort", { sortChoice: sortChoice });
+    // console.log("Vue starting user_update_sort function.")
+    fileStatusReturn.value = await invoke("user_update_sort", { sortChoice: sortChoice.value });
 }
 
 //  <-- === Update interface to show latest files === -->
