@@ -71,11 +71,11 @@ enum Task {
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, Default)]
 enum SortMetadata {
     #[default]
-    Name(&str),
-    DateCreated(SystemTime),
-    DateModified(SystemTime),
-    Type(TypeId),
-    Size(u64),
+    Name,
+    DateCreated,
+    DateModified,
+    Type,
+    Size,
 }
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, Default)]
 struct AppState {
