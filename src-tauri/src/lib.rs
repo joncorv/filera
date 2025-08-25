@@ -1,11 +1,4 @@
-use std::any::{Any, TypeId};
-use std::fs::{self, metadata};
-use std::os::unix::fs::MetadataExt;
-// use notify_rust::Notification;
-// use std::fs::{self, metadata, Metadata};
-// use natord::compare;
-// use serde_json::to_string;
-// use std::fmt::format;
+use std::any::Any;
 use std::sync::Mutex;
 use std::time::SystemTime;
 use std::{fs::rename, path::PathBuf};
@@ -256,10 +249,9 @@ fn sort_file_names(state: &State<'_, Mutex<AppState>>) {
                         file_sort_vector.sort_by_key(|k| k.1);
                     }
                     "size" => {
-                        let size = meta_data.size();
+                        let size = meta_data.len();
                         let mut file_sort_vector: Vec<(String, _)> = Vec::new();
                         file_sort_vector.push((file.to_owned(), size));
-
                         file_sort_vector.sort_by_key(|k| k.1);
                     }
                     "type" => {
