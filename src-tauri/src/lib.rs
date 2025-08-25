@@ -99,12 +99,12 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             user_open_files,
+            user_update_sort,
             user_update_tasks,
             user_update_search,
-            user_update_sort,
             user_clear_files,
-            user_rename_files,
-            user_update_search
+            user_update_search,
+            user_rename_files
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -115,7 +115,7 @@ pub fn run() {
 #[tauri::command]
 fn user_open_files(file_names: Vec<String>, state: State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
     solve_duplicates(file_names, &state);
-    // sort_file_names(&state);
+    sort_file_names(&state);
     convert_file_names_to_working_files_(&state);
     process_tasks_on_working_files_(&state);
     convert_working_files_to_file_status(&state)
@@ -131,10 +131,10 @@ fn user_clear_files(state: State<'_, Mutex<AppState>>) {
     state.working_files.clear();
 }
 
-// TODO: user_update_sort requires a state_update_sort function.
 #[tauri::command]
 fn user_update_sort(sort_choice: String, state: State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
-    sort_file_names(sort_choice, &state);
+    state_update_sort(sort_choice, &state);
+    sort_file_names(&state);
     convert_file_names_to_working_files_(&state);
     process_tasks_on_working_files_(&state);
     convert_working_files_to_file_status(&state)
@@ -143,7 +143,6 @@ fn user_update_sort(sort_choice: String, state: State<'_, Mutex<AppState>>) -> V
 #[tauri::command]
 fn user_update_tasks(task_list: Vec<Task>, state: State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
     state_update_tasks(task_list, &state);
-    // convert_file_names_to_working_files_(&state);
     process_tasks_on_working_files_(&state);
     convert_working_files_to_file_status(&state)
 }
@@ -228,10 +227,10 @@ fn solve_duplicates(file_names: Vec<String>, state: &State<'_, Mutex<AppState>>)
     state.file_names.dedup();
 }
 
-fn sort_file_names(sort_choice: String, state: &State<'_, Mutex<AppState>>) {
+fn sort_file_names(state: &State<'_, Mutex<AppState>>) {
     let mut state = state.lock().unwrap();
     let mut file_sort_vector: Vec<(String, _)> = Vec::new();
-    let sort_choice: &str = &sort_choice;
+    let sort_choice: &str = &state.sort_choice;
 
     // iterate over all files
     // if user has access to file, or and file does exist,
@@ -285,6 +284,11 @@ fn sort_file_names(sort_choice: String, state: &State<'_, Mutex<AppState>>) {
     // let's revies the file_names vector
     println!("This is the file sorted vector: {:?}", file_sort_vector);
     state.file_names = file_sort_vector.into_iter().map(|(path, _)| path).collect();
+}
+
+fn state_update_sort(sort_choice: String, state: &State<'_, Mutex<AppState>>) {
+    let mut state = state.lock().unwrap();
+    state.sort_choice = sort_choice;
 }
 
 #[tauri::command]
