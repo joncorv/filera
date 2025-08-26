@@ -1,4 +1,6 @@
 use std::any::Any;
+use std::fs::metadata;
+use std::path::Path;
 use std::sync::Mutex;
 use std::time::SystemTime;
 use std::{fs::rename, path::PathBuf};
@@ -166,7 +168,7 @@ fn sort_file_names(state: &State<'_, Mutex<AppState>>) {
     let sort_choice: &str = &state.sort_choice;
 
     // instantiate vectors for all possible datatypes
-    let mut file_sort_name: Vec<(String, _)> = Vec::new();
+    // let mut file_sort_name: Vec<(String, _)> = Vec::new();
     let mut file_sort_modified: Vec<(String, _)> = Vec::new();
     let mut file_sort_created: Vec<(String, _)> = Vec::new();
     let mut file_sort_size: Vec<(String, _)> = Vec::new();
@@ -224,7 +226,25 @@ fn sort_file_names(state: &State<'_, Mutex<AppState>>) {
 
     match sort_choice {
         "name" => {
-            // todo
+            let mut file_sort_name: Vec<(String, _)> = Vec::new();
+
+            for file in &state.file_names {
+                match std::fs::metadata(file) {
+                    Ok(meta_data) => {
+                        let filename = Path::new(file).file_name().unwrap();
+
+                        if let Some(good_filename) = filename {
+                            let string_filename = good_filename.to_string_lossy().to_string();
+                            file_sort_name.push((file.to_owned(), string_filename));
+                        }
+                    }
+                    Err(e) => {
+                        println!("Metadata error. Skipping file because: {:?}", e)
+                    }
+                }
+            }
+
+            file_sort_name.sort_by_key(|k| k.1);
         }
         "modified" => {
             // todo
