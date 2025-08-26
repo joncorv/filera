@@ -112,8 +112,8 @@ pub fn run() {
 fn user_open_files(file_names: Vec<String>, state: State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
     solve_duplicates(file_names, &state);
     sort_file_names(&state);
-    convert_file_names_to_working_files_(&state);
-    process_tasks_on_working_files_(&state);
+    convert_file_names_to_working_files(&state);
+    process_tasks_on_working_files(&state);
     convert_working_files_to_file_status(&state)
 }
 
@@ -131,15 +131,15 @@ fn user_clear_files(state: State<'_, Mutex<AppState>>) {
 fn user_update_sort(sort_choice: String, state: State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
     state_update_sort(sort_choice, &state);
     sort_file_names(&state);
-    convert_file_names_to_working_files_(&state);
-    process_tasks_on_working_files_(&state);
+    convert_file_names_to_working_files(&state);
+    process_tasks_on_working_files(&state);
     convert_working_files_to_file_status(&state)
 }
 
 #[tauri::command]
 fn user_update_tasks(task_list: Vec<Task>, state: State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
     state_update_tasks(task_list, &state);
-    process_tasks_on_working_files_(&state);
+    process_tasks_on_working_files(&state);
     convert_working_files_to_file_status(&state)
 }
 
@@ -279,7 +279,7 @@ fn state_update_search(search: String, state: &State<'_, Mutex<AppState>>) {
 }
 
 #[tauri::command]
-fn convert_file_names_to_working_files_(state: &State<'_, Mutex<AppState>>) {
+fn convert_file_names_to_working_files(state: &State<'_, Mutex<AppState>>) {
     let mut state = state.lock().unwrap();
     let mut new_working_files: Vec<WorkingFile> = Vec::with_capacity(state.file_names.len());
     let file_paths = &state.file_names_sorted;
@@ -298,7 +298,7 @@ fn convert_file_names_to_working_files_(state: &State<'_, Mutex<AppState>>) {
 // fn state_update_target_directory() {}
 
 #[tauri::command]
-fn process_tasks_on_working_files_(state: &State<'_, Mutex<AppState>>) {
+fn process_tasks_on_working_files(state: &State<'_, Mutex<AppState>>) {
     let mut state = state.lock().unwrap();
     let tasks = &state.tasks.clone();
 
