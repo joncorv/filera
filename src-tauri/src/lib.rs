@@ -227,12 +227,17 @@ fn sort_file_names(state: &State<'_, Mutex<AppState>>) {
             state.file_names_sorted = valid_files.into_iter().map(|(path, _)| path).collect();
         }
         "type" => {
-            let mut valid_files: Vec<(String, _)> = state
+            let mut valid_files: Vec<(String, String)> = state
                 .file_names
                 .iter()
                 .filter_map(|file| {
-                    let meta_data = std::fs::metadata(file).ok()?.file_type();
-                    Some((file.clone(), meta_data))
+                    std::fs::metadata(file).ok()?; // File must exist
+
+                    let extension = Path::new(file)
+                        .extension()
+                        .map_or("zz_no_ext".to_string(), |ext| ext.to_string_lossy().to_string());
+
+                    Some((file.clone(), extension))
                 })
                 .collect();
 
