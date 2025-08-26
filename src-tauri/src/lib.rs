@@ -223,7 +223,7 @@ fn sort_file_names(state: &State<'_, Mutex<AppState>>) {
                 })
                 .collect();
 
-            valid_files.sort_by_key(|(_, key)| key.clone());
+            valid_files.sort_by_key(|(_, key)| std::cmp::Reverse(key.clone()));
             state.file_names_sorted = valid_files.into_iter().map(|(path, _)| path).collect();
         }
         "type" => {
@@ -231,7 +231,7 @@ fn sort_file_names(state: &State<'_, Mutex<AppState>>) {
                 .file_names
                 .iter()
                 .filter_map(|file| {
-                    let meta_data = std::fs::metadata(file).ok()?.type_id();
+                    let meta_data = std::fs::metadata(file).ok()?.file_type();
                     Some((file.clone(), meta_data))
                 })
                 .collect();
