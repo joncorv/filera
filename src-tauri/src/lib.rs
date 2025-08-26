@@ -1,4 +1,5 @@
 use std::any::Any;
+use std::collections::HashMap;
 use std::fs::metadata;
 use std::path::Path;
 use std::sync::Mutex;
@@ -114,6 +115,7 @@ fn user_open_files(file_names: Vec<String>, state: State<'_, Mutex<AppState>>) -
     sort_file_names(&state);
     convert_file_names_to_working_files(&state);
     process_tasks_on_working_files(&state);
+    resolve_workingfile_duplicates(&state);
     convert_working_files_to_file_status(&state)
 }
 
@@ -133,6 +135,7 @@ fn user_update_sort(sort_choice: String, state: State<'_, Mutex<AppState>>) -> V
     sort_file_names(&state);
     convert_file_names_to_working_files(&state);
     process_tasks_on_working_files(&state);
+    resolve_workingfile_duplicates(&state);
     convert_working_files_to_file_status(&state)
 }
 
@@ -140,6 +143,7 @@ fn user_update_sort(sort_choice: String, state: State<'_, Mutex<AppState>>) -> V
 fn user_update_tasks(task_list: Vec<Task>, state: State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
     state_update_tasks(task_list, &state);
     process_tasks_on_working_files(&state);
+    resolve_workingfile_duplicates(&state);
     convert_working_files_to_file_status(&state)
 }
 
@@ -649,6 +653,16 @@ fn process_tasks_on_working_files(state: &State<'_, Mutex<AppState>>) {
             }
         }
     }
+}
+
+fn resolve_workingfile_duplicates(state: &State<'_, Mutex<AppState>>) {
+    // start here motherfucker
+    let state = state.lock().unwrap();
+
+    let working_targets = state.working_files.iter().map(|working_file| {
+        // do things here to working_file.target
+        todo!("something")
+    });
 }
 
 fn convert_working_files_to_file_status(state: &State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
