@@ -167,104 +167,93 @@ fn sort_file_names(state: &State<'_, Mutex<AppState>>) {
     let mut state = state.lock().unwrap();
     let sort_choice: &str = &state.sort_choice;
 
-    // instantiate vectors for all possible datatypes
-    // let mut file_sort_name: Vec<(String, _)> = Vec::new();
-    let mut file_sort_modified: Vec<(String, _)> = Vec::new();
-    let mut file_sort_created: Vec<(String, _)> = Vec::new();
-    let mut file_sort_size: Vec<(String, _)> = Vec::new();
-    let mut file_sort_type: Vec<(String, _)> = Vec::new();
-
-    // iterate over all files
-    // if user has access to file, or and file does exist,
-    // then it will be added to file_sort_vector
-    // TODO: Build in ascending and descending UX control.
-    // FIX: The hierarchy is totally wrong here. matching on every iteration is wasteful
-    // Match sort_choice -> iter file_names -> match metadata ->
-    // -> sort -> write
-    // it's a lot of extra/repeated code, but it's way faster
-    for file in &state.file_names {
-        match std::fs::metadata(file) {
-            Ok(meta_data) => {
-                // Here we have declared that the metadata is in fact accessible,
-                // so let's go ahead and do all the magic we need to do here.
-
-                match sort_choice {
-                    "name" => {
-                        // TODO: sort by filename
-                    }
-                    "modified" => {
-                        let modified = meta_data.modified().unwrap_or(SystemTime::UNIX_EPOCH);
-                        file_sort_modified.push((file.to_owned(), modified));
-                        file_sort_modified.sort_by_key(|k| k.1);
-                    }
-                    "created" => {
-                        let created = meta_data.created().unwrap_or(SystemTime::UNIX_EPOCH);
-                        file_sort_created.push((file.to_owned(), created));
-                        file_sort_created.sort_by_key(|k| k.1);
-                    }
-                    "size" => {
-                        let size = meta_data.len();
-                        file_sort_size.push((file.to_owned(), size));
-                        file_sort_size.sort_by_key(|k| k.1);
-                    }
-                    "type" => {
-                        let filetype = meta_data.type_id();
-                        file_sort_type.push((file.to_owned(), filetype));
-                        file_sort_type.sort_by_key(|k| k.1);
-                    }
-                    _ => {
-                        // for now this defaults to full path alphabetical.
-                        // TODO: This sorts by the full path alphabetically, but we need to sort by
-                        // file name instead
-                        // file_sort_vector.push((file.to_owned(), file.to_owned()));
-                    }
-                }
-            }
-            Err(e) => println!("Metadata error. Skipping file because: {:?}", e),
-        }
-    }
-
     match sort_choice {
         "name" => {
-            let mut file_sort_name: Vec<(String, _)> = Vec::new();
+            let mut valid_files: Vec<(String, String)> = state
+                .file_names
+                .iter()
+                .filter_map(|file| {
+                    let filename = Path::new(file).file_name()?.to_string_lossy().to_string();
+                    Some((file.clone(), filename))
+                })
+                .collect();
 
-            for file in &state.file_names {
-                match std::fs::metadata(file) {
-                    Ok(meta_data) => {
-                        let filename = Path::new(file).file_name().unwrap();
-
-                        if let Some(good_filename) = filename {
-                            let string_filename = good_filename.to_string_lossy().to_string();
-                            file_sort_name.push((file.to_owned(), string_filename));
-                        }
-                    }
-                    Err(e) => {
-                        println!("Metadata error. Skipping file because: {:?}", e)
-                    }
-                }
-            }
-
-            file_sort_name.sort_by_key(|k| k.1);
+            valid_files.sort_by_key(|(_, key)| key.clone());
+            state.file_names_sorted = valid_files.into_iter().map(|(path, _)| path).collect();
         }
         "modified" => {
-            // todo
+            let mut valid_files: Vec<(String, SystemTime)> = state
+                .file_names
+                .iter()
+                .filter_map(|file| {
+                    let meta_data = std::fs::metadata(file)
+                        .ok()?
+                        .modified()
+                        .unwrap_or(SystemTime::UNIX_EPOCH);
+                    Some((file.clone(), meta_data))
+                })
+                .collect();
+
+            valid_files.sort_by_key(|(_, key)| key.clone());
+            state.file_names_sorted = valid_files.into_iter().map(|(path, _)| path).collect();
         }
         "created" => {
-            // todo
+            let mut valid_files: Vec<(String, SystemTime)> = state
+                .file_names
+                .iter()
+                .filter_map(|file| {
+                    let meta_data = std::fs::metadata(file)
+                        .ok()?
+                        .created()
+                        .unwrap_or(SystemTime::UNIX_EPOCH);
+                    Some((file.clone(), meta_data))
+                })
+                .collect();
+
+            valid_files.sort_by_key(|(_, key)| key.clone());
+            state.file_names_sorted = valid_files.into_iter().map(|(path, _)| path).collect();
         }
         "size" => {
-            // todo
+            let mut valid_files: Vec<(String, _)> = state
+                .file_names
+                .iter()
+                .filter_map(|file| {
+                    let meta_data = std::fs::metadata(file).ok()?.len();
+                    Some((file.clone(), meta_data))
+                })
+                .collect();
+
+            valid_files.sort_by_key(|(_, key)| key.clone());
+            state.file_names_sorted = valid_files.into_iter().map(|(path, _)| path).collect();
         }
         "type" => {
-            // todo
+            let mut valid_files: Vec<(String, _)> = state
+                .file_names
+                .iter()
+                .filter_map(|file| {
+                    let meta_data = std::fs::metadata(file).ok()?.type_id();
+                    Some((file.clone(), meta_data))
+                })
+                .collect();
+
+            valid_files.sort_by_key(|(_, key)| key.clone());
+            state.file_names_sorted = valid_files.into_iter().map(|(path, _)| path).collect();
         }
         _ => {
-            // todo
+            // for now use the name sorting
+            let mut valid_files: Vec<(String, String)> = state
+                .file_names
+                .iter()
+                .filter_map(|file| {
+                    let filename = Path::new(file).file_name()?.to_string_lossy().to_string();
+                    Some((file.clone(), filename))
+                })
+                .collect();
+
+            valid_files.sort_by_key(|(_, key)| key.clone());
+            state.file_names_sorted = valid_files.into_iter().map(|(path, _)| path).collect();
         }
     }
-
-    println!("This is the file sorted vector: {:?}", file_sort_vector);
-    state.file_names_sorted = file_sort_vector.into_iter().map(|(path, _)| path).collect();
 }
 
 fn state_update_sort(sort_choice: String, state: &State<'_, Mutex<AppState>>) {
