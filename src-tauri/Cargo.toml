@@ -1,7 +1,7 @@
 [package]
 name = "giant-batch-renamer"
-version = "0.1.0"
-description = "A Tauri App"
+version = "0.1.2"
+description = "Batch rename all your files with ease"
 authors = ["Jonathan Corriveau"]
 edition = "2021"
 
