@@ -656,13 +656,41 @@ fn process_tasks_on_working_files(state: &State<'_, Mutex<AppState>>) {
 }
 
 fn resolve_workingfile_duplicates(state: &State<'_, Mutex<AppState>>) {
-    // start here motherfucker
-    let state = state.lock().unwrap();
+    let mut state = state.lock().unwrap();
 
-    let working_targets = state.working_files.iter().map(|working_file| {
-        // do things here to working_file.target
-        todo!("something")
-    });
+    state.working_files = state
+        .working_files
+        .drain(..)
+        .scan(HashMap::<PathBuf, usize>::new(), |seen, working_file| {
+            let count = seen.entry(working_file.target.clone()).or_insert(0);
+            let new_target = match *count {
+                0 => working_file.target.clone(),
+                n => {
+                    let (parent, stem, extension) = (
+                        working_file.target.parent(),
+                        working_file.target.file_stem().unwrap_or_default().to_string_lossy(),
+                        working_file.target.extension().map(|e| e.to_string_lossy()),
+                    );
+
+                    let new_filename = match extension {
+                        Some(ext) => format!("{}_{:04}.{}", stem, n, ext),
+                        None => format!("{}_{:04}", stem, n),
+                    };
+
+                    match parent {
+                        Some(p) => p.join(new_filename),     // Move happens here
+                        None => PathBuf::from(new_filename), // Move happens here
+                    }
+                }
+            };
+            *count += 1;
+            Some(WorkingFile {
+                source: working_file.source,
+                target: new_target,
+                active: working_file.active,
+            })
+        })
+        .collect();
 }
 
 fn convert_working_files_to_file_status(state: &State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
