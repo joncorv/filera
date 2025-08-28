@@ -1,6 +1,7 @@
-use std::any::Any;
+// use std::any::Any;
 use std::collections::HashMap;
-use std::fs::metadata;
+use std::net::Shutdown;
+// use std::fs::metadata;
 use std::path::Path;
 use std::sync::Mutex;
 use std::time::SystemTime;
@@ -735,7 +736,11 @@ fn convert_working_files_to_file_status(state: &State<'_, Mutex<AppState>>) -> V
 }
 
 #[tauri::command]
-fn user_rename_files(state: State<'_, Mutex<AppState>>, app: tauri::AppHandle) -> Vec<FileStatus> {
+fn user_rename_files(
+    state: State<'_, Mutex<AppState>>,
+    app: tauri::AppHandle,
+    app_thread: tauri::AppHandle,
+) -> Vec<FileStatus> {
     let existing_file_status = convert_working_files_to_file_status(&state);
     let mut state = state.lock().unwrap();
     let tasks_empty = state.tasks.is_empty();
@@ -773,6 +778,43 @@ fn user_rename_files(state: State<'_, Mutex<AppState>>, app: tauri::AppHandle) -
     }
     // if there are tasks and files
     else {
+        // let answer = std::thread::spawn(move || {
+        //     app_thread
+        //         .dialog()
+        //         .message("Are you sure you want to rename these files?".to_string())
+        //         .title("Warning")
+        //         // .buttons(MessageDialogButtons::OkCancelCustom("Cancel".to_string(), "Ok".to_string()))
+        //         .buttons(MessageDialogButtons::OkCancel)
+        //         .blocking_show()
+        // });
+
+        // let result = answer.join().unwrap();
+        //     let result = true;
+        //
+        //     if result {
+        //         for file in &mut state.working_files {
+        //             let rename_result = rename(&file.source, &file.target);
+        //
+        //             if let Err(t) = rename_result {
+        //                 println!("{t}");
+        //             }
+        //         }
+        //         state.file_names.clear();
+        //         state.working_files.clear();
+        //         let blank_file_status: Vec<FileStatus> = vec![];
+        //
+        //         app.dialog()
+        //             .message("Your files have been successfully renamed")
+        //             .title("Success!")
+        //             .buttons(MessageDialogButtons::OkCustom("Ok".to_string()))
+        //             .blocking_show();
+        //
+        //         blank_file_status
+        //     } else {
+        //         existing_file_status
+        //     }
+        // }
+
         for file in &mut state.working_files {
             let rename_result = rename(&file.source, &file.target);
 
