@@ -436,6 +436,15 @@ const createTemplate = () => {
 //     console.log("Export configuration");
 // };
 
+
+async function userNotification() {
+    await invoke("user_notification");
+}
+
+async function userDialog() {
+    await invoke("user_dialog");
+}
+
 </script>
 
 <template>
@@ -567,6 +576,8 @@ const createTemplate = () => {
                         aria-controls="custom_text_menu" />
                     <Menu ref="taskMenuToggle" id="custom_text_menu" :model="taskMenuItems" :popup="true" />
 
+                    <Button label="Make Notification" @click="userNotification" size="small" variant="outlined" />
+                    <Button label="Make Dialog" @click="userDialog" size="small" variant="outlined" />
                     <!-- === Separator === -->
                     <div class="flex-1"></div>
 

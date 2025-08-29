@@ -1,6 +1,6 @@
-use rfd::{MessageButtons, MessageDialog, MessageDialogResult};
 use std::collections::HashMap;
 use std::path::Path;
+use std::sync::mpsc;
 use std::sync::Mutex;
 use std::time::SystemTime;
 use std::{fs::rename, path::PathBuf};
@@ -100,7 +100,9 @@ pub fn run() {
             user_update_search,
             user_clear_files,
             user_update_search,
-            user_rename_files
+            user_rename_files,
+            user_notification,
+            user_dialog
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -734,11 +736,7 @@ fn convert_working_files_to_file_status(state: &State<'_, Mutex<AppState>>) -> V
 }
 
 #[tauri::command]
-fn user_rename_files(
-    state: State<'_, Mutex<AppState>>,
-    app: tauri::AppHandle,
-    app_thread: tauri::AppHandle,
-) -> Vec<FileStatus> {
+fn user_rename_files(state: State<'_, Mutex<AppState>>, app: tauri::AppHandle) -> Vec<FileStatus> {
     let existing_file_status = convert_working_files_to_file_status(&state);
     let mut state = state.lock().unwrap();
     let tasks_empty = state.tasks.is_empty();
@@ -750,7 +748,7 @@ fn user_rename_files(
             .message("Please add files to be converted first")
             .title("Warning")
             .buttons(MessageDialogButtons::OkCustom("Ok".to_string()))
-            .blocking_show();
+            .show(|_| println!("fuck off"));
 
         existing_file_status
     }
@@ -760,7 +758,7 @@ fn user_rename_files(
             .message("Please add file tasks first")
             .title("Warning")
             .buttons(MessageDialogButtons::OkCustom("Ok".to_string()))
-            .blocking_show();
+            .show(|_| println!("fuck off"));
 
         existing_file_status
     }
@@ -770,57 +768,29 @@ fn user_rename_files(
             .message("Please add files and tasks first")
             .title("Warning")
             .buttons(MessageDialogButtons::OkCustom("Ok".to_string()))
-            .blocking_show();
+            .show(|_| println!("fuck off"));
 
         existing_file_status
     }
     // if there are tasks and files
     else {
-        //     let answer = std::thread::spawn(move || {
-        //         app_thread
-        //             .dialog()
-        //             .message("Are you sure you want to rename these files?".to_string())
-        //             .title("Warning")
-        //             // .buttons(MessageDialogButtons::OkCancelCustom("Cancel".to_string(), "Ok".to_string()))
-        //             .buttons(MessageDialogButtons::OkCancel)
-        //             .blocking_show()
-        //     });
-        //
-        //     let result = answer.join().unwrap();
-        //     // let result = true;
-        //
-        //     if result {
-        //         for file in &mut state.working_files {
-        //             let rename_result = rename(&file.source, &file.target);
-        //
-        //             if let Err(t) = rename_result {
-        //                 println!("{t}");
-        //             }
-        //         }
-        //         state.file_names.clear();
-        //         state.working_files.clear();
-        //         let blank_file_status: Vec<FileStatus> = vec![];
-        //
-        //         app.dialog()
-        //             .message("Your files have been successfully renamed")
-        //             .title("Success!")
-        //             .buttons(MessageDialogButtons::OkCustom("Ok".to_string()))
-        //             .blocking_show();
-        //
-        //         blank_file_status
-        //     } else {
-        //         existing_file_status
-        //     }
-        // }
+        // create sender and receiver channels for closure
+        let (sender, receiver) = mpsc::channel();
 
-        let result = MessageDialog::new()
-            .set_title("Confirm Action")
-            .set_description("Are you sure you want to continue?")
-            .set_buttons(MessageButtons::YesNo)
-            .show();
+        app.dialog()
+            .message("Tauri is Awesome")
+            .title("Tauri is Awesome")
+            .buttons(MessageDialogButtons::OkCancelCustom(
+                "Ok".to_string(),
+                "Cancel".to_string(),
+            ))
+            .show(move |result| {
+                sender.send(result).unwrap();
+            });
+        let answer: bool = receiver.recv().unwrap();
 
-        match result {
-            MessageDialogResult::Yes => {
+        match answer {
+            true => {
                 println!("User clicked Yes");
                 for file in &mut state.working_files {
                     let rename_result = rename(&file.source, &file.target);
@@ -833,22 +803,10 @@ fn user_rename_files(
                 state.working_files.clear();
                 let blank_file_status: Vec<FileStatus> = vec![];
 
-                // MessageDialog::new()
-                //     .set_title("Success!")
-                //     .set_description("Your files have been successfully renamed")
-                //     .set_buttons(MessageButtons::Ok)
-                //     .show();
-
-                // let notification = notify_rust::Notification::new()
-                //     .summary("Success!")
-                //     .body("Your files have been successfully renamed")
-                //     .icon("firefox")
-                //     .show();
-
                 app.notification()
                     .builder()
-                    .title("Error")
-                    .body("Something went wrong!")
+                    .title("Success")
+                    .body("Files converted successfully")
                     .show()
                     .unwrap();
 
@@ -870,16 +828,31 @@ fn user_rename_files(
 
 // // This should print to the fucking console but it doesn't.
 // // This seems to be a linux only issue.
-// #[tauri::command]
-// fn print_something_to_console(console_title: &str, console_text: &str) -> String {
-//     let my_line: String = format!("{}\n{}", console_title, console_text);
-//     println!("{}", &my_line);
+#[tauri::command]
+fn user_notification(app: tauri::AppHandle) {
+    // let my_line: String = format!("{}\n{}", console_title, console_text);
+    // println!("{}", &my_line);
 
-//     Notification::new()
-//         .summary("This is the summary")
-//         .body("This is the body")
-//         .icon("firefox")
-//         .show()
-//         .unwrap();
-//     return my_line;
-// }
+    app.notification()
+        .builder()
+        .title("Tauri")
+        .body("fucking shitass")
+        .show()
+        .unwrap();
+    // return my_line;
+}
+
+#[tauri::command]
+fn user_dialog(app: tauri::AppHandle) {
+    app.dialog()
+        .message("Tauri is Awesome")
+        .title("Tauri is Awesome")
+        .buttons(MessageDialogButtons::OkCancelCustom(
+            "Absolutely".to_string(),
+            "Totally".to_string(),
+        ))
+        .show(|result| match result {
+            true => println!("True"),
+            false => println!("False"),
+        });
+}
