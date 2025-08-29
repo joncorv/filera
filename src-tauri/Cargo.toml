@@ -29,4 +29,5 @@ tauri-plugin-dialog = "2"
 clippy = "0.0.302"
 time = "0.3.41"
 natord = "1.0.9"
+rfd = { version = "0.15.4", default-features = false, features = ["gtk3"] }
 

@@ -1,14 +1,11 @@
-// use std::any::Any;
+use rfd::{MessageButtons, MessageDialog, MessageDialogResult};
 use std::collections::HashMap;
-use std::net::Shutdown;
-// use std::fs::metadata;
 use std::path::Path;
 use std::sync::Mutex;
 use std::time::SystemTime;
 use std::{fs::rename, path::PathBuf};
 use tauri::{Manager, State};
 use tauri_plugin_dialog::{DialogExt, MessageDialogButtons};
-// use tauri_plugin_notification::{Notification, NotificationBuilder};
 use time::OffsetDateTime;
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
@@ -815,6 +812,17 @@ fn user_rename_files(
         //     }
         // }
 
+        let result = MessageDialog::new()
+            .set_title("Confirm Action")
+            .set_description("Are you sure you want to continue?")
+            .set_buttons(MessageButtons::YesNo)
+            .show();
+
+        match result {
+            MessageDialogResult::Yes => println!("User clicked Yes"),
+            _ => println!("User clicked No"),
+        }
+
         for file in &mut state.working_files {
             let rename_result = rename(&file.source, &file.target);
 
@@ -826,11 +834,11 @@ fn user_rename_files(
         state.working_files.clear();
         let blank_file_status: Vec<FileStatus> = vec![];
 
-        app.dialog()
-            .message("Your files have been successfully renamed")
-            .title("Success!")
-            .buttons(MessageDialogButtons::OkCustom("Ok".to_string()))
-            .blocking_show();
+        // app.dialog()
+        //     .message("Your files have been successfully renamed")
+        //     .title("Success!")
+        //     .buttons(MessageDialogButtons::OkCustom("Ok".to_string()))
+        //     .blocking_show();
 
         blank_file_status
     }
