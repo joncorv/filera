@@ -6,6 +6,7 @@ use std::time::SystemTime;
 use std::{fs::rename, path::PathBuf};
 use tauri::{Manager, State};
 use tauri_plugin_dialog::{DialogExt, MessageDialogButtons};
+use tauri_plugin_notification::{Notification, NotificationBuilder, NotificationExt};
 use time::OffsetDateTime;
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
@@ -819,28 +820,51 @@ fn user_rename_files(
             .show();
 
         match result {
-            MessageDialogResult::Yes => println!("User clicked Yes"),
-            _ => println!("User clicked No"),
-        }
+            MessageDialogResult::Yes => {
+                println!("User clicked Yes");
+                for file in &mut state.working_files {
+                    let rename_result = rename(&file.source, &file.target);
 
-        for file in &mut state.working_files {
-            let rename_result = rename(&file.source, &file.target);
+                    if let Err(t) = rename_result {
+                        println!("{t}");
+                    }
+                }
+                state.file_names.clear();
+                state.working_files.clear();
+                let blank_file_status: Vec<FileStatus> = vec![];
 
-            if let Err(t) = rename_result {
-                println!("{t}");
+                // MessageDialog::new()
+                //     .set_title("Success!")
+                //     .set_description("Your files have been successfully renamed")
+                //     .set_buttons(MessageButtons::Ok)
+                //     .show();
+
+                // let notification = notify_rust::Notification::new()
+                //     .summary("Success!")
+                //     .body("Your files have been successfully renamed")
+                //     .icon("firefox")
+                //     .show();
+
+                app.notification()
+                    .builder()
+                    .title("Error")
+                    .body("Something went wrong!")
+                    .show()
+                    .unwrap();
+
+                blank_file_status
+            }
+            _ => {
+                println!("User clicked No");
+                existing_file_status
             }
         }
-        state.file_names.clear();
-        state.working_files.clear();
-        let blank_file_status: Vec<FileStatus> = vec![];
 
         // app.dialog()
         //     .message("Your files have been successfully renamed")
         //     .title("Success!")
         //     .buttons(MessageDialogButtons::OkCustom("Ok".to_string()))
         //     .blocking_show();
-
-        blank_file_status
     }
 }
 
