@@ -1,12 +1,13 @@
 use std::collections::HashMap;
 use std::path::Path;
-use std::sync::mpsc;
-use std::sync::Mutex;
+use std::sync::{mpsc, Mutex};
+use std::thread;
+use std::time::Duration;
 use std::time::SystemTime;
 use std::{fs::rename, path::PathBuf};
 use tauri::{Manager, State};
-use tauri_plugin_dialog::{DialogExt, MessageDialogButtons};
-use tauri_plugin_notification::{Notification, NotificationBuilder, NotificationExt};
+use tauri_plugin_dialog::{DialogExt, MessageDialogButtons, MessageDialogKind};
+use tauri_plugin_notification::NotificationExt;
 use time::OffsetDateTime;
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
@@ -745,10 +746,13 @@ fn user_rename_files(state: State<'_, Mutex<AppState>>, app: tauri::AppHandle) -
     // if there are tasks but no files selected
     if !tasks_empty && files_empty {
         app.dialog()
-            .message("Please add files to be converted first")
+            .message("Please add files first")
             .title("Warning")
             .buttons(MessageDialogButtons::OkCustom("Ok".to_string()))
-            .show(|_| println!("fuck off"));
+            .show(|result| match result {
+                true => println!("True"),
+                false => println!("False"),
+            });
 
         existing_file_status
     }
@@ -758,7 +762,10 @@ fn user_rename_files(state: State<'_, Mutex<AppState>>, app: tauri::AppHandle) -
             .message("Please add file tasks first")
             .title("Warning")
             .buttons(MessageDialogButtons::OkCustom("Ok".to_string()))
-            .show(|_| println!("fuck off"));
+            .show(|result| match result {
+                true => println!("True"),
+                false => println!("False"),
+            });
 
         existing_file_status
     }
@@ -768,7 +775,10 @@ fn user_rename_files(state: State<'_, Mutex<AppState>>, app: tauri::AppHandle) -
             .message("Please add files and tasks first")
             .title("Warning")
             .buttons(MessageDialogButtons::OkCustom("Ok".to_string()))
-            .show(|_| println!("fuck off"));
+            .show(|result| match result {
+                true => println!("True"),
+                false => println!("False"),
+            });
 
         existing_file_status
     }
@@ -785,9 +795,15 @@ fn user_rename_files(state: State<'_, Mutex<AppState>>, app: tauri::AppHandle) -
                 "Cancel".to_string(),
             ))
             .show(move |result| {
-                sender.send(result).unwrap();
+                let _ = sender.send(result);
             });
-        let answer: bool = receiver.recv().unwrap();
+        let answer: bool = match receiver.recv_timeout(Duration::from_secs(6)) {
+            Ok(result) => result,
+            Err(_) => {
+                println!("Dialog timeout or error");
+                return existing_file_status;
+            }
+        };
 
         match answer {
             true => {
@@ -817,12 +833,6 @@ fn user_rename_files(state: State<'_, Mutex<AppState>>, app: tauri::AppHandle) -
                 existing_file_status
             }
         }
-
-        // app.dialog()
-        //     .message("Your files have been successfully renamed")
-        //     .title("Success!")
-        //     .buttons(MessageDialogButtons::OkCustom("Ok".to_string()))
-        //     .blocking_show();
     }
 }
 
@@ -844,15 +854,32 @@ fn user_notification(app: tauri::AppHandle) {
 
 #[tauri::command]
 fn user_dialog(app: tauri::AppHandle) {
-    app.dialog()
-        .message("Tauri is Awesome")
-        .title("Tauri is Awesome")
-        .buttons(MessageDialogButtons::OkCancelCustom(
-            "Absolutely".to_string(),
-            "Totally".to_string(),
-        ))
-        .show(|result| match result {
-            true => println!("True"),
-            false => println!("False"),
-        });
+    let (sender, receiver) = mpsc::channel();
+    let app_clone = app.clone();
+
+    // Spawn thread for blocking_show since it can't run on main thread
+    thread::spawn(move || {
+        let dialog_result = app_clone
+            .dialog()
+            .message("Tauri is Awesome")
+            .title("Tauri is Awesome")
+            .buttons(MessageDialogButtons::OkCancelCustom(
+                "Ok".to_string(),
+                "Cancel".to_string(),
+            ))
+            .blocking_show();
+
+        sender.send(dialog_result).unwrap();
+    });
+
+    // Wait for result from the spawned thread
+    let ans = receiver.recv().unwrap();
+
+    match ans {
+        true => println!("heavy happy truth"),
+        false => println!("such falsitudes"),
+    }
+    println!("this is the dialog return: {:#?}", ans);
 }
+
+fn handle_dialog_result(result: bool, app: tauri::AppHandle) {}
