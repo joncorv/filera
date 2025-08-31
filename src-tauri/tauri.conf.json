@@ -4,9 +4,9 @@
   "version": "0.1.2",
   "identifier": "com.giantbatchrenamer",
   "build": {
-    "beforeDevCommand": "npm run dev",
+    "beforeDevCommand": "yarn run dev",
     "devUrl": "http://localhost:8000",
-    "beforeBuildCommand": "npm run build",
+    "beforeBuildCommand": "yarn run build",
     "frontendDist": "../dist"
   },
   "app": {
