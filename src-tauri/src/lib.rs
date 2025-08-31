@@ -1,3 +1,4 @@
+use rfd::{AsyncMessageDialog, MessageDialogResult};
 use std::collections::HashMap;
 use std::path::Path;
 use std::sync::{mpsc, Mutex};
@@ -839,7 +840,7 @@ fn user_rename_files(state: State<'_, Mutex<AppState>>, app: tauri::AppHandle) -
 // // This should print to the fucking console but it doesn't.
 // // This seems to be a linux only issue.
 #[tauri::command]
-fn user_notification(app: tauri::AppHandle) {
+fn user_notification(app: tauri::AppHandle) -> String {
     // let my_line: String = format!("{}\n{}", console_title, console_text);
     // println!("{}", &my_line);
 
@@ -850,36 +851,29 @@ fn user_notification(app: tauri::AppHandle) {
         .show()
         .unwrap();
     // return my_line;
+
+    return "balls".to_string();
 }
 
 #[tauri::command]
-fn user_dialog(app: tauri::AppHandle) {
-    let (sender, receiver) = mpsc::channel();
-    let app_clone = app.clone();
+async fn user_dialog() -> Result<String, String> {
+    let outer: String = "outergood".to_string();
 
-    // Spawn thread for blocking_show since it can't run on main thread
-    thread::spawn(move || {
-        let dialog_result = app_clone
-            .dialog()
-            .message("Tauri is Awesome")
-            .title("Tauri is Awesome")
-            .buttons(MessageDialogButtons::OkCancelCustom(
-                "Ok".to_string(),
-                "Cancel".to_string(),
-            ))
-            .blocking_show();
-
-        sender.send(dialog_result).unwrap();
-    });
-
-    // Wait for result from the spawned thread
-    let ans = receiver.recv().unwrap();
-
-    match ans {
-        true => println!("heavy happy truth"),
-        false => println!("such falsitudes"),
+    match AsyncMessageDialog::new()
+        .set_title("Title")
+        .set_description(format!("Hey this is a dialog description."))
+        .set_buttons(rfd::MessageButtons::OkCancel)
+        .show()
+        .await
+    {
+        MessageDialogResult::Ok => Ok({
+            let inner = "innergood".to_string();
+            format!(
+                "outer:{}, inner:{}. Hello, you've been greeted from Rust!",
+                outer, inner
+            )
+        }),
+        MessageDialogResult::Cancel => Ok("User clicked cancel".to_string()),
+        _ => Err("Shit hit the fan".to_string()),
     }
-    println!("this is the dialog return: {:#?}", ans);
 }
-
-fn handle_dialog_result(result: bool, app: tauri::AppHandle) {}
