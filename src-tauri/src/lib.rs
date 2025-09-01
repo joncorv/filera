@@ -738,7 +738,10 @@ fn convert_working_files_to_file_status(state: &State<'_, Mutex<AppState>>) -> V
 }
 
 #[tauri::command]
-fn user_rename_files(state: State<'_, Mutex<AppState>>, app: tauri::AppHandle) -> Vec<FileStatus> {
+async fn user_rename_files(
+    state: State<'_, Mutex<AppState>>,
+    app: tauri::AppHandle,
+) -> Result<Vec<FileStatus>, Vec<FileStatus>> {
     let existing_file_status = convert_working_files_to_file_status(&state);
     let mut state = state.lock().unwrap();
     let tasks_empty = state.tasks.is_empty();
@@ -746,69 +749,55 @@ fn user_rename_files(state: State<'_, Mutex<AppState>>, app: tauri::AppHandle) -
 
     // if there are tasks but no files selected
     if !tasks_empty && files_empty {
-        app.dialog()
-            .message("Please add files first")
-            .title("Warning")
-            .buttons(MessageDialogButtons::OkCustom("Ok".to_string()))
-            .show(|result| match result {
-                true => println!("True"),
-                false => println!("False"),
-            });
-
-        existing_file_status
+        match AsyncMessageDialog::new()
+            .set_title("Warning")
+            .set_description(format!("Please add files first"))
+            .set_buttons(rfd::MessageButtons::Ok)
+            .show()
+            .await
+        {
+            MessageDialogResult::Ok => Ok(existing_file_status),
+            _ => Err(existing_file_status),
+        }
     }
     // if there aren't tasks but there are files
     else if tasks_empty && !files_empty {
-        app.dialog()
-            .message("Please add file tasks first")
-            .title("Warning")
-            .buttons(MessageDialogButtons::OkCustom("Ok".to_string()))
-            .show(|result| match result {
-                true => println!("True"),
-                false => println!("False"),
-            });
-
-        existing_file_status
+        match AsyncMessageDialog::new()
+            .set_title("Warning")
+            .set_description(format!("Please add file tasks first"))
+            .set_buttons(rfd::MessageButtons::Ok)
+            .show()
+            .await
+        {
+            MessageDialogResult::Ok => Ok(existing_file_status),
+            _ => Err(existing_file_status),
+        }
     }
     // if there aren't tasks or files
     else if tasks_empty && files_empty {
-        app.dialog()
-            .message("Please add files and tasks first")
-            .title("Warning")
-            .buttons(MessageDialogButtons::OkCustom("Ok".to_string()))
-            .show(|result| match result {
-                true => println!("True"),
-                false => println!("False"),
-            });
-
-        existing_file_status
+        match AsyncMessageDialog::new()
+            .set_title("Warning")
+            .set_description(format!("Please add files and tasks first"))
+            .set_buttons(rfd::MessageButtons::Ok)
+            .show()
+            .await
+        {
+            MessageDialogResult::Ok => Ok(existing_file_status),
+            _ => Err(existing_file_status),
+        }
     }
     // if there are tasks and files
     else {
         // create sender and receiver channels for closure
-        let (sender, receiver) = mpsc::channel();
 
-        app.dialog()
-            .message("Tauri is Awesome")
-            .title("Tauri is Awesome")
-            .buttons(MessageDialogButtons::OkCancelCustom(
-                "Ok".to_string(),
-                "Cancel".to_string(),
-            ))
-            .show(move |result| {
-                let _ = sender.send(result);
-            });
-        let answer: bool = match receiver.recv_timeout(Duration::from_secs(6)) {
-            Ok(result) => result,
-            Err(_) => {
-                println!("Dialog timeout or error");
-                return existing_file_status;
-            }
-        };
-
-        match answer {
-            true => {
-                println!("User clicked Yes");
+        match AsyncMessageDialog::new()
+            .set_title("Title")
+            .set_description(format!("Are you sure you want to rename these files?"))
+            .set_buttons(rfd::MessageButtons::OkCancel)
+            .show()
+            .await
+        {
+            MessageDialogResult::Ok => {
                 for file in &mut state.working_files {
                     let rename_result = rename(&file.source, &file.target);
 
@@ -827,12 +816,10 @@ fn user_rename_files(state: State<'_, Mutex<AppState>>, app: tauri::AppHandle) -
                     .show()
                     .unwrap();
 
-                blank_file_status
+                Ok(blank_file_status)
             }
-            _ => {
-                println!("User clicked No");
-                existing_file_status
-            }
+            MessageDialogResult::Cancel => Err(existing_file_status),
+            _ => Err(existing_file_status),
         }
     }
 }
