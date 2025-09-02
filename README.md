@@ -2,7 +2,7 @@
 
 > **Note**: Filera is currently in **Alpha**. While functional, there are known issues being addressed before the first stable release.
 
-A powerful, cross-platform batch file renaming tool built with Tauri, Vue, and TypeScript. Transform messy, disorganized filenames into clean, organized ones with ease.
+A powerful, cross-platform batch file renaming tool built with Tauri. The backend is rust, and frontend in Vue/Typescript. Transform messy, disorganized filenames into clean, organized ones with ease.
 
 ## 🚀 Features
 
@@ -15,6 +15,7 @@ A powerful, cross-platform batch file renaming tool built with Tauri, Vue, and T
 ## 🎯 Why Filera?
 
 Have you ever found yourself with a folder full of files with messy names like:
+
 - `IMG_20231205_143022.jpg`
 - `Document (1) copy.pdf`
 - `untitled folder/New Text Document (3).txt`
@@ -39,32 +40,20 @@ Filera is currently in alpha development. It's functional and ready for testing,
 ## 📦 Installation
 
 ### Pre-built Releases
+
 Download the latest alpha release from the [Releases](https://github.com/yourusername/filera/releases) page.
-
-### Build from Source
-```bash
-# Clone the repository
-git clone https://github.com/yourusername/filera.git
-cd filera
-
-# Install dependencies
-npm install
-
-# Run in development mode
-npm run tauri dev
-
-# Build for production
-npm run tauri build
-```
 
 ## 🔧 Development Setup
 
 ### Prerequisites
+
 - [Rust](https://rustup.rs/) (latest stable)
 - [Node.js](https://nodejs.org/) (v16 or higher)
+- [npm](https://www.npmjs.com)
 - [yarn](https://yarnpkg.com/)
 
 ### Getting Started
+
 ```bash
 # Install frontend dependencies
 yarn install
@@ -78,20 +67,24 @@ yarn tauri dev
 This is a **free and open-source** project - my way of giving back to the amazing open-source community that has provided so many incredible tools over the years.
 
 Contributions are welcome! Whether you're:
+
 - 🐛 Reporting bugs
-- 💡 Suggesting features  
+- 💡 Suggesting features
 - 🔧 Fixing issues
 - 📚 Improving documentation
 - 🎨 Designing UI improvements
 
 ### Current Priority Issues
+
 Help is especially appreciated with these alpha issues:
+
 1. **File Handling**: Robust handling of empty/blank files
 2. **Light Mode**: Making the UI beautiful in light theme
 3. **Output Options**: Adding copy/move to directory functionality
 4. **UI Polish**: General interface improvements
 
 ### How to Contribute
+
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Commit your changes (`git commit -m 'Add some amazing feature'`)
@@ -101,17 +94,17 @@ Help is especially appreciated with these alpha issues:
 ## 📋 Roadmap
 
 - [ ] Fix blank file handling
-- [ ] Implement beautiful light mode
+- [ ] Implement light mode
 - [ ] Add output directory options
 - [ ] Custom renaming patterns
 - [ ] Undo functionality
 - [ ] Regex support
 - [ ] Batch folder renaming
-- [ ] Plugin system
+- [ ] Templates system
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://claude.ai/chat/LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 
@@ -121,4 +114,4 @@ Thank you to the open-source community for all the amazing tools and libraries t
 
 **Made with ❤️ for the community**
 
-*Have suggestions or found a bug? [Open an issue](https://github.com/yourusername/filera/issues) - all feedback helps make Filera better!*
+_Have suggestions or found a bug? [Open an issue](https://github.com/yourusername/filera/issues) - all feedback helps make Filera better!_
