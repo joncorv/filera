@@ -1,16 +1,124 @@
-# Tauri + Vue + TypeScript
+# Filera 🗂️
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+> **Note**: Filera is currently in **Alpha**. While functional, there are known issues being addressed before the first stable release.
 
-## Recommended IDE Setup
+A powerful, cross-platform batch file renaming tool built with Tauri, Vue, and TypeScript. Transform messy, disorganized filenames into clean, organized ones with ease.
 
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+## 🚀 Features
 
-## Type Support For `.vue` Imports in TS
+- **Batch Rename**: Process hundreds or thousands of files at once
+- **Cross-Platform**: Works seamlessly on Windows, macOS, and Linux
+- **Fast & Lightweight**: Built with Rust backend for optimal performance
+- **Modern UI**: Clean, intuitive interface built with Vue 3 and TypeScript
+- **Safe Operations**: Preview changes before applying them
 
-Since TypeScript cannot handle type information for `.vue` imports, they are shimmed to be a generic Vue component type by default. In most cases this is fine if you don't really care about component prop types outside of templates. However, if you wish to get actual prop types in `.vue` imports (for example to get props validation when using manual `h(...)` calls), you can enable Volar's Take Over mode by following these steps:
+## 🎯 Why Filera?
 
-1. Run `Extensions: Show Built-in Extensions` from VS Code's command palette, look for `TypeScript and JavaScript Language Features`, then right click and select `Disable (Workspace)`. By default, Take Over mode will enable itself if the default TypeScript extension is disabled.
-2. Reload the VS Code window by running `Developer: Reload Window` from the command palette.
+Have you ever found yourself with a folder full of files with messy names like:
+- `IMG_20231205_143022.jpg`
+- `Document (1) copy.pdf`
+- `untitled folder/New Text Document (3).txt`
 
-You can learn more about Take Over mode [here](https://github.com/johnsoncodehk/volar/discussions/471).
+Instead of spending hours renaming files manually, Filera lets you batch process them all at once with powerful renaming patterns and rules.
+
+## 🚧 Alpha Status
+
+Filera is currently in alpha development. It's functional and ready for testing, but please be aware of these known issues:
+
+- **File Handling**: Issues with completely blank/empty files
+- **Light Mode**: UI currently optimized for dark mode only
+- **Output Options**: Only in-place replacement available (no copy/move to directory options yet)
+- **Branding**: Temporary logo and name (Filera is the planned final name)
+
+## 🛠️ Tech Stack
+
+- **Backend**: Rust with Tauri
+- **Frontend**: Vue 3 + TypeScript
+- **Cross-Platform**: Windows, macOS, Linux
+
+## 📦 Installation
+
+### Pre-built Releases
+Download the latest alpha release from the [Releases](https://github.com/yourusername/filera/releases) page.
+
+### Build from Source
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/filera.git
+cd filera
+
+# Install dependencies
+npm install
+
+# Run in development mode
+npm run tauri dev
+
+# Build for production
+npm run tauri build
+```
+
+## 🔧 Development Setup
+
+### Prerequisites
+- [Rust](https://rustup.rs/) (latest stable)
+- [Node.js](https://nodejs.org/) (v16 or higher)
+- [yarn](https://yarnpkg.com/)
+
+### Getting Started
+```bash
+# Install frontend dependencies
+yarn install
+
+# Start development server
+yarn tauri dev
+```
+
+## 🤝 Contributing
+
+This is a **free and open-source** project - my way of giving back to the amazing open-source community that has provided so many incredible tools over the years.
+
+Contributions are welcome! Whether you're:
+- 🐛 Reporting bugs
+- 💡 Suggesting features  
+- 🔧 Fixing issues
+- 📚 Improving documentation
+- 🎨 Designing UI improvements
+
+### Current Priority Issues
+Help is especially appreciated with these alpha issues:
+1. **File Handling**: Robust handling of empty/blank files
+2. **Light Mode**: Making the UI beautiful in light theme
+3. **Output Options**: Adding copy/move to directory functionality
+4. **UI Polish**: General interface improvements
+
+### How to Contribute
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📋 Roadmap
+
+- [ ] Fix blank file handling
+- [ ] Implement beautiful light mode
+- [ ] Add output directory options
+- [ ] Custom renaming patterns
+- [ ] Undo functionality
+- [ ] Regex support
+- [ ] Batch folder renaming
+- [ ] Plugin system
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+Thank you to the open-source community for all the amazing tools and libraries that made this project possible. This is my small way of giving back.
+
+---
+
+**Made with ❤️ for the community**
+
+*Have suggestions or found a bug? [Open an issue](https://github.com/yourusername/filera/issues) - all feedback helps make Filera better!*

@@ -1,6 +1,6 @@
 [package]
 name = "giant-batch-renamer"
-version = "0.2.2"
+version = "0.2.3"
 description = "Batch rename all your files with ease"
 authors = ["Jonathan Corriveau"]
 edition = "2021"
