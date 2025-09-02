@@ -1,6 +1,6 @@
 [package]
 name = "filera"
-version = "0.3.0"
+version = "0.3.2"
 description = "Batch rename your files with ease"
 repository = "https://github.com/joncorv/filera.git"
 authors = ["joncorv"]
