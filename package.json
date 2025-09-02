@@ -1,7 +1,7 @@
 {
-  "name": "giant-batch-renamer",
+  "name": "filera",
   "private": true,
-  "version": "0.2.3",
+  "version": "0.3.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
