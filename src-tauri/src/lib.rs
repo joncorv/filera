@@ -833,13 +833,13 @@ fn user_notification(app: tauri::AppHandle) -> String {
 
     app.notification()
         .builder()
-        .title("Tauri")
-        .body("fucking shitass")
+        .title("Notification")
+        .body("This is a test notification")
         .show()
         .unwrap();
     // return my_line;
 
-    return "balls".to_string();
+    return "test return string".to_string();
 }
 
 #[tauri::command]
@@ -847,8 +847,8 @@ async fn user_dialog() -> Result<String, String> {
     let outer: String = "outergood".to_string();
 
     match AsyncMessageDialog::new()
-        .set_title("Title")
-        .set_description(format!("Hey this is a dialog description."))
+        .set_title("Dialog")
+        .set_description(format!("This is a test dialog."))
         .set_buttons(rfd::MessageButtons::OkCancel)
         .show()
         .await
