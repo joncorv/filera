@@ -4,6 +4,8 @@
 
 A powerful, cross-platform batch file renaming tool built with Tauri. The backend is rust, and frontend in Vue/Typescript. Transform messy, disorganized filenames into clean, organized ones with ease.
 
+![Alt text](src/assets/app_ui.png?raw=true "Title")
+
 ## 🚀 Features
 
 - **Batch Rename**: Process hundreds or thousands of files at once
