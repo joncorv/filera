@@ -2,5 +2,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    giant_batch_renamer_lib::run()
+    filera_lib::run()
 }
