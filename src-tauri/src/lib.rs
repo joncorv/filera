@@ -1,13 +1,10 @@
 use rfd::{AsyncMessageDialog, MessageDialogResult};
 use std::collections::HashMap;
 use std::path::Path;
-use std::sync::{mpsc, Mutex};
-use std::thread;
-use std::time::Duration;
+use std::sync::Mutex;
 use std::time::SystemTime;
 use std::{fs::rename, path::PathBuf};
 use tauri::{Manager, State};
-use tauri_plugin_dialog::{DialogExt, MessageDialogButtons, MessageDialogKind};
 use tauri_plugin_notification::NotificationExt;
 use time::OffsetDateTime;
 
