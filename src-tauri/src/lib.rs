@@ -743,9 +743,11 @@ async fn user_rename_files(
     app: tauri::AppHandle,
 ) -> Result<Vec<FileStatus>, Vec<FileStatus>> {
     let existing_file_status = convert_working_files_to_file_status(&state);
-    let mut state = state.lock().unwrap();
-    let tasks_empty = state.tasks.is_empty();
-    let files_empty = state.file_names.is_empty();
+    // Extract the needed data from the locked state without holding the lock across await points
+    let (tasks_empty, files_empty) = {
+        let state_guard = state.lock().unwrap();
+        (state_guard.tasks.is_empty(), state_guard.file_names.is_empty())
+    }; // MutexGuard is dropped here
 
     // if there are tasks but no files selected
     if !tasks_empty && files_empty {
@@ -798,6 +800,7 @@ async fn user_rename_files(
             .await
         {
             MessageDialogResult::Ok => {
+                let mut state = state.lock().unwrap();
                 for file in &mut state.working_files {
                     let rename_result = rename(&file.source, &file.target);
 
