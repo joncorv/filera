@@ -1190,6 +1190,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "filera"
+version = "0.3.0"
+dependencies = [
+ "clippy",
+ "natord",
+ "notify-rust",
+ "rfd",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-devtools",
+ "tauri-plugin-dialog",
+ "tauri-plugin-notification",
+ "tauri-plugin-opener",
+ "time",
+]
+
+[[package]]
 name = "find-msvc-tools"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1509,25 +1528,6 @@ dependencies = [
  "libc",
  "r-efi",
  "wasi 0.14.3+wasi-0.2.4",
-]
-
-[[package]]
-name = "giant-batch-renamer"
-version = "0.2.3"
-dependencies = [
- "clippy",
- "natord",
- "notify-rust",
- "rfd",
- "serde",
- "serde_json",
- "tauri",
- "tauri-build",
- "tauri-plugin-devtools",
- "tauri-plugin-dialog",
- "tauri-plugin-notification",
- "tauri-plugin-opener",
- "time",
 ]
 
 [[package]]
