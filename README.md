@@ -2,7 +2,7 @@
 
 A powerful, cross-platform batch file renaming tool written in Rust. Transform messy, disorganized filenames into clean, organized ones with ease.
 
-![Alt text](src/assets/app_ui.png?raw=true "Title")
+![filera app ui](src/assets/app_ui.png?raw=true "Filera App UI")
 
 > **⚠️ WORK IN PROGRESS**: This project is under active development. Features, documentation, and functionality are subject to change without notice. Use at your own discretion.
 
@@ -89,8 +89,10 @@ yarn run tauri dev
 ## 📋 Roadmap
 
 - [ ] Fix blank file handling
-- [ ] Implement beautiful light mode
+- [ ] Implement light mode
 - [ ] Add output directory options
+- [ ] Impliment Open Folders with recursion
+- [ ] Template Support
 - [ ] Custom renaming patterns
 - [ ] Undo functionality
 - [ ] Regex support
