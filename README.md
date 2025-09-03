@@ -1,12 +1,12 @@
 # Filera 🗂️
 
+A powerful, cross-platform batch file renaming tool written in Rust. Transform messy, disorganized filenames into clean, organized ones with ease.
+
+![Alt text](src/assets/app_ui.png?raw=true "Title")
+
 > **⚠️ WORK IN PROGRESS**: This project is under active development. Features, documentation, and functionality are subject to change without notice. Use at your own discretion.
 
 > **Note**: Filera is currently in **Alpha**. While functional, there are known issues being addressed before the first stable release.
-
-A powerful, cross-platform batch file renaming tool built with Tauri, Vue, and TypeScript. Transform messy, disorganized filenames into clean, organized ones with ease.
-
-![Alt text](src/assets/app_ui.png?raw=true "Title")
 
 ## 🚀 Features
 
