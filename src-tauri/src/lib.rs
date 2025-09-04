@@ -1,3 +1,4 @@
+use notify_rust::Notification;
 use rfd::{AsyncMessageDialog, MessageDialogResult};
 use std::collections::HashMap;
 use std::path::Path;
@@ -831,12 +832,20 @@ fn user_notification(app: tauri::AppHandle) -> String {
     // let my_line: String = format!("{}\n{}", console_title, console_text);
     // println!("{}", &my_line);
 
-    app.notification()
-        .builder()
-        .title("Notification")
-        .body("This is a test notification")
+    Notification::new()
+        .summary("xxx")
+        .body("xxx")
+        .icon("firefox")
         .show()
         .unwrap();
+
+    // app.notification()
+    //     .builder()
+    //     .title("Notification")
+    //     .body("This is a test notification")
+    //     .show()
+    //     .unwrap();
+
     // return my_line;
 
     return "test return string".to_string();
