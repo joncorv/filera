@@ -825,13 +825,11 @@ async fn user_rename_files(
     }
 }
 
-// // This should print to the fucking console but it doesn't.
-// // This seems to be a linux only issue.
+// NOTE: This notification works on Arch Linux, and Win 11
+// TODO: Confirm that this works on MacOS.
+// TODO: If all platforms work, we need to properly do error handling.
 #[tauri::command]
-fn user_notification(app: tauri::AppHandle) -> String {
-    // let my_line: String = format!("{}\n{}", console_title, console_text);
-    // println!("{}", &my_line);
-
+fn user_notification(_app: tauri::AppHandle) -> String {
     Notification::new()
         .summary("xxx")
         .body("xxx")
@@ -839,6 +837,7 @@ fn user_notification(app: tauri::AppHandle) -> String {
         .show()
         .unwrap();
 
+    // this is the standard tauri notification that isn't working on macos
     // app.notification()
     //     .builder()
     //     .title("Notification")
