@@ -1,6 +1,6 @@
 [package]
 name = "filera"
-version = "0.3.3"
+version = "0.3.4"
 description = "Batch rename your files with ease"
 authors = ["joncorv"]
 edition = "2021"
@@ -30,4 +30,5 @@ clippy = "0.0.302"
 time = "0.3.41"
 natord = "1.0.9"
 rfd = { version = "0.15.4", default-features = false, features = ["gtk3"] }
+notifica = "3.0.2"
 
