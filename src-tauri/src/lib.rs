@@ -1,4 +1,4 @@
-use notify_rust::Notification;
+// use notify_rust::Notification;
 use rfd::{AsyncMessageDialog, MessageDialogResult};
 use std::collections::HashMap;
 use std::path::Path;
@@ -72,6 +72,19 @@ enum SortMetadata {
     Type,
     Size,
 }
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, Default)]
+enum Output {
+    #[default]
+    Replace,
+    Copy {
+        directory: String,
+    },
+    Move {
+        directory: String,
+    },
+}
+
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, Default)]
 struct AppState {
     file_names: Vec<String>,
@@ -80,6 +93,7 @@ struct AppState {
     tasks: Vec<Task>,
     sort_choice: String,
     search: String,
+    output: Output,
 }
 
 // App Entry Point
@@ -830,12 +844,12 @@ async fn user_rename_files(
 // TODO: If all platforms work, we need to properly do error handling.
 #[tauri::command]
 fn user_notification(_app: tauri::AppHandle) -> String {
-    Notification::new()
-        .summary("xxx")
-        .body("xxx")
-        .icon("firefox")
-        .show()
-        .unwrap();
+    // Notification::new()
+    //     .summary("xxx")
+    //     .body("xxx")
+    //     .icon("firefox")
+    //     .show()
+    //     .unwrap();
 
     // this is the standard tauri notification that isn't working on macos
     // app.notification()
