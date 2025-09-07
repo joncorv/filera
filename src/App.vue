@@ -447,24 +447,39 @@ async function userDialog() {
 }
 
 // here we declare all the output data and functions
-type Output =
-    | { type: 'Replace' }
-    | { type: 'Copy'; directory: string }
-    | { type: 'Move'; directory: string }
+// type Output =
+//     | { type: 'Replace' }
+//     | { type: 'Copy'; directory: string }
+//     | { type: 'Move'; directory: string }
 
 
-const outputDropdownChoice = ref();
+const outputDropdownChoice = ref("");
 const outputDropdownChoices = [
-    { name: "Replace", code: "Replace" },
-    { name: "Copy", code: "Copy" },
-    { name: "Move", code: "Move" },
+    { name: "Replace files in place", code: "replace" },
+    { name: "Copy files to new directory", code: "copy" },
+    { name: "Move files to new directory", code: "move" },
 ];
 
+const outputDirectory = ref()
+
+// const outputDirectoryVisibility = computed(() => (outputDirectory.value != null));
+const outputDirectoryButtonDisabled = computed(() => (outputDropdownChoice.value == "replace"));
 
 // when user chooses from the dropdown, we run this function
 // this should take in 
-function userUpdateOutput() {
-    console.log(outputDropdownChoice.value);
+async function userUpdateOutput() {
+    console.log("outputDropdownChoice", outputDropdownChoice.value);
+
+    // if anything but replace, and a output directory doesn't exist, then ask the user to choose an output directory
+    if (outputDropdownChoice.value != "replace" && !outputDirectory.value) {
+        outputDirectory.value = await open({
+            directory: true,
+            multiple: false,
+
+        });
+    };
+    console.log("outputDirectory =", outputDirectory.value);
+    console.log("outputDirectoryButtonDisabled =", outputDirectoryButtonDisabled.value);
 }
 
 </script>
@@ -1027,21 +1042,22 @@ function userUpdateOutput() {
                 <footer id="footer_right_panel"
                     class="flex flex-row py-2 px-2 gap-2 bg-black/15 border-t-1 rounded-b-lg border-white/20 text-sm text-gray-400">
                     <!-- FIX: Give real calculated destination for resulting files -->
-                    <div id="file-destination" class="flex flex-col">
-                        <span class="font-bold">File Destination</span>
-                        <span class="">Files replaced in place</span>
-                    </div>
+                    <!-- <div id="file-destination" class="flex flex-col"> -->
+                    <!--     <span class="font-bold">File Destination</span> -->
+                    <!--     <span class="">Files replaced in place</span> -->
+                    <!-- </div> -->
 
 
                     <Select v-model="outputDropdownChoice" :options="outputDropdownChoices" size="small"
-                        optionLabel="name" placeholder="Output Operation" optionValue="code" class="w-full flex-1/4"
+                        optionLabel="name" placeholder="Output Operation" optionValue="code" class="w-full flex-1"
                         @change="userUpdateOutput" />
 
-                    <div id="separator" class="flex-1"></div>
+                    <!-- <div id="separator" class="flex-1"></div> -->
 
                     <!-- FIX: Create a dropdown menu for how the user works with output. The user should choose between Renaming in place, copying (or moving) to a new location -->
                     <!-- FIX: Change the visibility of the button based on the result of the output choice -->
-                    <Button size="small" icon="pi pi-folder-open" variant="outlined" label="Output Directory" />
+                    <Button size="small" icon="pi pi-folder-open" variant="outlined" label="Choose Output Directory"
+                        :disabled="outputDirectoryButtonDisabled" />
                     <Button size="small" icon="pi pi-check-square" label="Batch Rename Files"
                         @click="user_rename_files" />
                 </footer>
