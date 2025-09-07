@@ -1,4 +1,4 @@
-// use notify_rust::Notification;
+use notify_rust::Notification;
 use rfd::{AsyncMessageDialog, MessageDialogResult};
 use std::collections::HashMap;
 use std::path::Path;
@@ -844,12 +844,12 @@ async fn user_rename_files(
 // TODO: If all platforms work, we need to properly do error handling.
 #[tauri::command]
 fn user_notification(_app: tauri::AppHandle) -> String {
-    // Notification::new()
-    //     .summary("xxx")
-    //     .body("xxx")
-    //     .icon("firefox")
-    //     .show()
-    //     .unwrap();
+    Notification::new()
+        .summary("xxx")
+        .body("xxx")
+        .icon("firefox")
+        .show()
+        .unwrap();
 
     // this is the standard tauri notification that isn't working on macos
     // app.notification()
