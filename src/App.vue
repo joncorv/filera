@@ -25,6 +25,7 @@ interface FileStatus {
     new_file_name: string;
 }
 
+
 //  <-- === Task Type. Contains all Sub Tasks within === -->
 type Task =
     | { CustomText: { text: string; at_start: boolean; active: boolean } }
@@ -443,6 +444,27 @@ async function userNotification() {
 
 async function userDialog() {
     await invoke("user_dialog");
+}
+
+// here we declare all the output data and functions
+type Output =
+    | { type: 'Replace' }
+    | { type: 'Copy'; directory: string }
+    | { type: 'Move'; directory: string }
+
+
+const outputDropdownChoice = ref();
+const outputDropdownChoices = [
+    { name: "Replace", code: "Replace" },
+    { name: "Copy", code: "Copy" },
+    { name: "Move", code: "Move" },
+];
+
+
+// when user chooses from the dropdown, we run this function
+// this should take in 
+function userUpdateOutput() {
+    console.log(outputDropdownChoice.value);
 }
 
 </script>
@@ -1009,6 +1031,11 @@ async function userDialog() {
                         <span class="font-bold">File Destination</span>
                         <span class="">Files replaced in place</span>
                     </div>
+
+
+                    <Select v-model="outputDropdownChoice" :options="outputDropdownChoices" size="small"
+                        optionLabel="name" placeholder="Output Operation" optionValue="code" class="w-full flex-1/4"
+                        @change="userUpdateOutput" />
 
                     <div id="separator" class="flex-1"></div>
 
