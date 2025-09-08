@@ -751,9 +751,13 @@ fn convert_working_files_to_file_status(state: &State<'_, Mutex<AppState>>) -> V
 
 #[tauri::command]
 async fn user_rename_files(
+    output_dropdown_choice: String,
+    output_directory: String,
     state: State<'_, Mutex<AppState>>,
     app: tauri::AppHandle,
 ) -> Result<Vec<FileStatus>, Vec<FileStatus>> {
+    println!("output dropdown choice= {output_dropdown_choice}");
+    println!("output directory= {output_directory}");
     let existing_file_status = convert_working_files_to_file_status(&state);
     // Extract the needed data from the locked state without holding the lock across await points
     let (tasks_empty, files_empty) = {
