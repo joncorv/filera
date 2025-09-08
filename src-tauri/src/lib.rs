@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use std::path::Path;
 use std::sync::Mutex;
 use std::time::SystemTime;
-use std::{fs::rename, path::PathBuf};
+use std::{fs::copy, fs::rename, path::PathBuf};
 use tauri::{Manager, State};
 use tauri_plugin_notification::NotificationExt;
 use time::OffsetDateTime;
@@ -751,11 +751,15 @@ fn convert_working_files_to_file_status(state: &State<'_, Mutex<AppState>>) -> V
 
 #[tauri::command]
 async fn user_rename_files(
-    output_dropdown_choice: String,
-    output_directory: String,
+    output_dropdown_choice: &str,
+    output_directory: &str,
     state: State<'_, Mutex<AppState>>,
     app: tauri::AppHandle,
 ) -> Result<Vec<FileStatus>, Vec<FileStatus>> {
+    // const REPLACE: &str = "replace";
+    const COPY: &str = "copy";
+    const MOVE: &str = "move";
+
     println!("output dropdown choice= {output_dropdown_choice}");
     println!("output directory= {output_directory}");
     let existing_file_status = convert_working_files_to_file_status(&state);
@@ -805,9 +809,8 @@ async fn user_rename_files(
         }
     }
     // if there are tasks and files
+    // then we will rename, copy or move the files
     else {
-        // create sender and receiver channels for closure
-
         match AsyncMessageDialog::new()
             .set_title("Title")
             .set_description(format!("Are you sure you want to rename these files?"))
@@ -816,26 +819,92 @@ async fn user_rename_files(
             .await
         {
             MessageDialogResult::Ok => {
-                let mut state = state.lock().unwrap();
-                for file in &mut state.working_files {
-                    let rename_result = rename(&file.source, &file.target);
+                match output_dropdown_choice {
+                    COPY => {
+                        // here is our copy commands
+                        // no longer uses fs::rename, instead uses a copy, with a new parent
+                        // directory
+                        let mut state = state.lock().unwrap();
+                        for file in &mut state.working_files {
+                            let temp_filename = file.target.file_name();
 
-                    if let Err(t) = rename_result {
-                        println!("{t}");
+                            if let Some(t) = temp_filename {
+                                file.target = PathBuf::from(output_directory).join(t);
+
+                                let rename_result = copy(&file.source, &file.target);
+
+                                if let Err(t) = rename_result {
+                                    println!("{t}");
+                                }
+                            }
+                        }
+                        state.file_names.clear();
+                        state.working_files.clear();
+                        let blank_file_status: Vec<FileStatus> = vec![];
+
+                        app.notification()
+                            .builder()
+                            .title("Success")
+                            .body("Files converted successfully")
+                            .show()
+                            .unwrap();
+
+                        Ok(blank_file_status)
+                    }
+                    MOVE => {
+                        // here is our move commands
+                        // same rename function, but each file needs new parent directory
+                        let mut state = state.lock().unwrap();
+                        for file in &mut state.working_files {
+                            let temp_filename = file.target.file_name();
+
+                            if let Some(t) = temp_filename {
+                                file.target = PathBuf::from(output_directory).join(t);
+
+                                let rename_result = rename(&file.source, &file.target);
+
+                                if let Err(t) = rename_result {
+                                    println!("{t}");
+                                }
+                            }
+                        }
+                        state.file_names.clear();
+                        state.working_files.clear();
+                        let blank_file_status: Vec<FileStatus> = vec![];
+
+                        app.notification()
+                            .builder()
+                            .title("Success")
+                            .body("Files converted successfully")
+                            .show()
+                            .unwrap();
+
+                        Ok(blank_file_status)
+                    }
+                    _ => {
+                        // here is our replace commands
+                        let mut state = state.lock().unwrap();
+                        for file in &mut state.working_files {
+                            let rename_result = rename(&file.source, &file.target);
+
+                            if let Err(t) = rename_result {
+                                println!("{t}");
+                            }
+                        }
+                        state.file_names.clear();
+                        state.working_files.clear();
+                        let blank_file_status: Vec<FileStatus> = vec![];
+
+                        app.notification()
+                            .builder()
+                            .title("Success")
+                            .body("Files converted successfully")
+                            .show()
+                            .unwrap();
+
+                        Ok(blank_file_status)
                     }
                 }
-                state.file_names.clear();
-                state.working_files.clear();
-                let blank_file_status: Vec<FileStatus> = vec![];
-
-                app.notification()
-                    .builder()
-                    .title("Success")
-                    .body("Files converted successfully")
-                    .show()
-                    .unwrap();
-
-                Ok(blank_file_status)
             }
             MessageDialogResult::Cancel => Err(existing_file_status),
             _ => Err(existing_file_status),
