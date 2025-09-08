@@ -299,10 +299,6 @@ async function user_update_tasks() {
     });
 }
 
-//  <-- === Rename Files on the Rust Backend === -->
-async function user_rename_files() {
-    fileStatusReturn.value = await invoke("user_rename_files");
-}
 
 //  <-- === All Task Functions === -->
 async function clearFiles() {
@@ -446,13 +442,6 @@ async function userDialog() {
     await invoke("user_dialog");
 }
 
-// here we declare all the output data and functions
-// type Output =
-//     | { type: 'Replace' }
-//     | { type: 'Copy'; directory: string }
-//     | { type: 'Move'; directory: string }
-
-
 const outputDropdownChoice = ref("");
 const outputDropdownChoices = [
     { name: "Replace files in place", code: "replace" },
@@ -480,6 +469,12 @@ async function userUpdateOutput() {
     };
     console.log("outputDirectory =", outputDirectory.value);
     console.log("outputDirectoryButtonDisabled =", outputDirectoryButtonDisabled.value);
+}
+
+
+//  <-- === Rename Files on the Rust Backend === -->
+async function user_rename_files() {
+    fileStatusReturn.value = await invoke("user_rename_files", { outputDropdownChoice: outputDropdownChoice.value, outputDirectory: outputDirectory.value });
 }
 
 </script>
