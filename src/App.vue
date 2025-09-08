@@ -457,8 +457,6 @@ const outputDirectoryButtonDisabled = computed(() => (outputDropdownChoice.value
 // when user chooses from the dropdown, we run this function
 // this should take in 
 async function userUpdateOutput() {
-    console.log("outputDropdownChoice", outputDropdownChoice.value);
-
     // if anything but replace, and a output directory doesn't exist, then ask the user to choose an output directory
     if (outputDropdownChoice.value != "replace" && !outputDirectory.value) {
         outputDirectory.value = await open({
@@ -467,11 +465,21 @@ async function userUpdateOutput() {
 
         });
     };
+    console.log("outputDropdownChoice", outputDropdownChoice.value);
     console.log("outputDirectory =", outputDirectory.value);
     console.log("outputDirectoryButtonDisabled =", outputDirectoryButtonDisabled.value);
 }
 
+async function userChooseOutputDirectory() {
+    outputDirectory.value = await open({
+        directory: true,
+        multiple: false,
 
+    });
+    console.log("outputDropdownChoice", outputDropdownChoice.value);
+    console.log("outputDirectory =", outputDirectory.value);
+    console.log("outputDirectoryButtonDisabled =", outputDirectoryButtonDisabled.value);
+}
 //  <-- === Rename Files on the Rust Backend === -->
 async function user_rename_files() {
     fileStatusReturn.value = await invoke("user_rename_files", { outputDropdownChoice: outputDropdownChoice.value, outputDirectory: outputDirectory.value });
@@ -1052,7 +1060,7 @@ async function user_rename_files() {
                     <!-- FIX: Create a dropdown menu for how the user works with output. The user should choose between Renaming in place, copying (or moving) to a new location -->
                     <!-- FIX: Change the visibility of the button based on the result of the output choice -->
                     <Button size="small" icon="pi pi-folder-open" variant="outlined" label="Choose Output Directory"
-                        :disabled="outputDirectoryButtonDisabled" />
+                        :disabled="outputDirectoryButtonDisabled" @click="userChooseOutputDirectory" />
                     <Button size="small" icon="pi pi-check-square" label="Batch Rename Files"
                         @click="user_rename_files" />
                 </footer>
