@@ -306,7 +306,6 @@ async function clearFiles() {
     await invoke("user_clear_files");
 }
 
-// NOTE: this used to be an iterative delete, but it's unncessary
 async function clearTasks() {
     taskList.value = [];
     user_update_tasks();
@@ -490,39 +489,6 @@ async function user_rename_files() {
 <template>
 
     <body class="flex flex-col box-border w-screen h-screen m-0 p-0 overflow-hidden z-0 bg-white/5">
-        <!-- === Global Top Menubar === -->
-        <!-- <div -->
-        <!--     id="left-menu-buttons" -->
-        <!--     class="flex flex-row p-2 border-b-1 border-white/30 items-center justify-between w-full z-50 bg-black" -->
-        <!-- > -->
-        <!--     <div class="items-center gap-4"> -->
-        <!--         <Button size="small" icon="pi pi-file" label="Open Files" @click="open_files" class="mr-2" /> -->
-        <!--         <Button size="small" icon="pi pi-folder-open" label="Open Folders" @click="open_files" /> -->
-        <!--     </div> -->
-        <!---->
-        <!--     <div id="right-menu-buttons" class="items-center gap-2"> -->
-        <!--         <Button -->
-        <!--             type="button" -->
-        <!--             size="small" -->
-        <!--             icon="pi pi-bookmark" -->
-        <!--             variant="outlined" -->
-        <!--             @click="showTemplates" -->
-        <!--             v-tooltip="'Templates'" -->
-        <!--             class="p-button-secondary p-button-rounded mr-2" -->
-        <!--         /> -->
-        <!--         <Button -->
-        <!--             type="button" -->
-        <!--             size="small" -->
-        <!--             icon="pi pi-cog" -->
-        <!--             variant="outlined" -->
-        <!--             @click="showSettings" -->
-        <!--             v-tooltip="'Settings'" -->
-        <!--             class="p-button-secondary p-button-rounded mr-2" -->
-        <!--         /> -->
-        <!--         <Button size="small" icon="pi pi-check" label="Batch Rename Files" @click="rename_files" /> -->
-        <!--     </div> -->
-        <!-- </div> -->
-
         <!-- === Master Splitter Panel === -->
         <Splitter style="flex: 1; overflow: hidden; background-color: transparent; z-index: 40">
             <!-- === Left Splitter Panel === -->
@@ -530,12 +496,10 @@ async function user_rename_files() {
                 class="flex flex-2/3 flex-col gap-0 ml-2 mr-0.5 mt-0 mb-2 border-1 rounded-lg border-white/20 shadow-sm z-50 bg-black/40">
                 <!-- === Left SplitterPanel Menubar === -->
                 <div id="file_buttons" class="flex flex-row items-center gap-2 justify-start m-2">
-                    <!-- <div class="items-center flex flex-row gap-4"> -->
                     <Button size="small" icon="pi pi-file" label="Open Files" @click="open_files" variant="outlined"
                         class="min-w-max" />
                     <Button size="small" icon="pi pi-folder-open" label="Open Folders" variant="outlined"
                         @click="open_files" class="min-w-max" />
-                    <!-- </div> -->
                     <!-- === Search Field === -->
                     <IconField class="flex-3/4 w-full">
                         <InputIcon class="pi pi-search" />
@@ -731,7 +695,6 @@ async function user_rename_files() {
                                     </div>
 
                                     <!-- === Replace Text Field === -->
-
                                     <div class="w-full min-w-36">
                                         <FloatLabel variant="on" class="font-thin">
                                             <InputText :id="`replace-text-${index}`" fluid placeholder="" size="small"
@@ -770,26 +733,6 @@ async function user_rename_files() {
                                     </div>
                                 </div>
 
-                                <!-- === Main Controls === -->
-                                <!-- <div class="flex flex-row gap-3 items-center"> -->
-                                <!--     <div class="flex-1 flex items-center"> -->
-                                <!--         <p class="text-sm text-gray-700 m-0"> -->
-                                <!--             This will remove all existing text from the file names -->
-                                <!--         </p> -->
-                                <!--     </div> -->
-
-                                <!-- <!-- === Active Toggle === -->
-                                <!-- <div class="flex items-center gap-2 whitespace-nowrap"> -->
-                                <!--     <label :for="`active-${index}`" class="text-xs text-gray-600">Active</label> -->
-                                <!--     <ToggleSwitch -->
-                                <!--         v-model="item.task.ClearAll.active" -->
-                                <!--         :inputId="`active-${index}`" -->
-                                <!--         :name="`clear-all-active-${index}`" -->
-                                <!--         binary -->
-                                <!--         @change="user_update_tasks" -->
-                                <!--     /> -->
-                                <!-- </div> -->
-                                <!-- </div> -->
                             </div>
                         </template>
 
@@ -831,17 +774,6 @@ async function user_rename_files() {
                                     ]" optionLabel="label" optionValue="value" placeholder="Select case type"
                                         size="small" class="flex-1" @change="user_update_tasks" />
 
-                                    <!-- <!-- === Active Toggle === -->
-                                    <!-- <div class="flex items-center gap-2 whitespace-nowrap"> -->
-                                    <!--     <label :for="`active-${index}`" class="text-xs text-gray-600">Active</label> -->
-                                    <!--     <ToggleSwitch -->
-                                    <!--         v-model="item.task.ChangeCase.active" -->
-                                    <!--         :inputId="`active-${index}`" -->
-                                    <!--         :name="`change-case-active-${index}`" -->
-                                    <!--         binary -->
-                                    <!--         @change="user_update_tasks" -->
-                                    <!--     /> -->
-                                    <!-- </div> -->
                                 </div>
                             </div>
                         </template>
@@ -1015,13 +947,6 @@ async function user_rename_files() {
 
                                 <!-- === Main Controls === -->
                                 <div class="flex flex-row gap-3 items-center">
-                                    <!-- === Time Format === -->
-                                    <!-- <div class="flex items-center gap-2 whitespace-nowrap"> -->
-                                    <!--     <label :for="`hour24-${index}`" class="text-xs text-gray-600">24 Hour</label> -->
-                                    <!--     <ToggleSwitch v-model="item.task.Time.at_start" :inputId="`hour24-${index}`" -->
-                                    <!--         :name="`hour24-${index}`" binary @change="user_update_tasks" /> -->
-                                    <!-- </div> -->
-
                                     <!-- === Separator === -->
                                     <div class="flex">
                                         <FloatLabel variant="on">
@@ -1044,12 +969,6 @@ async function user_rename_files() {
                 </TransitionGroup>
                 <footer id="footer_right_panel"
                     class="flex flex-row py-2 px-2 gap-2 bg-black/15 border-t-1 rounded-b-lg border-white/20 text-sm text-gray-400">
-                    <!-- FIX: Give real calculated destination for resulting files -->
-                    <!-- <div id="file-destination" class="flex flex-col"> -->
-                    <!--     <span class="font-bold">File Destination</span> -->
-                    <!--     <span class="">Files replaced in place</span> -->
-                    <!-- </div> -->
-
 
                     <Select v-model="outputDropdownChoice" :options="outputDropdownChoices" size="small"
                         optionLabel="name" placeholder="Output Operation" optionValue="code" class="w-full flex-1"
@@ -1057,8 +976,6 @@ async function user_rename_files() {
 
                     <!-- <div id="separator" class="flex-1"></div> -->
 
-                    <!-- FIX: Create a dropdown menu for how the user works with output. The user should choose between Renaming in place, copying (or moving) to a new location -->
-                    <!-- FIX: Change the visibility of the button based on the result of the output choice -->
                     <Button size="small" icon="pi pi-folder-open" variant="outlined" label="Choose Output Directory"
                         :disabled="outputDirectoryButtonDisabled" @click="userChooseOutputDirectory" />
                     <Button size="small" icon="pi pi-check-square" label="Batch Rename Files"
@@ -1067,22 +984,6 @@ async function user_rename_files() {
             </SplitterPanel>
         </Splitter>
 
-        <!-- === Footer -> Total Files Selected === -->
-        <!-- <footer -->
-        <!--     class="flex flex-row py-2 px-2 bg-black/50 border-t-1 rounded-b-lg border-white/20 text-sm text-gray-400" -->
-        <!-- > -->
-        <!--     <div id="total-files-selected"> -->
-        <!--         <span class="">Total Files Selected: </span> -->
-        <!--         <Transition mode="out-in"> -->
-        <!--             <span>{{ numFileStatusItems }}</span> -->
-        <!--         </Transition> -->
-        <!--     </div> -->
-        <!---->
-        <!--     <div id="separator" class="flex-1"></div> -->
-        <!---->
-        <!--     <!-- <Button size="medium" icon="pi pi-check" label="Batch Rename Files" @click="rename_files" /> -->
-        <!-- -->
-        <!-- </footer> -->
     </body>
 </template>
 
