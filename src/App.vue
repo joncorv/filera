@@ -496,8 +496,8 @@ async function user_rename_files() {
                 class="flex flex-2/3 flex-col gap-0 ml-2 mr-0.5 mt-0 mb-2 border-1 rounded-lg border-white/20 shadow-sm z-50 bg-black/40">
                 <!-- === Left SplitterPanel Menubar === -->
                 <div id="file_buttons" class="flex flex-row items-center gap-2 justify-start m-2">
-                    <Button size="small" icon="pi pi-file" label="Open Files" @click="open_files" severity="primary"
-                        variant="outlined" class="min-w-max" />
+                    <Button size="small" icon="pi pi-file" label="Open Files" @click="open_files" severity="secondary"
+                        class="min-w-max" />
                     <Button size="small" icon="pi pi-folder-open" label="Open Folders" severity="secondary"
                         variant="outlined" @click="open_files" class="min-w-max" />
                     <!-- === Search Field === -->

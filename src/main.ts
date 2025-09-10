@@ -55,16 +55,40 @@ const fileraTheme = definePreset(Aura, {
                     950: "{stone.950}",
                 },
                 app: {
-                    button_bg: "{stone.900}",
+                    button_bg: "{stone.800}",
+                    button_stroke: "{stone.100}",
                 },
             },
         },
     },
 
     components: {
+        button: {
+            root: {
+                secondary: {
+                    background: "{app:button_bg}",
+                    borderColor: "{app.button_stroke}",
+                    // border.color: "{stone.500}",
+                },
+            },
+
+            outlined: {
+                secondary: {
+                    activeBackground: "#ffffff",
+                    borderColor: "{app.button_stroke}",
+                },
+            },
+        },
         inputtext: {
             root: {
-                background: "{app:button_bg}",
+                background: "{app.button_bg}",
+                borderColor: "{app.button_stroke}",
+            },
+        },
+        select: {
+            root: {
+                background: "{app.button_bg}",
+                borderColor: "{app.button_stroke}",
             },
         },
     },
