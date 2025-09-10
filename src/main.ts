@@ -35,9 +35,6 @@ const fileraTheme = definePreset(Aura, {
                     900: "{stone.900}",
                     950: "{stone.950}",
                 },
-                app: {
-                    button_bg: "{stone.50}",
-                },
             },
             dark: {
                 surface: {
@@ -54,9 +51,12 @@ const fileraTheme = definePreset(Aura, {
                     900: "{stone.900}",
                     950: "{stone.950}",
                 },
-                app: {
-                    button_bg: "{stone.800}",
-                    button_stroke: "{stone.100}",
+                reactive: {
+                    "button-background": "{primary.800}",
+                    "button-borderColor": "{primary.600}",
+                    "button-hoverBorderColor": "{primary.950}",
+                    "text-color": "{primary.400}",
+                    "top-panel": "red",
                 },
             },
         },
@@ -64,31 +64,41 @@ const fileraTheme = definePreset(Aura, {
 
     components: {
         button: {
-            root: {
-                secondary: {
-                    background: "{app:button_bg}",
-                    borderColor: "{app.button_stroke}",
-                    // border.color: "{stone.500}",
-                },
-            },
-
-            outlined: {
-                secondary: {
-                    activeBackground: "#ffffff",
-                    borderColor: "{app.button_stroke}",
+            colorScheme: {
+                dark: {
+                    root: {
+                        secondary: {
+                            background: "{reactive.button-background}",
+                            borderColor: "{reactive.button-borderColor}",
+                            color: "{reactive.text-color}",
+                            hoverBorderColor: "{reactive.button-borderColor}",
+                        },
+                    },
                 },
             },
         },
         inputtext: {
-            root: {
-                background: "{app.button_bg}",
-                borderColor: "{app.button_stroke}",
+            colorScheme: {
+                dark: {
+                    root: {
+                        background: "{reactive.button-background}",
+                        borderColor: "{reactive.button-borderColor}",
+                        color: "{reactive.text-color}",
+                        hoverBorderColor: "{reactive.button-borderColor}",
+                    },
+                },
             },
         },
         select: {
-            root: {
-                background: "{app.button_bg}",
-                borderColor: "{app.button_stroke}",
+            colorScheme: {
+                dark: {
+                    root: {
+                        background: "{reactive.button-background}",
+                        borderColor: "{reactive.button-borderColor}",
+                        color: "{reactive.text-color}",
+                        hoverBorderColor: "{reactive.button-borderColor}",
+                    },
+                },
             },
         },
     },
@@ -101,6 +111,10 @@ app.use(PrimeVue, {
         preset: fileraTheme,
         options: {
             darkModeSelector: true,
+            cssLayer: {
+                name: "primevue",
+                order: "theme, base, PrimeVue",
+            },
         },
     },
 });

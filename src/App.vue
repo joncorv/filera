@@ -493,13 +493,13 @@ async function user_rename_files() {
         <Splitter style="flex: 1; overflow: hidden; background-color: transparent; z-index: 40">
             <!-- === Left Splitter Panel === -->
             <SplitterPanel
-                class="flex flex-2/3 flex-col gap-0 ml-2 mr-0.5 mt-0 mb-2 border-1 rounded-lg border-white/20 shadow-sm z-50 bg-black/40">
+                class="flex flex-2/3 flex-col gap-0 ml-2 mr-0.5 mt-0 mb-2 border-1 rounded-lg border-white/20 shadow-sm z-50 bg-reactive-top-panel ">
                 <!-- === Left SplitterPanel Menubar === -->
                 <div id="file_buttons" class="flex flex-row items-center gap-2 justify-start m-2">
                     <Button size="small" icon="pi pi-file" label="Open Files" @click="open_files" severity="secondary"
                         class="min-w-max" />
                     <Button size="small" icon="pi pi-folder-open" label="Open Folders" severity="secondary"
-                        variant="outlined" @click="open_files" class="min-w-max" />
+                        @click="open_files" class="min-w-max" />
                     <!-- === Search Field === -->
                     <IconField class="flex-3/4 w-full">
                         <InputIcon class="pi pi-search" />
@@ -513,7 +513,7 @@ async function user_rename_files() {
 
                     <!-- === Hamburger Select === -->
                     <Button icon="pi pi-replay" class="whitespace-nowrap flex-none" @click="clearFiles"
-                        variant="outlined" severity="secondary" size="small" />
+                        severity="secondary" size="small" />
                 </div>
 
                 <hr class="border-white/30" />
@@ -576,23 +576,23 @@ async function user_rename_files() {
                     <!-- <Menu id="customTextOverlayMenu" :model="customTextMenuItems" popup="true" /> -->
 
                     <Button type="button" label="File Tasks & Effects" size="small" icon="pi pi-plus" class="min-w-max"
-                        variant="outlined" @click="taskMenuToggleFunction" aria-haspopup="true"
+                        severity="secondary" @click="taskMenuToggleFunction" aria-haspopup="true"
                         aria-controls="custom_text_menu" />
                     <Menu ref="taskMenuToggle" id="custom_text_menu" :model="taskMenuItems" :popup="true" />
 
-                    <Button label="Make Notification" @click="userNotification" size="small" variant="outlined" />
-                    <Button label="Make Dialog" @click="userDialog" size="small" variant="outlined" />
+                    <Button label="Make Notification" @click="userNotification" size="small" severity="secondary" />
+                    <Button label="Make Dialog" @click="userDialog" size="small" severity="secondary" />
                     <!-- === Separator === -->
                     <div class="flex-1"></div>
 
-                    <Button type="button" label="Templates" variant="outlined" severity="secondary" size="small"
-                        icon="pi pi-bookmark" class="min-w-max" @click="templateMenuToggleFunction" aria-haspopup="true"
+                    <Button type="button" label="Templates" severity="secondary" size="small" icon="pi pi-bookmark"
+                        class="min-w-max" @click="templateMenuToggleFunction" aria-haspopup="true"
                         aria-controls="custom_text_menu" />
                     <Menu ref="templateMenuToggle" id="template_menu" :model="templateMenuItems" :popup="true" />
 
                     <!-- === Hamburger Select === -->
                     <Button icon="pi pi-replay" class="whitespace-nowrap flex-none" @click="clearTasks"
-                        variant="outlined" severity="secondary" size="small" />
+                        severity="secondary" size="small" />
                 </div>
 
                 <hr class="border-white/20" />
@@ -640,8 +640,8 @@ async function user_rename_files() {
                                     <div class="w-full min-w-36">
                                         <FloatLabel variant="on" class="font-thin">
                                             <InputText fluid size="small" placeholder="" :id="`input-text-${index}`"
-                                                v-model="item.task.CustomText.text" variant="outlined"
-                                                @input="user_update_tasks" class="" />
+                                                v-model="item.task.CustomText.text" @input="user_update_tasks"
+                                                class="" />
                                             <label class="font-thin" for="`input-text-${index}`">Value</label>
                                         </FloatLabel>
                                     </div>
@@ -688,8 +688,8 @@ async function user_rename_files() {
                                     <div class="w-full min-w-36">
                                         <FloatLabel variant="on" class="font-thin">
                                             <InputText :id="`find-text-${index}`" fluid placeholder="" size="small"
-                                                v-model="item.task.FindAndReplace.find_text" variant="outlined"
-                                                @input="user_update_tasks" class="flex-1" />
+                                                v-model="item.task.FindAndReplace.find_text" @input="user_update_tasks"
+                                                class="flex-1" />
                                             <label class="font-thin" for="`find-text-${index}`">Find</label>
                                         </FloatLabel>
                                     </div>
@@ -698,7 +698,7 @@ async function user_rename_files() {
                                     <div class="w-full min-w-36">
                                         <FloatLabel variant="on" class="font-thin">
                                             <InputText :id="`replace-text-${index}`" fluid placeholder="" size="small"
-                                                v-model="item.task.FindAndReplace.replace_text" variant="outlined"
+                                                v-model="item.task.FindAndReplace.replace_text"
                                                 @input="user_update_tasks" class="flex-1" />
                                             <label class="font-thin" for="`replace-text-${index}`">Replace</label>
                                         </FloatLabel>
@@ -976,7 +976,7 @@ async function user_rename_files() {
 
                     <!-- <div id="separator" class="flex-1"></div> -->
 
-                    <Button size="small" icon="pi pi-folder-open" variant="outlined" label="Choose Output Directory"
+                    <Button size="small" icon="pi pi-folder-open" label="Choose Output Directory" severity="secondary"
                         :disabled="outputDirectoryButtonDisabled" @click="userChooseOutputDirectory" />
                     <Button size="small" icon="pi pi-check-square" label="Batch Rename Files"
                         @click="user_rename_files" />
@@ -1022,7 +1022,7 @@ async function user_rename_files() {
 }
 
 html {
-    font-size: 15px;
+    font-size: 14px;
     /* PrimeVue design system base */
     line-height: 1.5;
     -webkit-text-size-adjust: 100%;
