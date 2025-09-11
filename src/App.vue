@@ -493,7 +493,7 @@ async function user_rename_files() {
         <Splitter style="flex: 1; overflow: hidden; background-color: transparent; z-index: 40">
             <!-- === Left Splitter Panel === -->
             <SplitterPanel
-                class="flex flex-2/3 flex-col gap-0 ml-2 mr-0.5 mt-0 mb-2 border-1 rounded-lg border-white/20 shadow-sm z-50 bg-reactive-top-panel ">
+                class="flex flex-2/3 flex-col gap-0 ml-2 mr-0.5 mt-0 mb-2 border-1 rounded-lg border-white/20 shadow-sm z-50 bg-test ">
                 <!-- === Left SplitterPanel Menubar === -->
                 <div id="file_buttons" class="flex flex-row items-center gap-2 justify-start m-2">
                     <Button size="small" icon="pi pi-file" label="Open Files" @click="open_files" severity="secondary"
@@ -522,7 +522,7 @@ async function user_rename_files() {
                     <!-- === No Files Selected === -->
                     <div v-if="!numFileStatusItems"
                         class="flex flex-1 bg-white/3 flex-col justify-center items-center w-full h-full whitespace-nowrap">
-                        <span class="text-center mb-2 text-gray-400">Drag your files here.</span>
+                        <span class="text-center mb-2 text-test">Drag your files here.</span>
                         <span class="text-center text-sm text-gray-600">NOTE: drag functionality is not
                             implimented,</span>
                         <span class="text-center text-sm text-gray-600">Please use the add buttons above.</span>

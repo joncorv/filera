@@ -6,6 +6,7 @@ import Aura from "@primeuix/themes/aura";
 
 const fileraTheme = definePreset(Aura, {
     semantic: {
+        test: "#FF00FF",
         primary: {
             50: "{stone.50}",
             100: "{stone.100}",
