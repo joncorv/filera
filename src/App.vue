@@ -497,9 +497,10 @@ async function user_rename_files() {
                 <!-- === Left SplitterPanel Menubar === -->
                 <div id="file_buttons" class="flex flex-row items-center gap-2 justify-start m-2">
                     <!-- <div class="bg-test2"> test test </div> -->
-                    <Button size="small" icon="pi pi-file" label="Open Files" @click="open_files" class="min-w-max" />
+                    <Button size="small" icon="pi pi-file" label="Open Files" @click="open_files" class="min-w-max"
+                        severity="secondary" />
                     <Button size="small" icon="pi pi-folder-open" label="Open Folders" @click="open_files"
-                        class="min-w-max" />
+                        severity="secondary" class="min-w-max" />
                     <!-- === Search Field === -->
                     <IconField class="flex-3/4 w-full">
                         <InputIcon class="pi pi-search" />
@@ -576,7 +577,8 @@ async function user_rename_files() {
                     <!-- <Menu id="customTextOverlayMenu" :model="customTextMenuItems" popup="true" /> -->
 
                     <Button type="button" label="File Tasks & Effects" size="small" icon="pi pi-plus" class="min-w-max"
-                        @click="taskMenuToggleFunction" aria-haspopup="true" aria-controls="custom_text_menu" />
+                        severity="secondary" @click="taskMenuToggleFunction" aria-haspopup="true"
+                        aria-controls="custom_text_menu" />
                     <Menu ref="taskMenuToggle" id="custom_text_menu" :model="taskMenuItems" :popup="true" />
 
                     <Button label="Make Notification" @click="userNotification" size="small" severity="secondary" />
@@ -620,14 +622,15 @@ async function user_rename_files() {
                                     <div class="flex-1"></div>
 
                                     <!-- === Close Button === -->
-                                    <i class="pi pi-angle-up hover:cursor-pointer text-sm mr-1"
+                                    <i class="pi pi-angle-up text-textprimary hover:cursor-pointer text-sm mr-1"
                                         :class="{ 'opacity-30': index === 0 }" @click="moveSelectedTaskUp(index)"></i>
-                                    <i class="pi pi-angle-down hover:cursor-pointer text-sm mr-1" :class="{
-                                        'opacity-30': index === taskList.length - 1,
-                                    }" @click="moveSelectedTaskDown(index)"></i>
+                                    <i class="pi pi-angle-down text-textprimary hover:cursor-pointer text-sm mr-1"
+                                        :class="{
+                                            'opacity-30': index === taskList.length - 1,
+                                        }" @click="moveSelectedTaskDown(index)"></i>
                                     <!-- === Close Button === -->
                                     <div class="flex items-center" @click="deleteSelectedTask(index)">
-                                        <i class="pi pi-times hover:cursor-pointer text-sm text-gray-600 hover:text-red-500 transition-colors"
+                                        <i class="pi pi-times hover:cursor-pointer text-sm text-textprimary hover:text-red-500 transition-colors"
                                             style="font-size: 0.9rem"></i>
                                     </div>
                                 </div>
@@ -660,22 +663,23 @@ async function user_rename_files() {
                                 <!-- === Title and Description === -->
                                 <div class="flex flex-row items-center justify-between mb-1">
                                     <div class="flex flex-row items-center gap-2">
-                                        <span class="pi pi-search"></span>
-                                        <h4 class="text-sm font-semibold text-gray-200 m-0">Find & Replace</h4>
-                                        <p class="text-xs text-gray-400 m-0">Replace text in file names</p>
+                                        <span class="pi pi-search text-textprimary"></span>
+                                        <h4 class="text-sm font-semibold text-textprimary m-0">Find & Replace</h4>
+                                        <p class="text-xs text-textprimary m-0">Replace text in file names</p>
                                     </div>
                                     <!-- === Dummy Spacer === -->
                                     <div class="flex-1"></div>
 
                                     <!-- === Close Button === -->
-                                    <i class="pi pi-angle-up hover:cursor-pointer text-sm mr-1"
+                                    <i class="pi pi-angle-up text-textprimary hover:cursor-pointer text-sm mr-1"
                                         :class="{ 'opacity-30': index === 0 }" @click="moveSelectedTaskUp(index)"></i>
-                                    <i class="pi pi-angle-down hover:cursor-pointer text-sm mr-1" :class="{
-                                        'opacity-30': index === taskList.length - 1,
-                                    }" @click="moveSelectedTaskDown(index)"></i>
+                                    <i class="pi pi-angle-down text-textprimary hover:cursor-pointer text-sm mr-1"
+                                        :class="{
+                                            'opacity-30': index === taskList.length - 1,
+                                        }" @click="moveSelectedTaskDown(index)"></i>
                                     <!-- === Close Button === -->
                                     <div class="flex items-center" @click="deleteSelectedTask(index)">
-                                        <i class="pi pi-times hover:cursor-pointer text-sm text-gray-600 hover:text-red-500 transition-colors"
+                                        <i class="pi pi-times hover:cursor-pointer text-sm text-textprimary hover:text-red-500 transition-colors"
                                             style="font-size: 0.9rem"></i>
                                     </div>
                                 </div>
@@ -712,22 +716,23 @@ async function user_rename_files() {
                                 <!-- === Title and Description === -->
                                 <div class="flex flex-row items-center justify-between mb-1">
                                     <div class="flex flex-row items-center gap-2">
-                                        <span class="pi pi-eraser"></span>
-                                        <h4 class="text-sm font-semibold text-gray-200 m-0">Clear All</h4>
-                                        <p class="text-xs text-gray-400 m-0">Remove all text from file names</p>
+                                        <span class="pi pi-eraser text-textprimary"></span>
+                                        <h4 class="text-sm font-semibold text-textprimary m-0">Clear All</h4>
+                                        <p class="text-xs text-textprimary m-0">Remove all text from file names</p>
                                     </div>
                                     <!-- === Dummy Spacer === -->
                                     <div class="flex-1"></div>
 
                                     <!-- === Close Button === -->
-                                    <i class="pi pi-angle-up hover:cursor-pointer text-sm mr-1"
+                                    <i class="pi pi-angle-up text-textprimary hover:cursor-pointer text-sm mr-1"
                                         :class="{ 'opacity-30': index === 0 }" @click="moveSelectedTaskUp(index)"></i>
-                                    <i class="pi pi-angle-down hover:cursor-pointer text-sm mr-1" :class="{
-                                        'opacity-30': index === taskList.length - 1,
-                                    }" @click="moveSelectedTaskDown(index)"></i>
+                                    <i class="pi pi-angle-down text-textprimary hover:cursor-pointer text-sm mr-1"
+                                        :class="{
+                                            'opacity-30': index === taskList.length - 1,
+                                        }" @click="moveSelectedTaskDown(index)"></i>
                                     <!-- === Close Button === -->
                                     <div class="flex items-center" @click="deleteSelectedTask(index)">
-                                        <i class="pi pi-times hover:cursor-pointer text-sm text-gray-600 hover:text-red-500 transition-colors"
+                                        <i class="pi pi-times hover:cursor-pointer text-sm text-textprimary hover:text-red-500 transition-colors"
                                             style="font-size: 0.9rem"></i>
                                     </div>
                                 </div>
@@ -741,9 +746,10 @@ async function user_rename_files() {
                                 <!-- === Title and Description === -->
                                 <div class="flex flex-row items-center justify-between mb-1">
                                     <div class="flex flex-row items-center gap-2">
-                                        <span class="pi pi-sort-alpha-up"></span>
-                                        <h4 class="min-w-max text-sm font-semibold text-gray-200 m-0">Change Case</h4>
-                                        <p class="min-w-max text-xs text-gray-400 m-0">
+                                        <span class="pi pi-sort-alpha-up text-textprimary"></span>
+                                        <h4 class="min-w-max text-sm font-semibold text-textprimary m-0">Change Case
+                                        </h4>
+                                        <p class="min-w-max text-xs text-textprimary m-0">
                                             Convert text case in file names
                                         </p>
                                     </div>
@@ -751,14 +757,15 @@ async function user_rename_files() {
                                     <div class="flex-1"></div>
 
                                     <!-- === Close Button === -->
-                                    <i class="pi pi-angle-up hover:cursor-pointer text-sm mr-1"
+                                    <i class="pi pi-angle-up text-textprimary hover:cursor-pointer text-sm mr-1"
                                         :class="{ 'opacity-30': index === 0 }" @click="moveSelectedTaskUp(index)"></i>
-                                    <i class="pi pi-angle-down hover:cursor-pointer text-sm mr-1" :class="{
-                                        'opacity-30': index === taskList.length - 1,
-                                    }" @click="moveSelectedTaskDown(index)"></i>
+                                    <i class="pi pi-angle-down text-textprimary hover:cursor-pointer text-sm mr-1"
+                                        :class="{
+                                            'opacity-30': index === taskList.length - 1,
+                                        }" @click="moveSelectedTaskDown(index)"></i>
                                     <!-- === Close Button === -->
                                     <div class="flex items-center" @click="deleteSelectedTask(index)">
-                                        <i class="pi pi-times hover:cursor-pointer text-sm text-gray-600 hover:text-red-500 transition-colors"
+                                        <i class="pi pi-times hover:cursor-pointer text-sm text-textprimary hover:text-red-500 transition-colors"
                                             style="font-size: 0.9rem"></i>
                                     </div>
                                 </div>
@@ -783,23 +790,24 @@ async function user_rename_files() {
                                 <!-- === Title and Description === -->
                                 <div class="flex flex-row items-center justify-between mb-1">
                                     <div class="flex flex-row items-center gap-2">
-                                        <span class="pi pi-sort-numeric-down"></span>
-                                        <h4 class="text-sm font-semibold text-gray-200 m-0">Number Sequence</h4>
-                                        <p class="text-xs text-gray-400 m-0">Add sequential numbers to file names</p>
+                                        <span class="pi pi-sort-numeric-down text-textprimary"></span>
+                                        <h4 class="text-sm font-semibold text-textprimary m-0">Number Sequence</h4>
+                                        <p class="text-xs text-textprimary m-0">Add sequential numbers to file names</p>
                                     </div>
 
                                     <!-- === Dummy Spacer === -->
                                     <div class="flex-1"></div>
 
                                     <!-- === Close Button === -->
-                                    <i class="pi pi-angle-up hover:cursor-pointer text-sm mr-1"
+                                    <i class="pi pi-angle-up text-textprimary hover:cursor-pointer text-sm mr-1"
                                         :class="{ 'opacity-30': index === 0 }" @click="moveSelectedTaskUp(index)"></i>
-                                    <i class="pi pi-angle-down hover:cursor-pointer text-sm mr-1" :class="{
-                                        'opacity-30': index === taskList.length - 1,
-                                    }" @click="moveSelectedTaskDown(index)"></i>
+                                    <i class="pi pi-angle-down text-textprimary hover:cursor-pointer text-sm mr-1"
+                                        :class="{
+                                            'opacity-30': index === taskList.length - 1,
+                                        }" @click="moveSelectedTaskDown(index)"></i>
                                     <!-- === Close Button === -->
                                     <div class="flex items-center" @click="deleteSelectedTask(index)">
-                                        <i class="pi pi-times hover:cursor-pointer text-sm text-gray-600 hover:text-red-500 transition-colors"
+                                        <i class="pi pi-times hover:cursor-pointer text-sm text-textprimary hover:text-red-500 transition-colors"
                                             style="font-size: 0.9rem"></i>
                                     </div>
                                 </div>
@@ -852,23 +860,24 @@ async function user_rename_files() {
                                 <!-- === Title and Description === -->
                                 <div class="flex flex-row items-center justify-between mb-1">
                                     <div class="flex flex-row items-center gap-2">
-                                        <span class="pi pi-calendar"></span>
-                                        <h4 class="text-sm font-semibold text-gray-200 m-0">Date</h4>
-                                        <p class="text-xs text-gray-400 m-0">Add modified date to file names</p>
+                                        <span class="pi pi-calendar text-textprimary"></span>
+                                        <h4 class="text-sm font-semibold text-textprimary m-0">Date</h4>
+                                        <p class="text-xs text-textprimary m-0">Add modified date to file names</p>
                                     </div>
 
                                     <!-- === Dummy Spacer === -->
                                     <div class="flex-1"></div>
 
                                     <!-- === Close Button === -->
-                                    <i class="pi pi-angle-up hover:cursor-pointer text-sm mr-1"
+                                    <i class="pi pi-angle-up text-textprimary hover:cursor-pointer text-sm mr-1"
                                         :class="{ 'opacity-30': index === 0 }" @click="moveSelectedTaskUp(index)"></i>
-                                    <i class="pi pi-angle-down hover:cursor-pointer text-sm mr-1" :class="{
-                                        'opacity-30': index === taskList.length - 1,
-                                    }" @click="moveSelectedTaskDown(index)"></i>
+                                    <i class="pi pi-angle-down text-textprimary hover:cursor-pointer text-sm mr-1"
+                                        :class="{
+                                            'opacity-30': index === taskList.length - 1,
+                                        }" @click="moveSelectedTaskDown(index)"></i>
                                     <!-- === Close Button === -->
                                     <div class="flex items-center" @click="deleteSelectedTask(index)">
-                                        <i class="pi pi-times hover:cursor-pointer text-sm text-gray-600 hover:text-red-500 transition-colors"
+                                        <i class="pi pi-times hover:cursor-pointer text-sm text-textprimary hover:text-red-500 transition-colors"
                                             style="font-size: 0.9rem"></i>
                                     </div>
                                 </div>
@@ -923,23 +932,24 @@ async function user_rename_files() {
                                 <!-- === Title and Description === -->
                                 <div class="flex flex-row items-center justify-between mb-1">
                                     <div class="flex flex-row items-center gap-2">
-                                        <span class="pi pi-clock"></span>
-                                        <h4 class="text-sm font-semibold text-gray-200 m-0">Time</h4>
-                                        <p class="text-xs text-gray-400 m-0">Add modified time to file names.</p>
+                                        <span class="pi pi-clock text-textprimary"></span>
+                                        <h4 class="text-sm font-semibold text-textprimary m-0">Time</h4>
+                                        <p class="text-xs text-textprimary m-0">Add modified time to file names.</p>
                                     </div>
 
                                     <!-- === Dummy Spacer === -->
                                     <div class="flex-1"></div>
 
                                     <!-- === Close Button === -->
-                                    <i class="pi pi-angle-up hover:cursor-pointer text-sm mr-1"
+                                    <i class="pi pi-angle-up text-textprimary hover:cursor-pointer text-sm mr-1"
                                         :class="{ 'opacity-30': index === 0 }" @click="moveSelectedTaskUp(index)"></i>
-                                    <i class="pi pi-angle-down hover:cursor-pointer text-sm mr-1" :class="{
-                                        'opacity-30': index === taskList.length - 1,
-                                    }" @click="moveSelectedTaskDown(index)"></i>
+                                    <i class="pi pi-angle-down text-textprimary hover:cursor-pointer text-sm mr-1"
+                                        :class="{
+                                            'opacity-30': index === taskList.length - 1,
+                                        }" @click="moveSelectedTaskDown(index)"></i>
                                     <!-- === Close Button === -->
                                     <div class="flex items-center" @click="deleteSelectedTask(index)">
-                                        <i class="pi pi-times hover:cursor-pointer text-sm text-gray-600 hover:text-red-500 transition-colors"
+                                        <i class="pi pi-times hover:cursor-pointer text-sm text-textprimary hover:text-red-500 transition-colors"
                                             style="font-size: 0.9rem"></i>
                                     </div>
                                 </div>
