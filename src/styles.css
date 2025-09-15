@@ -9,4 +9,11 @@
   --color-test: var(--p-test);
   --color-test2: var(--p-test2);
   --color-foo: var(--p-foo-foo);
+
+
+  --color-panelheader: var(--p-panelheader);
+  --color-panelbody: var(--p-panelbody);
+  --color-panelfooter: var(--p-panelfooter);
+  --color-textprimary: var(--p-textprimary);
+  --color-textsecondary: var(--p-textsecondary);
 }
