@@ -22,22 +22,10 @@ const fileraTheme = definePreset(Aura, {
         },
         colorScheme: {
             light: {
-                surface: {
-                    0: "#ffffff",
-                    50: "{stone.50}",
-                    100: "{stone.100}",
-                    200: "{stone.200}",
-                    300: "{stone.300}",
-                    400: "{stone.400}",
-                    500: "{stone.500}",
-                    600: "{stone.600}",
-                    700: "{stone.700}",
-                    800: "{stone.800}",
-                    900: "{stone.900}",
-                    950: "{stone.950}",
+                test2: "#0000FF",
+                foo: {
+                    foo: "#FF00FF",
                 },
-            },
-            dark: {
                 surface: {
                     0: "#ffffff",
                     50: "{stone.50}",
@@ -57,7 +45,34 @@ const fileraTheme = definePreset(Aura, {
                     "button-borderColor": "{primary.600}",
                     "button-hoverBorderColor": "{primary.950}",
                     "text-color": "{primary.400}",
-                    "top-panel": "red",
+                    "top-panel": "#FF0000",
+                },
+            },
+            dark: {
+                test2: "#FF0000",
+                foo: {
+                    foo: "#FF00FF",
+                },
+                surface: {
+                    0: "#ffffff",
+                    50: "{stone.50}",
+                    100: "{stone.100}",
+                    200: "{stone.200}",
+                    300: "{stone.300}",
+                    400: "{stone.400}",
+                    500: "{stone.500}",
+                    600: "{stone.600}",
+                    700: "{stone.700}",
+                    800: "{stone.800}",
+                    900: "{stone.900}",
+                    950: "{stone.950}",
+                },
+                reactive: {
+                    "button-background": "{primary.800}",
+                    "button-borderColor": "{primary.600}",
+                    "button-hoverBorderColor": "{primary.950}",
+                    "text-color": "{primary.400}",
+                    "top-panel": "#FF0000",
                 },
             },
         },
