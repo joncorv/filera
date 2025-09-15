@@ -79,18 +79,25 @@ Help is especially appreciated with these alpha issues:
 
 ### Getting Started
 ```bash
+# Clone the repopsitory 
+git clone https://github.com/joncorv/filera.git
+cd filera
+
 # Install frontend dependencies
 yarn install
 
 # Start development server
 yarn run tauri dev
+
+# Optionally, if you are on linux, run the custom dev script
+./tauri_dev.sh
 ```
 
 ## 📋 Roadmap
 
 - [ ] Fix blank file handling
 - [ ] Implement light mode
-- [ ] Add output directory options
+- [x] Add output directory options
 - [ ] Impliment Open Folders with recursion
 - [ ] Template Support
 - [ ] Custom renaming patterns
