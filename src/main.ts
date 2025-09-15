@@ -6,7 +6,6 @@ import Aura from "@primeuix/themes/aura";
 
 const fileraTheme = definePreset(Aura, {
     semantic: {
-        test: "#FF00FF",
         primary: {
             50: "{stone.50}",
             100: "{stone.100}",
@@ -22,10 +21,6 @@ const fileraTheme = definePreset(Aura, {
         },
         colorScheme: {
             light: {
-                test2: "#0000FF",
-                foo: {
-                    foo: "#FF00FF",
-                },
                 surface: {
                     0: "#ffffff",
                     50: "{stone.50}",
@@ -47,12 +42,13 @@ const fileraTheme = definePreset(Aura, {
                     "text-color": "{primary.400}",
                     "top-panel": "#FF0000",
                 },
+                panelheader: "",
+                panelbody: "",
+                panelfooter: "",
+                textprimary: "",
+                textsecondary: "",
             },
             dark: {
-                test2: "#FF0000",
-                foo: {
-                    foo: "#FF00FF",
-                },
                 surface: {
                     0: "#ffffff",
                     50: "{stone.50}",
@@ -74,6 +70,12 @@ const fileraTheme = definePreset(Aura, {
                     "text-color": "{primary.400}",
                     "top-panel": "#FF0000",
                 },
+                panelheader: "{primary.950}",
+                panelbody: "{primary.950}",
+                panelfooter: "{primary.950}",
+                textprimary: "{primary.400}",
+                textsecondary: "{primary.400}",
+                bordercolor: "{primary.950}",
             },
         },
     },
