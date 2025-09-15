@@ -1,4 +1,12 @@
-@config "./tailwind.config.js";
 @import "tailwindcss";
 @import 'primeicons/primeicons.css'
+@import "tailwindcss-primeui";
 
+
+
+
+@theme {
+  --color-test: var(--p-test);
+  --color-test2: var(--p-test2);
+  --color-foo: var(--p-foo-foo);
+}
