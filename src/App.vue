@@ -488,19 +488,18 @@ async function user_rename_files() {
 
 <template>
 
-    <body class="flex flex-col box-border w-screen h-screen m-0 p-0 overflow-hidden z-0 bg-white/5">
+    <body class="flex flex-col box-border w-screen h-screen m-0 p-0 overflow-hidden z-0">
         <!-- === Master Splitter Panel === -->
         <Splitter style="flex: 1; overflow: hidden; background-color: transparent; z-index: 40">
             <!-- === Left Splitter Panel === -->
             <SplitterPanel
-                class="flex flex-2/3 flex-col gap-0 ml-2 mr-0.5 mt-0 mb-2 border-1 rounded-lg border-white/20 shadow-sm z-50 bg-test ">
+                class="flex flex-2/3 flex-col gap-0 ml-2 mr-0.5 mt-0 mb-2 border-1 rounded-lg border-bordercolor z-50 bg-panelheader ">
                 <!-- === Left SplitterPanel Menubar === -->
                 <div id="file_buttons" class="flex flex-row items-center gap-2 justify-start m-2">
-                    <div class="bg-test2"> test test </div>
-                    <Button size="small" icon="pi pi-file" label="Open Files" @click="open_files" severity="secondary"
+                    <!-- <div class="bg-test2"> test test </div> -->
+                    <Button size="small" icon="pi pi-file" label="Open Files" @click="open_files" class="min-w-max" />
+                    <Button size="small" icon="pi pi-folder-open" label="Open Folders" @click="open_files"
                         class="min-w-max" />
-                    <Button size="small" icon="pi pi-folder-open" label="Open Folders" severity="secondary"
-                        @click="open_files" class="min-w-max" />
                     <!-- === Search Field === -->
                     <IconField class="flex-3/4 w-full">
                         <InputIcon class="pi pi-search" />
@@ -517,37 +516,37 @@ async function user_rename_files() {
                         severity="secondary" size="small" />
                 </div>
 
-                <hr class="border-white/30" />
+                <hr class="border-bordercolor" />
 
                 <Transition mode="out-in">
                     <!-- === No Files Selected === -->
                     <div v-if="!numFileStatusItems"
-                        class="flex flex-1 bg-white/3 flex-col justify-center items-center w-full h-full whitespace-nowrap">
-                        <span class="text-center mb-2 text-test">Drag your files here.</span>
-                        <span class="text-center text-sm text-gray-600">NOTE: drag functionality is not
+                        class="flex flex-1 bg-panelbody flex-col justify-center items-center w-full h-full whitespace-nowrap bg-panelbody">
+                        <span class="text-center mb-2 text-textprimary">Drag your files here.</span>
+                        <span class="text-center text-sm text-textsecondary">NOTE: drag functionality is not
                             implimented,</span>
-                        <span class="text-center text-sm text-gray-600">Please use the add buttons above.</span>
+                        <span class="text-center text-sm text-textsecondary">Please use the add buttons above.</span>
                     </div>
 
                     <!-- === File Table === -->
-                    <div v-else id="table-container" class="flex-1/2 flex flex-col mb-2 min-h-0 text-sm">
-                        <table class="w-full text-white/90">
+                    <div v-else id="table-container" class="flex-1/2 flex flex-col mb-2 min-h-0 text-sm bg-panelbody">
+                        <table class="w-full text-textprimary bg-panelheader/50">
                             <thead>
                                 <tr>
-                                    <th class="px-4 pt-2.5 pb-1.5 text-left border-b border-white/20">Old Name</th>
-                                    <th class="px-4 pt-2.5 pb-1.5 text-left border-b border-white/20">New Name</th>
+                                    <th class="px-4 pt-2.5 pb-1.5 text-left border-b border-bordercolor">Old Name</th>
+                                    <th class="px-4 pt-2.5 pb-1.5 text-left border-b border-bordercolor">New Name</th>
                                 </tr>
                             </thead>
                         </table>
 
-                        <div class="flex-1/2 overflow-y-auto min-h-0 text-white/70">
+                        <div class="flex-1/2 overflow-y-auto min-h-0 text-textprimary">
                             <table class="w-full">
                                 <tbody>
                                     <tr v-for="(item, index) in fileStatusReturn" :key="index">
-                                        <td class="px-4 py-2 border-b border-b-white/10">
+                                        <td class="px-4 py-2 border-b border-bordercolor">
                                             {{ item.old_file_name }}
                                         </td>
-                                        <td class="px-4 py-2 border-b border-b-white/10">
+                                        <td class="px-4 py-2 border-b border-bordercolor">
                                             {{ item.new_file_name }}
                                         </td>
                                     </tr>
@@ -557,7 +556,7 @@ async function user_rename_files() {
                     </div>
                 </Transition>
                 <footer id="footer_left_panel"
-                    class="flex flex-row py-2 px-2 bg-black/50 border-t-1 rounded-b-lg border-white/20 text-sm text-gray-400">
+                    class="flex flex-row py-2 px-2 bg-panelfooter border-t-1 rounded-b-lg border-bordercolor text-sm text-textprimary">
                     <div id="total-files-selected">
                         <span class="">Total Files Selected: </span>
                         <Transition mode="out-in">
@@ -571,14 +570,13 @@ async function user_rename_files() {
 
             <!-- === Right Splitter Panel === -->
             <SplitterPanel
-                class="flex flex-col flex-1/3 ml-0.5 mb-2 mr-2 bg-black/40 rounded-lg border-1 border-white/20">
+                class="flex flex-col flex-1/3 ml-0.5 mb-2 mr-2 bg-panelheader rounded-lg border-1 border-bordercolor">
                 <!-- === Right SplitterPanel Menubar === -->
-                <div id="file_buttons" class="flex flex-row m-2 gap-2 items-center justify-start">
+                <div id="file_buttons" class="flex flex-row m-2 gap-2 items-center justify-start bg-panelheader">
                     <!-- <Menu id="customTextOverlayMenu" :model="customTextMenuItems" popup="true" /> -->
 
                     <Button type="button" label="File Tasks & Effects" size="small" icon="pi pi-plus" class="min-w-max"
-                        severity="secondary" @click="taskMenuToggleFunction" aria-haspopup="true"
-                        aria-controls="custom_text_menu" />
+                        @click="taskMenuToggleFunction" aria-haspopup="true" aria-controls="custom_text_menu" />
                     <Menu ref="taskMenuToggle" id="custom_text_menu" :model="taskMenuItems" :popup="true" />
 
                     <Button label="Make Notification" @click="userNotification" size="small" severity="secondary" />
@@ -596,14 +594,14 @@ async function user_rename_files() {
                         severity="secondary" size="small" />
                 </div>
 
-                <hr class="border-white/20" />
+                <hr class="border-bordercolor" />
 
-                <TransitionGroup tag="div" name="ttasks" class="h-full relative overflow-y-auto bg-white/3">
+                <TransitionGroup tag="div" name="ttasks" class="h-full relative overflow-y-auto bg-panelbody">
                     <!-- === No Files Selected === -->
                     <div v-if="!numTaskListItems"
                         class="flex flex-1 flex-col justify-center items-center w-full h-full whitespace-nowrap">
-                        <span class="text-center mb-2 text-gray-400">File tasks & effects go here.</span>
-                        <span class="text-center text-sm text-gray-600">Please use the add buttons above.</span>
+                        <span class="text-center mb-2 text-textprimary">File tasks & effects go here.</span>
+                        <span class="text-center text-sm text-textsecondary">Please use the add buttons above.</span>
                     </div>
 
                     <div v-else v-for="(item, index) in taskList" :key="item.id"
@@ -614,9 +612,9 @@ async function user_rename_files() {
                                 <!-- === Title and Description === -->
                                 <div class="flex flex-row items-center justify-between mb-1">
                                     <div class="flex flex-row items-center gap-2">
-                                        <span class="pi pi-pen-to-square"></span>
-                                        <h4 class="text-sm font-semibold text-gray-200 m-0">Custom Text</h4>
-                                        <p class="text-xs text-gray-400 m-0">Add text to file names</p>
+                                        <span class="pi pi-pen-to-square text-textprimary"></span>
+                                        <h4 class="text-sm font-semibold text-textprimary m-0">Custom Text</h4>
+                                        <p class="text-xs text-textprimary m-0">Add text to file names</p>
                                     </div>
                                     <!-- === Dummy Spacer === -->
                                     <div class="flex-1"></div>
@@ -969,7 +967,7 @@ async function user_rename_files() {
                     </div>
                 </TransitionGroup>
                 <footer id="footer_right_panel"
-                    class="flex flex-row py-2 px-2 gap-2 bg-black/15 border-t-1 rounded-b-lg border-white/20 text-sm text-gray-400">
+                    class="flex flex-row py-2 px-2 gap-2 bg-panelfooter border-t-1 rounded-b-lg border-bordercolor text-sm text-textprimary">
 
                     <Select v-model="outputDropdownChoice" :options="outputDropdownChoices" size="small"
                         optionLabel="name" placeholder="Output Operation" optionValue="code" class="w-full flex-1"
@@ -1131,8 +1129,8 @@ html {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    background-color: rgba(15, 15, 15, 1);
+    border: 1px solid var(--p-bordercolor);
+    background-color: var(--p-taskbg);
     border-radius: 0.5rem;
     padding: 0.75rem;
     overflow: hidden;
