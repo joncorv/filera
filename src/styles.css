@@ -16,4 +16,6 @@
   --color-panelfooter: var(--p-panelfooter);
   --color-textprimary: var(--p-textprimary);
   --color-textsecondary: var(--p-textsecondary);
+  --color-bordercolor: var(--p-bordercolor);
+  --color-taskbg: var(--p-taskbg);
 }
