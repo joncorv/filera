@@ -513,7 +513,7 @@ async function user_rename_files() {
                         placeholder="Sort By" optionValue="code" class="w-full flex-1/4" @change="user_update_sort" />
 
                     <!-- === Hamburger Select === -->
-                    <Button icon="pi pi-replay" class="whitespace-nowrap flex-none" @click="clearFiles"
+                    <Button icon="pi pi-trash" class="whitespace-nowrap flex-none" @click="clearFiles"
                         severity="secondary" size="small" />
                 </div>
 
@@ -581,8 +581,8 @@ async function user_rename_files() {
                         aria-controls="custom_text_menu" />
                     <Menu ref="taskMenuToggle" id="custom_text_menu" :model="taskMenuItems" :popup="true" />
 
-                    <Button label="Make Notification" @click="userNotification" size="small" severity="secondary" />
-                    <Button label="Make Dialog" @click="userDialog" size="small" severity="secondary" />
+                    <!-- <Button label="Make Notification" @click="userNotification" size="small" severity="secondary" /> -->
+                    <!-- <Button label="Make Dialog" @click="userDialog" size="small" severity="secondary" /> -->
                     <!-- === Separator === -->
                     <div class="flex-1"></div>
 
@@ -592,7 +592,7 @@ async function user_rename_files() {
                     <Menu ref="templateMenuToggle" id="template_menu" :model="templateMenuItems" :popup="true" />
 
                     <!-- === Hamburger Select === -->
-                    <Button icon="pi pi-replay" class="whitespace-nowrap flex-none" @click="clearTasks"
+                    <Button icon="pi pi-trash" class="whitespace-nowrap flex-none" @click="clearTasks"
                         severity="secondary" size="small" />
                 </div>
 
@@ -980,14 +980,15 @@ async function user_rename_files() {
                     class="flex flex-row py-2 px-2 gap-2 bg-panelfooter border-t-1 rounded-b-lg border-bordercolor text-sm text-textprimary">
 
                     <Select v-model="outputDropdownChoice" :options="outputDropdownChoices" size="small"
-                        optionLabel="name" placeholder="Output Operation" optionValue="code" class="w-full flex-1"
-                        @change="userUpdateOutput" />
+                        optionLabel="name" placeholder="Output Operation" optionValue="code"
+                        class="w-full flex-1 min-w-max" @change="userUpdateOutput" />
 
                     <!-- <div id="separator" class="flex-1"></div> -->
 
                     <Button size="small" icon="pi pi-folder-open" label="Choose Output Directory" severity="secondary"
-                        :disabled="outputDirectoryButtonDisabled" @click="userChooseOutputDirectory" />
-                    <Button size="small" icon="pi pi-check-square" label="Batch Rename Files"
+                        class="min-w-max" :disabled="outputDirectoryButtonDisabled"
+                        @click="userChooseOutputDirectory" />
+                    <Button size="small" icon="pi pi-check-square" label="Batch Rename Files" class="min-w-max"
                         @click="user_rename_files" />
                 </footer>
             </SplitterPanel>
