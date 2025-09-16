@@ -121,6 +121,31 @@ const fileraTheme = definePreset(Aura, {
                 },
             },
         },
+        togglebutton: {
+            colorScheme: {
+                dark: {
+                    root: {
+                        background: "{reactive.button-background}",
+                        borderColor: "{reactive.button-borderColor}",
+                        color: "{reactive.text-color}",
+                        checkedBackground: "{reactive.button-background}",
+                        checkedBorderColor: "{reactive.button-borderColor}",
+                        checkedColor: "{reactive.text-color}",
+                    },
+                },
+            },
+        },
+        floatlabel: {
+            colorScheme: {
+                dark: {
+                    on: {
+                        active: {
+                            background: "{panelbody}",
+                        },
+                    },
+                },
+            },
+        },
     },
 });
 
