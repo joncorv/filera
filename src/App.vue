@@ -433,13 +433,13 @@ const createTemplate = () => {
 // };
 
 
-async function userNotification() {
-    await invoke("user_notification");
-}
-
-async function userDialog() {
-    await invoke("user_dialog");
-}
+// async function userNotification() {
+//     await invoke("user_notification");
+// }
+//
+// async function userDialog() {
+//     await invoke("user_dialog");
+// }
 
 const outputDropdownChoice = ref("");
 const outputDropdownChoices = [
@@ -493,7 +493,7 @@ async function user_rename_files() {
         <Splitter style="flex: 1; overflow: hidden; background-color: transparent; z-index: 40">
             <!-- === Left Splitter Panel === -->
             <SplitterPanel
-                class="flex flex-2/3 flex-col gap-0 ml-2 mr-0.5 mt-0 mb-2 border-1 rounded-lg border-bordercolor z-50 bg-panelheader ">
+                class="flex flex-2/3 flex-col gap-0 ml-1 mr-0.25 mt-0 mb-1 border-1 rounded-lg border-bordercolor z-50 bg-panelheader ">
                 <!-- === Left SplitterPanel Menubar === -->
                 <div id="file_buttons" class="flex flex-row items-center gap-2 justify-start m-2">
                     <!-- <div class="bg-test2"> test test </div> -->
@@ -571,7 +571,7 @@ async function user_rename_files() {
 
             <!-- === Right Splitter Panel === -->
             <SplitterPanel
-                class="flex flex-col flex-1/3 ml-0.5 mb-2 mr-2 bg-panelheader rounded-lg border-1 border-bordercolor">
+                class="flex flex-col flex-1/3 ml-0.25 mb-1 mr-1 bg-panelheader rounded-lg border-1 border-bordercolor">
                 <!-- === Right SplitterPanel Menubar === -->
                 <div id="file_buttons" class="flex flex-row m-2 gap-2 items-center justify-start bg-panelheader">
                     <!-- <Menu id="customTextOverlayMenu" :model="customTextMenuItems" popup="true" /> -->
