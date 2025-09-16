@@ -586,8 +586,8 @@ async function user_rename_files() {
                     <!-- === Separator === -->
                     <div class="flex-1"></div>
 
-                    <Button type="button" label="Templates" severity="secondary" size="small" icon="pi pi-bookmark"
-                        class="min-w-max" @click="templateMenuToggleFunction" aria-haspopup="true"
+                    <Button type="button" label="Templates" disabled severity="secondary" size="small"
+                        icon="pi pi-bookmark" class="min-w-max" @click="templateMenuToggleFunction" aria-haspopup="true"
                         aria-controls="custom_text_menu" />
                     <Menu ref="templateMenuToggle" id="template_menu" :model="templateMenuItems" :popup="true" />
 
