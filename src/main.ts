@@ -147,6 +147,22 @@ const fileraTheme = definePreset(Aura, {
                 },
             },
         },
+        inputnumber: {
+            colorScheme: {
+                dark: {
+                    button: {
+                        background: "{reactive.button-background}",
+                    },
+                },
+                light: {
+                    button: {
+                        background: "{primary.100}",
+                        hoverBackground: "{primary.200}",
+                        activeBackground: "{primary.300}",
+                    },
+                },
+            },
+        },
     },
 });
 
