@@ -523,14 +523,14 @@ async function user_rename_files() {
                     <!-- === No Files Selected === -->
                     <div v-if="!numFileStatusItems"
                         class="flex flex-1 bg-panelbody flex-col justify-center items-center w-full h-full whitespace-nowrap bg-panelbody">
-                        <span class="text-center mb-2 text-textprimary">Drag your files here.</span>
+                        <span class="text-center mb-0 text-textprimary">Drag your files here.</span>
                         <span class="text-center text-sm text-textsecondary">NOTE: drag functionality is not
                             implimented,</span>
                         <span class="text-center text-sm text-textsecondary">Please use the add buttons above.</span>
                     </div>
 
                     <!-- === File Table === -->
-                    <div v-else id="table-container" class="flex-1/2 flex flex-col mb-2 min-h-0 text-sm bg-panelbody">
+                    <div v-else id="table-container" class="flex-1/2 flex flex-col mb-0 min-h-0 text-sm bg-panelbody">
                         <table class="w-full text-textprimary bg-panelheader/50">
                             <thead>
                                 <tr>
