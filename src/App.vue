@@ -284,15 +284,15 @@ async function open_files() {
 
 //  <-- === Opens Files System Dialog === -->
 async function open_folders() {
-    const selectedFiles = await open({
+    const selectedFolders = await open({
         directory: true,
-        // multiple: true,
+        multiple: true,
         recursive: true,
     });
 
-    if (selectedFiles) {
+    if (selectedFolders) {
         fileStatusReturn.value = await invoke("user_open_folders", {
-            fileNames: selectedFiles,
+            directories: selectedFolders,
         });
     } else {
         console.log("There was no previous selection or current selection. No Updates to make.");
