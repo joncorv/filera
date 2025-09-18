@@ -96,11 +96,10 @@ yarn run tauri dev
 ## 📋 Roadmap
 
 - [ ] Fix blank file handling
-- [ ] Implement light mode
+- [x] Implement light mode
 - [x] Add output directory options
-- [ ] Impliment Open Folders with recursion
+- [x] Impliment Open Folders with recursion
 - [ ] Template Support
-- [ ] Custom renaming patterns
 - [ ] Undo functionality
 - [ ] Regex support
 - [ ] Batch folder renaming
@@ -108,7 +107,7 @@ yarn run tauri dev
 
 ## 📄 License
 
-This project will be licensed under an open-source license (TBD). License file coming soon.
+This project is licensed under an open-source Apache license.
 
 ## 🙏 Acknowledgments
 
