@@ -8,6 +8,7 @@ use std::{fs::copy, fs::rename, path::PathBuf};
 use tauri::{Manager, State};
 use tauri_plugin_notification::NotificationExt;
 use time::OffsetDateTime;
+use walkdir::WalkDir;
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 struct WorkingFile {
@@ -109,6 +110,7 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             user_open_files,
+            user_open_folders,
             user_update_sort,
             user_update_tasks,
             user_update_search,
@@ -134,8 +136,23 @@ fn user_open_files(file_names: Vec<String>, state: State<'_, Mutex<AppState>>) -
     convert_working_files_to_file_status(&state)
 }
 
-// #[tauri::command]
-// fn user_open_folders() {}
+#[tauri::command]
+fn user_open_folders(directories: Vec<String>, state: State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
+    let mut file_names: Vec<String> = Vec::new();
+
+    for dir in directories {
+        for entry in WalkDir::new(dir).into_iter().filter_map(|e| e.ok()) {
+            file_names.push(entry.path().to_string_lossy().to_string());
+        }
+    }
+
+    solve_duplicates(file_names, &state);
+    sort_file_names(&state);
+    convert_file_names_to_working_files(&state);
+    process_tasks_on_working_files(&state);
+    resolve_workingfile_duplicates(&state);
+    convert_working_files_to_file_status(&state)
+}
 
 #[tauri::command]
 fn user_clear_files(state: State<'_, Mutex<AppState>>) {
