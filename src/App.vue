@@ -270,11 +270,28 @@ const numTaskListItems = computed(() => taskList.value.length);
 async function open_files() {
     const selectedFiles = await open({
         multiple: true,
-        director: true,
+        directory: false,
     });
 
     if (selectedFiles) {
         fileStatusReturn.value = await invoke("user_open_files", {
+            fileNames: selectedFiles,
+        });
+    } else {
+        console.log("There was no previous selection or current selection. No Updates to make.");
+    }
+}
+
+//  <-- === Opens Files System Dialog === -->
+async function open_folders() {
+    const selectedFiles = await open({
+        directory: true,
+        // multiple: true,
+        recursive: true,
+    });
+
+    if (selectedFiles) {
+        fileStatusReturn.value = await invoke("user_open_folders", {
             fileNames: selectedFiles,
         });
     } else {
@@ -499,7 +516,7 @@ async function user_rename_files() {
                     <!-- <div class="bg-test2"> test test </div> -->
                     <Button size="small" icon="pi pi-file" label="Open Files" @click="open_files" class="min-w-max"
                         severity="secondary" />
-                    <Button size="small" icon="pi pi-folder-open" label="Open Folders" @click="open_files"
+                    <Button size="small" icon="pi pi-folder-open" label="Open Folders" @click="open_folders"
                         severity="secondary" class="min-w-max" />
                     <!-- === Search Field === -->
                     <IconField class="flex-3/4 w-full">
