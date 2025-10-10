@@ -34,7 +34,7 @@ Instead of spending hours renaming files manually, Filera lets you batch process
 ## 📦 Installation
 
 ### Pre-built Releases
-Download the latest beta release from the [Releases](https://github.com/joncorv/filera/releases) page.
+Download the latest beta release from the [Releases](https://github.com/joncorv/filera/releases) page. Please note that I am in the process of receiving official signing certificates from Apple and Microsoft. Once those are in place, you should not see warnings about installing an app from an unknown developer.
 
 ## 🤝 Contributing
 
