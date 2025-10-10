@@ -71,7 +71,7 @@ cd filera
 yarn install
 
 # Start development server
-yarn run tauri dev
+yarn tauri dev
 
 # Optionally, if you are on linux, run the custom dev script
 ./tauri_dev.sh
