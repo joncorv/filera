@@ -6,11 +6,11 @@ A powerful, cross-platform batch file renaming tool written in Rust. Transform m
 
 > **⚠️ WORK IN PROGRESS**: This project is under active development. Features, documentation, and functionality are subject to change without notice. Use at your own discretion.
 
-> **Note**: Filera is currently in **Alpha**. While functional, there are known issues being addressed before the first stable release.
+> **Note**: Filera is currently in **Beta**. While functional, there are known issues being addressed before the first stable release.
 
 ## 🚀 Features
 
-- **Batch Rename**: Process hundreds or thousands of files at once
+- **Batch Rename**: Process thousands of files at once
 - **Cross-Platform**: Works seamlessly on Windows, macOS, and Linux
 - **Fast & Lightweight**: Built with Rust backend for optimal performance
 - **Modern UI**: Clean, intuitive interface built with Vue 3 and TypeScript
@@ -25,15 +25,6 @@ Have you ever found yourself with a folder full of files with messy names like:
 
 Instead of spending hours renaming files manually, Filera lets you batch process them all at once with powerful renaming patterns and rules.
 
-## 🚧 Alpha Status
-
-Filera is currently in alpha development. It's functional and ready for testing, but please be aware of these known issues:
-
-- **File Handling**: Issues with completely blank/empty files
-- **Light Mode**: UI currently optimized for dark mode only
-- **Output Options**: Only in-place replacement available (no copy/move to directory options yet)
-- Some Linux distros will display the UI at 2x scale.
-
 ## 🛠️ Tech Stack
 
 - **Backend**: Rust with Tauri
@@ -43,7 +34,7 @@ Filera is currently in alpha development. It's functional and ready for testing,
 ## 📦 Installation
 
 ### Pre-built Releases
-Download the latest alpha release from the [Releases](https://github.com/joncorv/filera/releases) page.
+Download the latest beta release from the [Releases](https://github.com/joncorv/filera/releases) page.
 
 ## 🤝 Contributing
 
@@ -55,13 +46,6 @@ Contributions are welcome! Whether you're:
 - 🔧 Fixing issues
 - 📚 Improving documentation
 - 🎨 Designing UI improvements
-
-### Current Priority Issues
-Help is especially appreciated with these alpha issues:
-1. **File Handling**: Robust handling of empty/blank files
-2. **Light Mode**: Making the UI beautiful in light theme
-3. **Output Options**: Adding copy/move to directory functionality
-4. **UI Polish**: General interface improvements
 
 ### How to Contribute
 1. Fork the repository
@@ -95,7 +79,7 @@ yarn run tauri dev
 
 ## 📋 Roadmap
 
-- [ ] Fix blank file handling
+- [x] Fix blank file handling
 - [x] Implement light mode
 - [x] Add output directory options
 - [x] Impliment Open Folders with recursion
