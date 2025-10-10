@@ -124,8 +124,6 @@ pub fn run() {
         .expect("error while running tauri application");
 }
 
-// these are all Tauri commands
-// they should all return Vec<FileStatus>
 #[tauri::command]
 fn user_open_files(file_names: Vec<String>, state: State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
     solve_duplicates(file_names, &state);
@@ -184,8 +182,6 @@ fn user_update_search(search: String, state: State<'_, Mutex<AppState>>) -> Vec<
     state_update_search(search, &state);
     convert_working_files_to_file_status(&state)
 }
-
-// fn user_change_target_directory() {}
 
 #[tauri::command]
 fn solve_duplicates(file_names: Vec<String>, state: &State<'_, Mutex<AppState>>) {
@@ -345,9 +341,6 @@ fn process_tasks_on_working_files(state: &State<'_, Mutex<AppState>>) {
         // iterate over all tasks in task_list
         for task in tasks {
             match task {
-                // TODO: Custom Text does not account for files w/o a file extension, or files that
-                // start with a "."
-                // TODO: account for <BLANK> edge case
                 Task::CustomText { text, at_start, active } => {
                     if *active {
                         let file_stem: String;
