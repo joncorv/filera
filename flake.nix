@@ -64,12 +64,14 @@
           ];
 
           preBuild = ''
+            # Go up to parent directory and copy to writable location
             cd ..
-            export HOME=$(mktemp -d)
+            parentDir=$(pwd)
+            cp -r $parentDir /build/filera-build
+            chmod -R +w /build/filera-build
+            cd /build/filera-build
 
-            # Copy yarn.lock to a writable location
-            cp yarn.lock yarn.lock.orig
-            chmod +w yarn.lock
+            export HOME=$(mktemp -d)
 
             # Setup yarn offline cache
             export YARN_ENABLE_NETWORK=0
@@ -79,7 +81,11 @@
             yarn install --offline --frozen-lockfile --ignore-scripts --no-progress --non-interactive
 
             yarn build
-            cd src-tauri
+
+            # Copy built files back to original location
+            cp -r dist $parentDir/
+
+            cd $parentDir/src-tauri
           '';
 
           doCheck = false;
