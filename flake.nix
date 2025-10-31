@@ -1,10 +1,8 @@
 {
-  description = "Filera — a Tauri-based file manager";
+  description = "Filera - A powerful batch file renaming tool";
 
   inputs = {
-    # Pin nixpkgs for reproducibility
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
-    # Optionally include flake-utils for multi-platform convenience
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
@@ -17,16 +15,26 @@
     flake-utils.lib.eachDefaultSystem (
       system:
       let
-        pkgs = import nixpkgs {
-          inherit system;
-        };
+        pkgs = nixpkgs.legacyPackages.${system};
       in
       {
-        # Development shell for contributors
-        devShells.default = pkgs.mkShell {
+        packages.default = pkgs.rustPlatform.buildRustPackage {
+          pname = "filera";
+          version = "0.4.2";
+
+          src = ./.;
+
+          # Point to the Cargo.lock in src-tauri
+          cargoLock = {
+            lockFile = ./src-tauri/Cargo.lock;
+          };
+
+          # Build only the Tauri backend
+          sourceRoot = "source/src-tauri";
+
           nativeBuildInputs = with pkgs; [
             pkg-config
-            gobject-introspection
+            wrapGAppsHook
             cargo
             rustc
             nodejs
@@ -34,10 +42,6 @@
           ];
 
           buildInputs = with pkgs; [
-            # DBus (required)
-            dbus.dev
-
-            # Tauri runtime dependencies
             at-spi2-atk
             atkmm
             cairo
@@ -49,82 +53,46 @@
             libsoup_3
             pango
             webkitgtk_4_1
-            openssl.dev
+            openssl
+            dbus
             fontconfig
             gsettings-desktop-schemas
           ];
 
-          shellHook = ''
-            export PKG_CONFIG_PATH="${pkgs.dbus.dev}/lib/pkgconfig:${pkgs.openssl.dev}/lib/pkgconfig:$PKG_CONFIG_PATH"
-            export XDG_DATA_DIRS="${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}:${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}:$XDG_DATA_DIRS"
-            echo "Filera Tauri development environment loaded!"
-            echo "Run 'yarn tauri dev' to start development"
-          '';
-        };
-
-        packages.default = pkgs.rustPlatform.buildRustPackage {
-          pname = "filera";
-          version = "0.4.2";
-
-          # Include whole repo
-          src = self;
-
-          cargoLock.lockFile = ./src-tauri/Cargo.lock;
-
-          nativeBuildInputs = with pkgs; [
-            pkg-config
-            nodejs
-            yarn
-          ];
-          buildInputs = with pkgs; [
-            dbus.dev
-            at-spi2-atk
-            atkmm
-            cairo
-            gdk-pixbuf
-            glib
-            gtk3
-            harfbuzz
-            librsvg
-            libsoup_3
-            pango
-            webkitgtk_4_1
-            openssl.dev
-            fontconfig
-            gsettings-desktop-schemas
-          ];
-
-          # Tell nix to unpack and cd into src-tauri manually
-          preUnpack = ''
-            echo ">>> Using manual unpack for src-tauri"
-          '';
-          unpackPhase = ''
-            mkdir source
-            tar -xf $src --strip-components=1 -C source
-            cd source/src-tauri
-            sourceRoot=$(pwd)
-          '';
-
+          # Build the frontend first
           preBuild = ''
-            export XDG_DATA_DIRS="${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}:${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}:$XDG_DATA_DIRS"
-          '';
-
-          # Optional: package frontend before Rust build
-          buildPhase = ''
-            echo ">>> Building frontend"
             cd ..
+            export HOME=$(mktemp -d)
             yarn install --frozen-lockfile
             yarn build
             cd src-tauri
-            cargo build --release --frozen
           '';
 
-          installPhase = ''
-            mkdir -p $out/bin
-            cp target/release/filera $out/bin/
+          # Disable tests since this is a GUI app
+          doCheck = false;
+
+          postInstall = ''
+            # Install desktop file
+            mkdir -p $out/share/applications
+            cat > $out/share/applications/filera.desktop <<EOF
+            [Desktop Entry]
+            Name=Filera
+            Comment=Powerful batch file renaming tool
+            Exec=$out/bin/filera
+            Type=Application
+            Categories=Utility;FileTools;
+            Terminal=false
+            EOF
           '';
+
+          meta = with pkgs.lib; {
+            description = "A powerful, cross-platform batch file renaming tool";
+            homepage = "https://github.com/joncorv/filera";
+            # license = licenses.mit; # Uncomment and set when you choose a license
+            maintainers = [ ];
+            platforms = platforms.linux;
+          };
         };
-
       }
     );
 }
