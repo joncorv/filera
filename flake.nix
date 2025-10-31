@@ -22,11 +22,11 @@
           pname = "filera";
           version = "0.4.2";
 
-          src = self; # Changed from ./.
+          src = self;
 
           # Point to the Cargo.lock in src-tauri
           cargoLock = {
-            lockFile = ./src-tauri/Cargo.lock;
+            lockFile = "${self}/src-tauri/Cargo.lock";
           };
 
           # Build only the Tauri backend
