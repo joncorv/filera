@@ -38,7 +38,7 @@
 
           nativeBuildInputs = with pkgs; [
             pkg-config
-            wrapGAppsHook
+            wrapGAppsHook3 # Changed from wrapGAppsHook
             cargo
             rustc
             nodejs
