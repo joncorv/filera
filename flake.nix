@@ -27,6 +27,7 @@
             yarn
             makeWrapper
             xdg-utils
+            fixup-yarn-lock
           ];
 
           buildInputs = with pkgs; [
@@ -58,11 +59,15 @@
             cp -r $yarnOfflineCache/* $YARN_CACHE_FOLDER/
             chmod -R +w $YARN_CACHE_FOLDER
             
+            # Fix yarn.lock for offline mode
+            cp yarn.lock yarn.lock.orig
+            chmod +w yarn.lock
+            fixup-yarn-lock yarn.lock
+            
             yarn install --offline --frozen-lockfile --ignore-scripts --no-progress --non-interactive
           '';
 
           buildPhase = ''
-            # Use yarn tauri build - it handles everything
             export TAURI_BUNDLER_TARGETS="none"
             yarn --offline tauri build
           '';
