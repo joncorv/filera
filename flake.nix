@@ -30,15 +30,11 @@
           };
 
           # Build only the Tauri backend
-          sourceRoot = ".";
-          postUnpack = ''
-            cd $sourceRoot/src-tauri
-            sourceRoot="."
-          '';
+          sourceRoot = "source/src-tauri";
 
           nativeBuildInputs = with pkgs; [
             pkg-config
-            wrapGAppsHook3 # Changed from wrapGAppsHook
+            wrapGAppsHook3
             cargo
             rustc
             nodejs
