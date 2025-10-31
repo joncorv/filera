@@ -26,7 +26,7 @@
       in
       {
         packages.default = pkgs.appimageTools.wrapType2 {
-          name = "filera";
+          pname = "filera";
           version = "0.4.2";
 
           src = pkgs.fetchurl {
