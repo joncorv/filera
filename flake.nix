@@ -32,7 +32,7 @@
           src = pkgs.fetchurl {
             url = "https://github.com/joncorv/filera/releases/download/filera-v${version}/filera-${tauriArch}";
             # url = "https://github.com/joncorv/filera/releases/download/filera-v${version}/filera_linux_x64";
-            hash = ""; # Will get this after first release
+            hash = "sha256-ighUK%2BZoDBYWO6ZnVIhToXXb0vaRu2/cx5awGizSLJs%3D"; # Will get this after first release
           };
 
           dontUnpack = true;
