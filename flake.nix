@@ -16,33 +16,34 @@
       system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
+
+        # Build the frontend separately
+        frontend = pkgs.buildNpmPackage {
+          pname = "filera-frontend";
+          version = "0.4.2";
+          src = self;
+          npmDepsHash = ""; # Will tell you the hash
+          npmBuildScript = "build";
+          installPhase = ''
+            mkdir -p $out
+            cp -r dist $out/
+          '';
+        };
       in
       {
         packages.default = pkgs.rustPlatform.buildRustPackage {
           pname = "filera";
           version = "0.4.2";
 
-          src = self;
+          src = "${self}/src-tauri";
 
           cargoLock = {
             lockFile = "${self}/src-tauri/Cargo.lock";
           };
 
-          sourceRoot = "source/src-tauri";
-
-          yarnOfflineCache = pkgs.fetchYarnDeps {
-            yarnLock = "${self}/yarn.lock";
-            hash = "sha256-OoKYgLmWI39w6UAshCbDYNK7VW6SPHE8A9bN/20d13A=";
-          };
-
           nativeBuildInputs = with pkgs; [
             pkg-config
             wrapGAppsHook3
-            cargo
-            rustc
-            nodejs
-            yarn
-            fixup-yarn-lock
           ];
 
           buildInputs = with pkgs; [
@@ -63,30 +64,10 @@
             gsettings-desktop-schemas
           ];
 
+          # Copy pre-built frontend into place
           preBuild = ''
-            # Go up to parent directory and copy to writable location
-            cd ..
-            parentDir=$(pwd)
-            cp -r $parentDir /build/filera-build
-            chmod -R +w /build/filera-build
-            cd /build/filera-build
-
-            export HOME=$(mktemp -d)
-
-            # Copy yarn cache to writable location
-            export YARN_CACHE_FOLDER=/build/yarn-cache
-            cp -r $yarnOfflineCache $YARN_CACHE_FOLDER
-            chmod -R +w $YARN_CACHE_FOLDER
-
-            fixup-yarn-lock yarn.lock
-            yarn install --offline --frozen-lockfile --ignore-scripts --no-progress --non-interactive
-
-            yarn build
-
-            # Copy built files back to original location
-            cp -r dist $parentDir/
-
-            cd $parentDir/src-tauri
+            mkdir -p ../dist
+            cp -r ${frontend}/dist/* ../dist/
           '';
 
           doCheck = false;
