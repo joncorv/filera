@@ -10,6 +10,13 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
+        
+        yarnModules = pkgs.mkYarnModules {
+          pname = "filera-modules";
+          version = "0.4.2";
+          packageJSON = "${self}/package.json";
+          yarnLock = "${self}/yarn.lock";
+        };
       in
       {
         packages.default = pkgs.stdenv.mkDerivation {
@@ -27,7 +34,6 @@
             yarn
             makeWrapper
             xdg-utils
-            fixup-yarn-lock
           ];
 
           buildInputs = with pkgs; [
@@ -48,28 +54,16 @@
             gsettings-desktop-schemas
           ];
 
-          yarnOfflineCache = pkgs.fetchYarnDeps {
-            yarnLock = "${self}/yarn.lock";
-            hash = "sha256-OoKYgLmWI39w6UAshCbDYNK7VW6SPHE8A9bN/20d13A=";
-          };
-
           configurePhase = ''
             export HOME=$(mktemp -d)
-            export YARN_CACHE_FOLDER=$(mktemp -d)
-            cp -r $yarnOfflineCache/* $YARN_CACHE_FOLDER/
-            chmod -R +w $YARN_CACHE_FOLDER
             
-            # Fix yarn.lock for offline mode
-            cp yarn.lock yarn.lock.orig
-            chmod +w yarn.lock
-            fixup-yarn-lock yarn.lock
-            
-            yarn install --offline --frozen-lockfile --ignore-scripts --no-progress --non-interactive
+            # Use pre-fetched yarn modules
+            ln -s ${yarnModules}/node_modules ./node_modules
           '';
 
           buildPhase = ''
             export TAURI_BUNDLER_TARGETS="none"
-            yarn --offline tauri build
+            yarn tauri build
           '';
 
           installPhase = ''
