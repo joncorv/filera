@@ -20,10 +20,10 @@
       {
         packages.default = pkgs.stdenv.mkDerivation rec {
           pname = "filera";
-          version = "0.4.1";
+          version = "0.4.2";
 
           src = pkgs.fetchurl {
-            url = "https://github.com/joncorv/filera/releases/download/v${version}/filera_${version}_x64.tar.gz";
+            url = "https://github.com/joncorv/filera/releases/download/v${version}/filera_${version}_x64.app.tar.gz";
             hash = ""; # Get this from first build error
           };
 
