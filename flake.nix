@@ -30,7 +30,11 @@
           };
 
           # Build only the Tauri backend
-          sourceRoot = "source/src-tauri";
+          sourceRoot = ".";
+          postUnpack = ''
+            cd $sourceRoot/src-tauri
+            sourceRoot="."
+          '';
 
           nativeBuildInputs = with pkgs; [
             pkg-config
