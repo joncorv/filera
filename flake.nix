@@ -11,29 +11,31 @@
       let
         pkgs = nixpkgs.legacyPackages.${system};
         
-        yarnModules = pkgs.mkYarnModules {
-          pname = "filera-modules";
+        # Pre-build the frontend
+        frontend = pkgs.mkYarnModules {
+          pname = "filera-frontend";
           version = "0.4.2";
           packageJSON = "${self}/package.json";
           yarnLock = "${self}/yarn.lock";
         };
       in
       {
-        packages.default = pkgs.stdenv.mkDerivation {
+        packages.default = pkgs.rustPlatform.buildRustPackage {
           pname = "filera";
           version = "0.4.2";
           src = self;
 
+          sourceRoot = "source/src-tauri";
+
+          cargoLock = {
+            lockFile = "${self}/src-tauri/Cargo.lock";
+          };
+
           nativeBuildInputs = with pkgs; [
             pkg-config
             wrapGAppsHook3
-            cargo
-            rustc
-            cargo-tauri
             nodejs
             yarn
-            makeWrapper
-            xdg-utils
           ];
 
           buildInputs = with pkgs; [
@@ -54,23 +56,17 @@
             gsettings-desktop-schemas
           ];
 
-          configurePhase = ''
+          preBuild = ''
+            # Go back to root and build frontend
+            cd ..
+            ln -s ${frontend}/node_modules ./node_modules
             export HOME=$(mktemp -d)
-            
-            # Use pre-fetched yarn modules
-            ln -s ${yarnModules}/node_modules ./node_modules
+            yarn build
+            cd src-tauri
           '';
 
-          buildPhase = ''
-            export TAURI_BUNDLER_TARGETS="none"
-            yarn tauri build
-          '';
-
-          installPhase = ''
-            mkdir -p $out/bin $out/share/applications
-            
-            cp src-tauri/target/release/filera $out/bin/
-            
+          postInstall = ''
+            mkdir -p $out/share/applications
             cat > $out/share/applications/filera.desktop <<EOF
             [Desktop Entry]
             Name=Filera
