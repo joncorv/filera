@@ -88,7 +88,7 @@
           meta = with pkgs.lib; {
             description = "A powerful, cross-platform batch file renaming tool";
             homepage = "https://github.com/joncorv/filera";
-            license = licenses.unfree; # Update when you choose a license
+            # license = licenses.mit; # Uncomment and set when you choose a license
             maintainers = [ ];
             platforms = platforms.linux;
           };
