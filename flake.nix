@@ -17,17 +17,22 @@
       let
         pkgs = nixpkgs.legacyPackages.${system};
 
-        # Build the frontend separately
-        frontend = pkgs.buildNpmPackage {
+        # Build the frontend separately using mkYarnPackage
+        frontend = pkgs.mkYarnPackage {
           pname = "filera-frontend";
           version = "0.4.2";
           src = self;
-          npmDepsHash = ""; # Will tell you the hash
-          npmBuildScript = "build";
+
+          buildPhase = ''
+            yarn --offline build
+          '';
+
           installPhase = ''
             mkdir -p $out
-            cp -r dist $out/
+            cp -r deps/filera/dist $out/
           '';
+
+          distPhase = "true";
         };
       in
       {
