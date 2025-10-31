@@ -33,7 +33,7 @@
           # Fetch yarn dependencies offline
           yarnOfflineCache = pkgs.fetchYarnDeps {
             yarnLock = "${self}/yarn.lock";
-            hash = ""; # Will fail and tell you the correct hash
+            hash = "sha256-OoKYgLmWI39w6UAshCbDYNK7VW6SPHE8A9bN/20d13A=";
           };
 
           nativeBuildInputs = with pkgs; [
