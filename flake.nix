@@ -32,7 +32,7 @@
 
           src = pkgs.fetchurl {
             url = "https://github.com/joncorv/filera/releases/download/filera-v${version}/filera_${version}_${tauriArch}_linux.AppImage";
-            hash = ""; # Get this from first build error
+            hash = "sha256-Pb3SBaVbQIzZ/cu4V7rJjd45WeJ01kZVc50ChNQYDlA=";
           };
 
           nativeBuildInputs = with pkgs; [
