@@ -30,7 +30,6 @@
 
           sourceRoot = "source/src-tauri";
 
-          # Fetch yarn dependencies offline
           yarnOfflineCache = pkgs.fetchYarnDeps {
             yarnLock = "${self}/yarn.lock";
             hash = "sha256-OoKYgLmWI39w6UAshCbDYNK7VW6SPHE8A9bN/20d13A=";
@@ -67,6 +66,10 @@
           preBuild = ''
             cd ..
             export HOME=$(mktemp -d)
+
+            # Copy yarn.lock to a writable location
+            cp yarn.lock yarn.lock.orig
+            chmod +w yarn.lock
 
             # Setup yarn offline cache
             export YARN_ENABLE_NETWORK=0
