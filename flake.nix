@@ -19,7 +19,7 @@
 
         tauriArch =
           {
-            "x86_64-linux" = "amd64";
+            "x86_64-linux" = "x64";
             "aarch64-linux" = "arm64";
           }
           .${system};
@@ -30,8 +30,9 @@
           version = "0.4.3";
 
           src = pkgs.fetchurl {
-            url = "https://github.com/joncorv/filera/releases/download/filera-v${version}/filera-${tauriArch}";
-            hash = ""; # Will get this after first release
+            # url = "https://github.com/joncorv/filera/releases/download/filera-v${version}/filera-${tauriArch}";
+            url = "https://github.com/joncorv/filera/releases/download/filera-v${version}/filera_linux_x64";
+            hash = "sha256:c4eab0309324c51f2d2b5fec8f332902032e2f59232c12d180abd558bd253e4f"; # Will get this after first release
           };
 
           dontUnpack = true;
