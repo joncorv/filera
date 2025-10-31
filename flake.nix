@@ -16,52 +16,69 @@
       system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-
-        tauriArch =
-          {
-            "x86_64-linux" = "amd64";
-            "aarch64-linux" = "arm64";
-          }
-          .${system} or (throw "Unsupported system: ${system}");
       in
       {
-        packages.default = pkgs.appimageTools.wrapType2 {
+        packages.default = pkgs.rustPlatform.buildRustPackage {
           pname = "filera";
           version = "0.4.2";
 
-          src = pkgs.fetchurl {
-            url = "https://github.com/joncorv/filera/releases/download/filera-v0.4.2/filera_0.4.2_${tauriArch}_linux.AppImage";
-            hash = "sha256-Pb3SBaVbQIzZ/cu4V7rJjd45WeJ01kZVc50ChNQYDlA=";
+          src = ./.;
+
+          # Point to the Cargo.lock in src-tauri
+          cargoLock = {
+            lockFile = ./src-tauri/Cargo.lock;
           };
 
-          extraPkgs =
-            pkgs: with pkgs; [
-              webkitgtk_4_1
-              gtk3
-              cairo
-              gdk-pixbuf
-              glib
-              dbus
-              openssl
-              librsvg
-              libsoup_3
-              pango
-              harfbuzz
-              at-spi2-atk
-              atkmm
-              fontconfig
-              gsettings-desktop-schemas
-              krb5
-              e2fsprogs
-            ];
+          # Build only the Tauri backend
+          sourceRoot = "source/src-tauri";
 
-          extraInstallCommands = ''
+          nativeBuildInputs = with pkgs; [
+            pkg-config
+            wrapGAppsHook
+            cargo
+            rustc
+            nodejs
+            yarn
+          ];
+
+          buildInputs = with pkgs; [
+            at-spi2-atk
+            atkmm
+            cairo
+            gdk-pixbuf
+            glib
+            gtk3
+            harfbuzz
+            librsvg
+            libsoup_3
+            pango
+            webkitgtk_4_1
+            openssl
+            dbus
+            fontconfig
+            gsettings-desktop-schemas
+          ];
+
+          # Build the frontend first
+          preBuild = ''
+            cd ..
+            export HOME=$(mktemp -d)
+            yarn install --frozen-lockfile
+            yarn build
+            cd src-tauri
+          '';
+
+          # Disable tests since this is a GUI app
+          doCheck = false;
+
+          postInstall = ''
+            # Install desktop file
             mkdir -p $out/share/applications
             cat > $out/share/applications/filera.desktop <<EOF
             [Desktop Entry]
             Name=Filera
             Comment=Powerful batch file renaming tool
-            Exec=filera
+            Exec=$out/bin/filera
             Type=Application
             Categories=Utility;FileTools;
             Terminal=false
@@ -71,10 +88,9 @@
           meta = with pkgs.lib; {
             description = "A powerful, cross-platform batch file renaming tool";
             homepage = "https://github.com/joncorv/filera";
-            platforms = [
-              "x86_64-linux"
-              "aarch64-linux"
-            ];
+            license = licenses.unfree; # Update when you choose a license
+            maintainers = [ ];
+            platforms = platforms.linux;
           };
         };
       }
