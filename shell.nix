@@ -32,6 +32,7 @@ pkgs.mkShell {
     openssl.dev
     fontconfig
     gsettings-desktop-schemas
+    xdg-utils
   ];
 
   # Environment variables

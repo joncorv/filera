@@ -11,30 +11,26 @@
       let
         pkgs = nixpkgs.legacyPackages.${system};
         
-        frontend = pkgs.mkYarnModules {
-          pname = "filera-frontend";
-          version = "0.4.2";
-          packageJSON = "${self}/package.json";
-          yarnLock = "${self}/yarn.lock";
-        };
+        tauriArch = {
+          "x86_64-linux" = "amd64";
+          "aarch64-linux" = "arm64";
+        }.${system};
       in
       {
-        packages.default = pkgs.rustPlatform.buildRustPackage {
+        packages.default = pkgs.stdenv.mkDerivation rec {
           pname = "filera";
           version = "0.4.2";
-          src = self;
 
-          sourceRoot = "source/src-tauri";
-
-          cargoLock = {
-            lockFile = "${self}/src-tauri/Cargo.lock";
+          src = pkgs.fetchurl {
+            url = "https://github.com/joncorv/filera/releases/download/filera-v${version}/filera-${tauriArch}";
+            hash = ""; # Will get this after first release
           };
 
+          dontUnpack = true;
+
           nativeBuildInputs = with pkgs; [
-            pkg-config
+            autoPatchelfHook
             wrapGAppsHook3
-            nodejs
-            yarn
           ];
 
           buildInputs = with pkgs; [
@@ -53,19 +49,15 @@
             dbus
             fontconfig
             gsettings-desktop-schemas
+            xdg-utils
           ];
 
-          preBuild = ''
-            cd ..
-            cp -r ${frontend}/node_modules ./
-            chmod -R +w node_modules
-            export HOME=$(mktemp -d)
-            yarn build
-            cd src-tauri
-          '';
-
-          postInstall = ''
-            mkdir -p $out/share/applications
+          installPhase = ''
+            mkdir -p $out/bin $out/share/applications
+            
+            cp $src $out/bin/filera
+            chmod +x $out/bin/filera
+            
             cat > $out/share/applications/filera.desktop <<EOF
             [Desktop Entry]
             Name=Filera
