@@ -6,49 +6,27 @@
     flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs =
-    {
-      self,
-      nixpkgs,
-      flake-utils,
-    }:
-    flake-utils.lib.eachDefaultSystem (
-      system:
+  outputs = { self, nixpkgs, flake-utils }:
+    flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-
-        # Build the frontend separately using mkYarnPackage
-        frontend = pkgs.mkYarnPackage {
-          pname = "filera-frontend";
-          version = "0.4.2";
-          src = self;
-
-          buildPhase = ''
-            yarn --offline build
-          '';
-
-          installPhase = ''
-            mkdir -p $out
-            cp -r deps/filera/dist $out/
-          '';
-
-          distPhase = "true";
-        };
       in
       {
-        packages.default = pkgs.rustPlatform.buildRustPackage {
+        packages.default = pkgs.stdenv.mkDerivation {
           pname = "filera";
           version = "0.4.2";
-
-          src = "${self}/src-tauri";
-
-          cargoLock = {
-            lockFile = "${self}/src-tauri/Cargo.lock";
-          };
+          src = self;
 
           nativeBuildInputs = with pkgs; [
             pkg-config
             wrapGAppsHook3
+            cargo
+            rustc
+            cargo-tauri
+            nodejs
+            yarn
+            makeWrapper
+            xdg-utils
           ];
 
           buildInputs = with pkgs; [
@@ -67,19 +45,33 @@
             dbus
             fontconfig
             gsettings-desktop-schemas
-            xdg-utils
           ];
 
-          # Copy pre-built frontend into place
-          preBuild = ''
-            mkdir -p ../dist
-            cp -r ${frontend}/dist/* ../dist/
+          yarnOfflineCache = pkgs.fetchYarnDeps {
+            yarnLock = "${self}/yarn.lock";
+            hash = "sha256-OoKYgLmWI39w6UAshCbDYNK7VW6SPHE8A9bN/20d13A=";
+          };
+
+          configurePhase = ''
+            export HOME=$(mktemp -d)
+            export YARN_CACHE_FOLDER=$(mktemp -d)
+            cp -r $yarnOfflineCache/* $YARN_CACHE_FOLDER/
+            chmod -R +w $YARN_CACHE_FOLDER
+            
+            yarn install --offline --frozen-lockfile --ignore-scripts --no-progress --non-interactive
           '';
 
-          doCheck = false;
+          buildPhase = ''
+            # Use yarn tauri build - it handles everything
+            export TAURI_BUNDLER_TARGETS="none"
+            yarn --offline tauri build
+          '';
 
-          postInstall = ''
-            mkdir -p $out/share/applications
+          installPhase = ''
+            mkdir -p $out/bin $out/share/applications
+            
+            cp src-tauri/target/release/filera $out/bin/
+            
             cat > $out/share/applications/filera.desktop <<EOF
             [Desktop Entry]
             Name=Filera
