@@ -11,7 +11,6 @@
       let
         pkgs = nixpkgs.legacyPackages.${system};
         
-        # Pre-build the frontend
         frontend = pkgs.mkYarnModules {
           pname = "filera-frontend";
           version = "0.4.2";
@@ -57,9 +56,9 @@
           ];
 
           preBuild = ''
-            # Go back to root and build frontend
             cd ..
-            ln -s ${frontend}/node_modules ./node_modules
+            cp -r ${frontend}/node_modules ./
+            chmod -R +w node_modules
             export HOME=$(mktemp -d)
             yarn build
             cd src-tauri
