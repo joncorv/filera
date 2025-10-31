@@ -27,6 +27,7 @@
       {
         packages.default = pkgs.appimageTools.wrapType2 {
           name = "filera";
+          version = "0.4.2";
 
           src = pkgs.fetchurl {
             url = "https://github.com/joncorv/filera/releases/download/filera-v0.4.2/filera_0.4.2_${tauriArch}_linux.AppImage";
