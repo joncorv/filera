@@ -20,7 +20,7 @@
         # Map Nix system to Tauri architecture naming
         tauriArch =
           {
-            "x86_64-linux" = "x64";
+            "x86_64-linux" = "amd64";
             "aarch64-linux" = "arm64";
           }
           .${system} or (throw "Unsupported system: ${system}");
@@ -31,7 +31,7 @@
           version = "0.4.2";
 
           src = pkgs.fetchurl {
-            url = "https://github.com/joncorv/filera/releases/download/filera-v${version}/filera_${version}_${tauriArch}.tar.gz";
+            url = "https://github.com/joncorv/filera/releases/download/filera-v${version}/filera_${version}_${tauriArch}_linux.AppImage";
             hash = ""; # Get this from first build error
           };
 
@@ -41,7 +41,6 @@
           ];
 
           buildInputs = with pkgs; [
-            # Core Tauri dependencies
             webkitgtk_4_1
             gtk3
             cairo
@@ -53,24 +52,34 @@
             libsoup_3
             pango
             harfbuzz
-            # Additional runtime dependencies
             at-spi2-atk
             atkmm
             fontconfig
             gsettings-desktop-schemas
           ];
 
+          dontUnpack = true;
+          dontBuild = true;
+
           installPhase = ''
             mkdir -p $out/bin $out/share/applications
 
-            cp -r * $out/bin/
-            chmod +x $out/bin/filera
+            # Copy and extract AppImage
+            cp ${src} $out/bin/filera.AppImage
+            chmod +x $out/bin/filera.AppImage
 
-            wrapProgram $out/bin/filera \
+            cd $out/bin
+            ./filera.AppImage --appimage-extract
+            rm filera.AppImage
+            mv squashfs-root filera-extracted
+
+            # Create wrapper script
+            makeWrapper $out/bin/filera-extracted/AppRun $out/bin/filera \
               --prefix LD_LIBRARY_PATH : "${pkgs.lib.makeLibraryPath buildInputs}" \
               --prefix XDG_DATA_DIRS : "${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}" \
               --prefix XDG_DATA_DIRS : "${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}"
 
+            # Desktop file
             cat > $out/share/applications/filera.desktop <<EOF
             [Desktop Entry]
             Name=Filera
