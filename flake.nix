@@ -1,8 +1,10 @@
 {
-  description = "Filera - A powerful batch file renaming tool";
+  description = "Filera — a Tauri-based file manager";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    # Pin nixpkgs for reproducibility
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
+    # Optionally include flake-utils for multi-platform convenience
     flake-utils.url = "github:numtide/flake-utils";
   };
 
@@ -15,26 +17,16 @@
     flake-utils.lib.eachDefaultSystem (
       system:
       let
-        pkgs = nixpkgs.legacyPackages.${system};
+        pkgs = import nixpkgs {
+          inherit system;
+        };
       in
       {
-        packages.default = pkgs.rustPlatform.buildRustPackage {
-          pname = "filera";
-          version = "0.4.2";
-
-          src = ./.;
-
-          # Point to the Cargo.lock in src-tauri
-          cargoLock = {
-            lockFile = ./src-tauri/Cargo.lock;
-          };
-
-          # Build only the Tauri backend
-          sourceRoot = "src-tauri";
-
+        # Development shell for contributors
+        devShells.default = pkgs.mkShell {
           nativeBuildInputs = with pkgs; [
             pkg-config
-            wrapGAppsHook3
+            gobject-introspection
             cargo
             rustc
             nodejs
@@ -42,6 +34,10 @@
           ];
 
           buildInputs = with pkgs; [
+            # DBus (required)
+            dbus.dev
+
+            # Tauri runtime dependencies
             at-spi2-atk
             atkmm
             cairo
@@ -53,46 +49,53 @@
             libsoup_3
             pango
             webkitgtk_4_1
-            openssl
-            dbus
+            openssl.dev
             fontconfig
             gsettings-desktop-schemas
           ];
 
-          # Build the frontend first
-          preBuild = ''
-            cd ..
-            export HOME=$(mktemp -d)
-            yarn install --frozen-lockfile
-            yarn build
-            cd src-tauri
+          shellHook = ''
+            export PKG_CONFIG_PATH="${pkgs.dbus.dev}/lib/pkgconfig:${pkgs.openssl.dev}/lib/pkgconfig:$PKG_CONFIG_PATH"
+            export XDG_DATA_DIRS="${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}:${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}:$XDG_DATA_DIRS"
+            echo "Filera Tauri development environment loaded!"
+            echo "Run 'yarn tauri dev' to start development"
           '';
-
-          # Disable tests since this is a GUI app
-          doCheck = false;
-
-          postInstall = ''
-            # Install desktop file
-            mkdir -p $out/share/applications
-            cat > $out/share/applications/filera.desktop <<EOF
-            [Desktop Entry]
-            Name=Filera
-            Comment=Powerful batch file renaming tool
-            Exec=$out/bin/filera
-            Type=Application
-            Categories=Utility;FileTools;
-            Terminal=false
-            EOF
-          '';
-
-          meta = with pkgs.lib; {
-            description = "A powerful, cross-platform batch file renaming tool";
-            homepage = "https://github.com/joncorv/filera";
-            # license = licenses.mit; # Uncomment and set when you choose a license
-            maintainers = [ ];
-            platforms = platforms.linux;
-          };
         };
+
+        packages.default = pkgs.rustPlatform.buildRustPackage {
+          pname = "filera";
+          version = "0.4.2";
+
+          # Whole repo, but set the source root correctly
+          src = pkgs.lib.cleanSource ./.;
+          sourceRoot = "src-tauri";
+
+          cargoLock.lockFile = ./src-tauri/Cargo.lock;
+
+          nativeBuildInputs = with pkgs; [ pkg-config ];
+          buildInputs = with pkgs; [
+            dbus.dev
+            at-spi2-atk
+            atkmm
+            cairo
+            gdk-pixbuf
+            glib
+            gtk3
+            harfbuzz
+            librsvg
+            libsoup_3
+            pango
+            webkitgtk_4_1
+            openssl.dev
+            fontconfig
+            gsettings-desktop-schemas
+          ];
+
+          preBuild = ''
+            export XDG_DATA_DIRS="${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}:${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}:$XDG_DATA_DIRS"
+          '';
+        };
+
       }
     );
 }
