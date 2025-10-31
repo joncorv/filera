@@ -56,6 +56,9 @@
             atkmm
             fontconfig
             gsettings-desktop-schemas
+            # Kerberos libraries
+            krb5
+            e2fsprogs # provides libcom_err
           ];
 
           dontUnpack = true;
