@@ -6,20 +6,28 @@
     flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.eachDefaultSystem (system:
+  outputs =
+    {
+      self,
+      nixpkgs,
+      flake-utils,
+    }:
+    flake-utils.lib.eachDefaultSystem (
+      system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-        
-        tauriArch = {
-          "x86_64-linux" = "amd64";
-          "aarch64-linux" = "arm64";
-        }.${system};
+
+        tauriArch =
+          {
+            "x86_64-linux" = "amd64";
+            "aarch64-linux" = "arm64";
+          }
+          .${system};
       in
       {
         packages.default = pkgs.stdenv.mkDerivation rec {
           pname = "filera";
-          version = "0.4.2";
+          version = "0.4.3";
 
           src = pkgs.fetchurl {
             url = "https://github.com/joncorv/filera/releases/download/filera-v${version}/filera-${tauriArch}";
@@ -54,10 +62,10 @@
 
           installPhase = ''
             mkdir -p $out/bin $out/share/applications
-            
+
             cp $src $out/bin/filera
             chmod +x $out/bin/filera
-            
+
             cat > $out/share/applications/filera.desktop <<EOF
             [Desktop Entry]
             Name=Filera
