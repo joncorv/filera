@@ -67,6 +67,7 @@
             dbus
             fontconfig
             gsettings-desktop-schemas
+            xdg-utils
           ];
 
           # Copy pre-built frontend into place

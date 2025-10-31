@@ -10,6 +10,7 @@ pkgs.mkShell {
     rustc
     nodejs
     yarn
+    xdg-utils
   ];
 
   buildInputs = with pkgs; [
