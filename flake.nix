@@ -73,9 +73,10 @@
 
             export HOME=$(mktemp -d)
 
-            # Setup yarn offline cache
-            export YARN_ENABLE_NETWORK=0
-            export YARN_CACHE_FOLDER=$yarnOfflineCache
+            # Copy yarn cache to writable location
+            export YARN_CACHE_FOLDER=/build/yarn-cache
+            cp -r $yarnOfflineCache $YARN_CACHE_FOLDER
+            chmod -R +w $YARN_CACHE_FOLDER
 
             fixup-yarn-lock yarn.lock
             yarn install --offline --frozen-lockfile --ignore-scripts --no-progress --non-interactive
