@@ -67,7 +67,7 @@
           version = "0.4.2";
 
           # Include whole repo
-          src = pkgs.lib.cleanSource ./.;
+          src = self;
 
           cargoLock.lockFile = ./src-tauri/Cargo.lock;
 
