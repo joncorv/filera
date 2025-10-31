@@ -17,7 +17,6 @@
       let
         pkgs = nixpkgs.legacyPackages.${system};
 
-        # Map Nix system to Tauri architecture naming
         tauriArch =
           {
             "x86_64-linux" = "amd64";
@@ -26,68 +25,42 @@
           .${system} or (throw "Unsupported system: ${system}");
       in
       {
-        packages.default = pkgs.stdenv.mkDerivation rec {
-          pname = "filera";
-          version = "0.4.2";
+        packages.default = pkgs.appimageTools.wrapType2 {
+          name = "filera";
 
           src = pkgs.fetchurl {
-            url = "https://github.com/joncorv/filera/releases/download/filera-v${version}/filera_${version}_${tauriArch}_linux.AppImage";
+            url = "https://github.com/joncorv/filera/releases/download/filera-v0.4.2/filera_0.4.2_${tauriArch}_linux.AppImage";
             hash = "sha256-Pb3SBaVbQIzZ/cu4V7rJjd45WeJ01kZVc50ChNQYDlA=";
           };
 
-          nativeBuildInputs = with pkgs; [
-            autoPatchelfHook
-            makeWrapper
-          ];
+          extraPkgs =
+            pkgs: with pkgs; [
+              webkitgtk_4_1
+              gtk3
+              cairo
+              gdk-pixbuf
+              glib
+              dbus
+              openssl
+              librsvg
+              libsoup_3
+              pango
+              harfbuzz
+              at-spi2-atk
+              atkmm
+              fontconfig
+              gsettings-desktop-schemas
+              krb5
+              e2fsprogs
+            ];
 
-          buildInputs = with pkgs; [
-            webkitgtk_4_1
-            gtk3
-            cairo
-            gdk-pixbuf
-            glib
-            dbus
-            openssl
-            librsvg
-            libsoup_3
-            pango
-            harfbuzz
-            at-spi2-atk
-            atkmm
-            fontconfig
-            gsettings-desktop-schemas
-            # Kerberos libraries
-            krb5
-            e2fsprogs # provides libcom_err
-          ];
-
-          dontUnpack = true;
-          dontBuild = true;
-
-          installPhase = ''
-            mkdir -p $out/bin $out/share/applications
-
-            # Copy and extract AppImage
-            cp ${src} $out/bin/filera.AppImage
-            chmod +x $out/bin/filera.AppImage
-
-            cd $out/bin
-            ./filera.AppImage --appimage-extract
-            rm filera.AppImage
-            mv squashfs-root filera-extracted
-
-            # Create wrapper script
-            makeWrapper $out/bin/filera-extracted/AppRun $out/bin/filera \
-              --prefix LD_LIBRARY_PATH : "${pkgs.lib.makeLibraryPath buildInputs}" \
-              --prefix XDG_DATA_DIRS : "${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}" \
-              --prefix XDG_DATA_DIRS : "${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}"
-
-            # Desktop file
+          extraInstallCommands = ''
+            mkdir -p $out/share/applications
             cat > $out/share/applications/filera.desktop <<EOF
             [Desktop Entry]
             Name=Filera
             Comment=Powerful batch file renaming tool
-            Exec=$out/bin/filera
+            Exec=filera
             Type=Application
             Categories=Utility;FileTools;
             Terminal=false
