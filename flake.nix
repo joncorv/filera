@@ -24,13 +24,17 @@
 
           src = self;
 
-          # Point to the Cargo.lock in src-tauri
           cargoLock = {
             lockFile = "${self}/src-tauri/Cargo.lock";
           };
 
-          # Build only the Tauri backend
           sourceRoot = "source/src-tauri";
+
+          # Fetch yarn dependencies offline
+          yarnOfflineCache = pkgs.fetchYarnDeps {
+            yarnLock = "${self}/yarn.lock";
+            hash = ""; # Will fail and tell you the correct hash
+          };
 
           nativeBuildInputs = with pkgs; [
             pkg-config
@@ -39,6 +43,7 @@
             rustc
             nodejs
             yarn
+            fixup-yarn-lock
           ];
 
           buildInputs = with pkgs; [
@@ -59,20 +64,24 @@
             gsettings-desktop-schemas
           ];
 
-          # Build the frontend first
           preBuild = ''
             cd ..
             export HOME=$(mktemp -d)
-            yarn install --frozen-lockfile
+
+            # Setup yarn offline cache
+            export YARN_ENABLE_NETWORK=0
+            export YARN_CACHE_FOLDER=$yarnOfflineCache
+
+            fixup-yarn-lock yarn.lock
+            yarn install --offline --frozen-lockfile --ignore-scripts --no-progress --non-interactive
+
             yarn build
             cd src-tauri
           '';
 
-          # Disable tests since this is a GUI app
           doCheck = false;
 
           postInstall = ''
-            # Install desktop file
             mkdir -p $out/share/applications
             cat > $out/share/applications/filera.desktop <<EOF
             [Desktop Entry]
