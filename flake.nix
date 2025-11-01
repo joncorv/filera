@@ -25,6 +25,7 @@
           nodejs
           yarn
           xdg-utils
+          cargo-tauri
         ];
 
         buildInputs = with pkgs; [
