@@ -25,12 +25,10 @@
           inherit system overlays;
         };
 
-        # Rust toolchain
         rustToolchain = pkgs.rust-bin.stable.latest.default.override {
           extensions = [ "rust-src" ];
         };
 
-        # System libraries matching your shell.nix
         libraries = with pkgs; [
           at-spi2-atk
           atkmm
@@ -49,7 +47,6 @@
           dbus
         ];
 
-        # Build-time dependencies matching your shell.nix
         buildInputs =
           libraries
           ++ (with pkgs; [
@@ -57,7 +54,6 @@
             openssl.dev
           ]);
 
-        # Native build inputs matching your shell.nix
         nativeBuildInputs = with pkgs; [
           pkg-config
           gobject-introspection
@@ -79,23 +75,19 @@
 
           inherit buildInputs nativeBuildInputs;
 
-          # Environment variables from your shellHook
-          preBuildPhases = [ "setupEnv" ];
+          # Allow network access for yarn
+          __noChroot = true;
 
-          setupEnv = ''
+          preBuild = ''
             export PKG_CONFIG_PATH="${pkgs.dbus.dev}/lib/pkgconfig:${pkgs.openssl.dev}/lib/pkgconfig:$PKG_CONFIG_PATH"
             export XDG_DATA_DIRS="${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}:${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}:$XDG_DATA_DIRS"
           '';
 
-          # Build the frontend first, then the Rust backend
           buildPhase = ''
-            # Set home directory for yarn cache
             export HOME=$TMPDIR
 
-            # Install frontend dependencies
+            # Install and build frontend
             yarn install --frozen-lockfile
-
-            # Build frontend (Vue 3 + TypeScript)
             yarn build
 
             # Build Tauri app
@@ -104,17 +96,13 @@
 
           installPhase = ''
             mkdir -p $out/bin
-
-            # Copy the binary
             cp target/release/filera $out/bin/
 
-            # Install .desktop file if it exists
             if [ -f src-tauri/filera.desktop ]; then
               mkdir -p $out/share/applications
               cp src-tauri/filera.desktop $out/share/applications/
             fi
 
-            # Install icons if they exist
             if [ -d src-tauri/icons ]; then
               mkdir -p $out/share/icons/hicolor
               for icon in src-tauri/icons/*.png; do
@@ -130,14 +118,13 @@
           meta = with pkgs.lib; {
             description = "A powerful, cross-platform batch file renaming tool built in Rust";
             homepage = "https://github.com/joncorv/filera";
-            license = licenses.unfree; # Update when license is decided
+            license = licenses.mit;
             maintainers = [ ];
             platforms = platforms.linux;
             mainProgram = "filera";
           };
         };
 
-        # Development shell matching your shell.nix exactly
         devShells.default = pkgs.mkShell {
           nativeBuildInputs = nativeBuildInputs;
           buildInputs = buildInputs;
@@ -150,7 +137,6 @@
           '';
         };
 
-        # App runner
         apps.default = {
           type = "app";
           program = "${self.packages.${system}.default}/bin/filera";
