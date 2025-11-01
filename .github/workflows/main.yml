@@ -7,6 +7,9 @@ on:
       - release
 
 jobs:
+  # ============================================
+  # EXISTING: Your working Tauri builds
+  # ============================================
   publish-tauri:
     permissions:
       contents: write
@@ -67,3 +70,80 @@ jobs:
           prerelease: false
           args: ${{ matrix.args }}
           uploadPlainBinary: true
+
+  # ============================================
+  # NEW: Nix build for NixOS users
+  # ============================================
+  build-nix:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      # NEW: Install Nix with flakes support
+      - name: Install Nix
+        uses: cachix/install-nix-action@v24
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+            accept-flake-config = true
+      
+      # NEW: Setup Cachix for binary caching
+      - name: Setup Cachix
+        uses: cachix/cachix-action@v14
+        with:
+          name: filera  # Replace with your Cachix cache name
+          authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+      
+      # NEW: Build using Nix
+      - name: Build with Nix
+        run: |
+          nix build .#default --print-build-logs
+      
+      # NEW: Push to Cachix
+      - name: Push to Cachix
+        run: |
+          cachix push filera result
+      
+      # NEW: Create tarball for release
+      - name: Package Nix binary
+        run: |
+          mkdir -p nix-release
+          cp result/bin/filera nix-release/
+          cd nix-release
+          tar -czf filera-nix-linux-x86_64.tar.gz filera
+          cd ..
+      
+      # NEW: Upload to the same release as Tauri builds
+      - name: Upload Nix binary to release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: nix-release/filera-nix-linux-x86_64.tar.gz
+          tag_name: ${{ github.ref }}
+          draft: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ============================================
+  # NEW: Test Nix installation works
+  # ============================================
+  test-nix-install:
+    needs: build-nix
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Nix
+        uses: cachix/install-nix-action@v24
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+      
+      - name: Setup Cachix
+        uses: cachix/cachix-action@v14
+        with:
+          name: filera
+      
+      - name: Test installation from Cachix
+        run: |
+          nix profile install github:joncorv/filera
+          filera --version || filera --help

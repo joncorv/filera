@@ -1,9 +1,13 @@
 {
-  description = "Filera - A powerful batch file renaming tool";
+  description = "Filera - A powerful, cross-platform batch file renaming tool";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
+    rust-overlay = {
+      url = "github:oxalica/rust-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -11,79 +15,145 @@
       self,
       nixpkgs,
       flake-utils,
+      rust-overlay,
     }:
     flake-utils.lib.eachDefaultSystem (
       system:
       let
-        pkgs = nixpkgs.legacyPackages.${system};
+        overlays = [ (import rust-overlay) ];
+        pkgs = import nixpkgs {
+          inherit system overlays;
+        };
 
-        tauriArch =
-          {
-            "x86_64-linux" = "x64";
-            "aarch64-linux" = "arm64";
-          }
-          .${system};
+        # Rust toolchain
+        rustToolchain = pkgs.rust-bin.stable.latest.default.override {
+          extensions = [ "rust-src" ];
+        };
+
+        # System libraries matching your shell.nix
+        libraries = with pkgs; [
+          at-spi2-atk
+          atkmm
+          cairo
+          gdk-pixbuf
+          glib
+          gtk3
+          harfbuzz
+          librsvg
+          libsoup_3
+          pango
+          webkitgtk_4_1
+          openssl
+          fontconfig
+          gsettings-desktop-schemas
+          dbus
+        ];
+
+        # Build-time dependencies matching your shell.nix
+        buildInputs =
+          libraries
+          ++ (with pkgs; [
+            dbus.dev
+            openssl.dev
+          ]);
+
+        # Native build inputs matching your shell.nix
+        nativeBuildInputs = with pkgs; [
+          pkg-config
+          gobject-introspection
+          rustToolchain
+          cargo
+          nodejs
+          yarn
+          wrapGAppsHook3
+          xdg-utils
+        ];
+
       in
       {
-        packages.default = pkgs.stdenv.mkDerivation rec {
+        packages.default = pkgs.stdenv.mkDerivation {
           pname = "filera";
-          version = "0.4.3";
+          version = "0.4.4";
 
-          src = pkgs.fetchurl {
-            # url = "https://github.com/joncorv/filera/releases/download/filera-v${version}/filera-${tauriArch}";
-            url = "https://github.com/joncorv/filera/releases/download/filera-v${version}/filera_linux_test";
-            hash = "sha256-ighUK%2BZoDBYWO6ZnVIhToXXb0vaRu2/cx5awGizSLJs%3D"; # Will get this after first release
-          };
+          src = ./.;
 
-          dontUnpack = true;
+          inherit buildInputs nativeBuildInputs;
 
-          nativeBuildInputs = with pkgs; [
-            autoPatchelfHook
-            wrapGAppsHook3
-          ];
+          # Environment variables from your shellHook
+          preBuildPhases = [ "setupEnv" ];
 
-          buildInputs = with pkgs; [
-            at-spi2-atk
-            atkmm
-            cairo
-            gdk-pixbuf
-            glib
-            gtk3
-            harfbuzz
-            librsvg
-            libsoup_3
-            pango
-            webkitgtk_4_1
-            openssl
-            dbus
-            fontconfig
-            gsettings-desktop-schemas
-            xdg-utils
-          ];
+          setupEnv = ''
+            export PKG_CONFIG_PATH="${pkgs.dbus.dev}/lib/pkgconfig:${pkgs.openssl.dev}/lib/pkgconfig:$PKG_CONFIG_PATH"
+            export XDG_DATA_DIRS="${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}:${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}:$XDG_DATA_DIRS"
+          '';
+
+          # Build the frontend first, then the Rust backend
+          buildPhase = ''
+            # Set home directory for yarn cache
+            export HOME=$TMPDIR
+
+            # Install frontend dependencies
+            yarn install --frozen-lockfile
+
+            # Build frontend (Vue 3 + TypeScript)
+            yarn build
+
+            # Build Tauri app
+            cargo tauri build
+          '';
 
           installPhase = ''
-            mkdir -p $out/bin $out/share/applications
+            mkdir -p $out/bin
 
-            cp $src $out/bin/filera
-            chmod +x $out/bin/filera
+            # Copy the binary
+            cp target/release/filera $out/bin/
 
-            cat > $out/share/applications/filera.desktop <<EOF
-            [Desktop Entry]
-            Name=Filera
-            Comment=Powerful batch file renaming tool
-            Exec=$out/bin/filera
-            Type=Application
-            Categories=Utility;FileTools;
-            Terminal=false
-            EOF
+            # Install .desktop file if it exists
+            if [ -f src-tauri/filera.desktop ]; then
+              mkdir -p $out/share/applications
+              cp src-tauri/filera.desktop $out/share/applications/
+            fi
+
+            # Install icons if they exist
+            if [ -d src-tauri/icons ]; then
+              mkdir -p $out/share/icons/hicolor
+              for icon in src-tauri/icons/*.png; do
+                if [ -f "$icon" ]; then
+                  size=$(basename "$icon" .png | grep -oE '[0-9]+' || echo "128")
+                  mkdir -p $out/share/icons/hicolor/''${size}x''${size}/apps
+                  cp "$icon" $out/share/icons/hicolor/''${size}x''${size}/apps/filera.png
+                fi
+              done
+            fi
           '';
 
           meta = with pkgs.lib; {
-            description = "A powerful, cross-platform batch file renaming tool";
+            description = "A powerful, cross-platform batch file renaming tool built in Rust";
             homepage = "https://github.com/joncorv/filera";
+            license = licenses.unfree; # Update when license is decided
             maintainers = [ ];
             platforms = platforms.linux;
+            mainProgram = "filera";
           };
+        };
+
+        # Development shell matching your shell.nix exactly
+        devShells.default = pkgs.mkShell {
+          nativeBuildInputs = nativeBuildInputs;
+          buildInputs = buildInputs;
+
+          shellHook = ''
+            export PKG_CONFIG_PATH="${pkgs.dbus.dev}/lib/pkgconfig:${pkgs.openssl.dev}/lib/pkgconfig:$PKG_CONFIG_PATH"
+            export XDG_DATA_DIRS="${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}:${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}:$XDG_DATA_DIRS"
+            echo "Filera development environment loaded!"
+            echo "Run 'yarn tauri dev' to start development"
+          '';
+        };
+
+        # App runner
+        apps.default = {
+          type = "app";
+          program = "${self.packages.${system}.default}/bin/filera";
         };
       }
     );
