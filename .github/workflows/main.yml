@@ -94,7 +94,7 @@ jobs:
       
       - name: Build with Nix
         run: |
-          nix build .#default --print-build-logs
+          nix build .#default --print-build-logs --option sandbox false
       
       - name: Push to Cachix
         run: |
