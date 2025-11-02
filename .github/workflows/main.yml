@@ -8,69 +8,7 @@ on:
 
 jobs:
   # ============================================
-  # EXISTING: Your working Tauri builds
-  # ============================================
-  publish-tauri:
-    permissions:
-      contents: write
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - platform: 'macos-latest' # for Arm based macs (M1 and above).
-            args: '--target aarch64-apple-darwin'
-          - platform: 'macos-latest' # for Intel based macs.
-            args: '--target x86_64-apple-darwin'
-          - platform: 'ubuntu-22.04'
-            args: ''
-          - platform: 'ubuntu-22.04-arm' # Only available in public repos.
-            args: ''
-          - platform: 'windows-latest'
-            args: ''
-
-    runs-on: ${{ matrix.platform }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: install dependencies (ubuntu only)
-        if: matrix.platform == 'ubuntu-22.04'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
-
-      - name: setup node
-        uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
-          cache: 'yarn'
-
-      - name: install Rust stable
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
-
-      - name: Rust cache
-        uses: swatinem/rust-cache@v2
-        with:
-          workspaces: './src-tauri -> target'
-
-      - name: install frontend dependencies
-        run: yarn install
-
-      - uses: tauri-apps/tauri-action@v0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tagName: filera-v__VERSION__
-          releaseName: 'filera v__VERSION__'
-          releaseBody: 'See the assets to download this version and install.'
-          releaseDraft: true
-          prerelease: false
-          args: ${{ matrix.args }}
-          uploadPlainBinary: true
-
-  # ============================================
-  # NEW: Nix build for NixOS users
+  # Nix build for NixOS users
   # ============================================
   build-nix:
     permissions:
@@ -112,13 +50,13 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: nix-release/filera-nix-linux-x86_64.tar.gz
-          tag_name: ${{ github.ref }}
+          tag_name: filera-v${{ github.run_number }}
           draft: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # ============================================
-  # NEW: Test Nix installation works
+  # Test Nix installation works
   # ============================================
   test-nix-install:
     needs: build-nix

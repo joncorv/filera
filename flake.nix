@@ -51,14 +51,14 @@
           export HOME=$PWD
           export PKG_CONFIG_PATH="${pkgs.dbus.dev}/lib/pkgconfig:${pkgs.openssl.dev}/lib/pkgconfig:$PKG_CONFIG_PATH"
           export XDG_DATA_DIRS="${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}:${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}:$XDG_DATA_DIRS"
-
+          
           # Fix SSL certificates for Node/Yarn
           export NODE_EXTRA_CA_CERTS="${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
           export SSL_CERT_FILE="${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
-
+          
           yarn install
           yarn build
-          cargo tauri build --bundles none
+          cargo tauri build --bundles none  # ← Remove this line
         '';
 
         installPhase = ''
