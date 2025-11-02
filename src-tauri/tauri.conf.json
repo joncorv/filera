@@ -4,9 +4,9 @@
   "version": "0.4.4",
   "identifier": "com.joncorv.filera",
   "build": {
-    "beforeDevCommand": "yarn run dev",
+    "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:8000",
-    "beforeBuildCommand": "yarn run build",
+    "beforeBuildCommand": "npm run build",
     "frontendDist": "../dist"
   },
   "app": {
