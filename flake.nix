@@ -58,7 +58,6 @@
           
           yarn install
           yarn build
-          cargo tauri build --bundles none  # ← Remove this line
         '';
 
         installPhase = ''
