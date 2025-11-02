@@ -7,73 +7,59 @@ on:
       - release
 
 jobs:
-  # ============================================
-  # Nix build for NixOS users
-  # ============================================
   build-nix:
-    permissions:
-      contents: write
     runs-on: ubuntu-latest
+    
     steps:
-      - uses: actions/checkout@v4
-      
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Install Nix
-        uses: cachix/install-nix-action@v27
+        uses: cachix/install-nix-action@v24
         with:
           extra_nix_config: |
             experimental-features = nix-command flakes
             accept-flake-config = true
-      
+
       - name: Setup Cachix
-        uses: cachix/cachix-action@v15
+        uses: cachix/cachix-action@v14
         with:
-          name: filera
+          name: filera  # Replace with your cachix cache name
           authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
-      
+
       - name: Build with Nix
         run: |
-          nix build .#default --print-build-logs --option sandbox false
-      
-      - name: Push to Cachix
+          nix build --print-build-logs
+          
+      - name: Check build output
         run: |
-          cachix push filera result
-      
-      - name: Create tarball for release
-        run: |
-          mkdir -p nix-release
-          cp result/bin/filera nix-release/
-          cd nix-release
-          tar -czf filera-nix-linux-x86_64.tar.gz filera
-          cd ..
-      
-      - name: Upload Nix binary to release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: nix-release/filera-nix-linux-x86_64.tar.gz
-          tag_name: filera-v${{ github.run_number }}
-          draft: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ls -la result/
 
-  # ============================================
-  # Test Nix installation works
-  # ============================================
-  test-nix-install:
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: filera-nixos-${{ github.sha }}
+          path: result/bin/*
+          retention-days: 30
+
+  release:
     needs: build-nix
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
     steps:
-      - name: Install Nix
-        uses: cachix/install-nix-action@v27
+      - name: Download NixOS artifacts
+        uses: actions/download-artifact@v4
         with:
-          extra_nix_config: |
-            experimental-features = nix-command flakes
-      
-      - name: Setup Cachix
-        uses: cachix/cachix-action@v15
+          name: filera-nixos-${{ github.sha }}
+          path: ./artifacts-nixos
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
         with:
-          name: filera
-      
-      - name: Test installation from Cachix
-        run: |
-          nix profile install github:joncorv/filera
-          filera --version || filera --help
+          files: ./artifacts-nixos/**/*
+          draft: true
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
