@@ -468,7 +468,10 @@ const outputDropdownChoices = [
 const outputDirectory = ref()
 
 // const outputDirectoryVisibility = computed(() => (outputDirectory.value != null));
-const outputDirectoryButtonDisabled = computed(() => (outputDropdownChoice.value == "replace"));
+const outputDirectoryButtonDisabled = computed(() => (
+    outputDropdownChoice.value == "replace" || outputDropdownChoice.value == ""
+
+));
 
 // when user chooses from the dropdown, we run this function
 // this should take in 
@@ -478,9 +481,14 @@ async function userUpdateOutput() {
         outputDirectory.value = await open({
             directory: true,
             multiple: false,
-
         });
+
+        if (!outputDirectory.value) {
+            outputDropdownChoice.value = "replace";
+        }
+
     };
+
     console.log("outputDropdownChoice", outputDropdownChoice.value);
     console.log("outputDirectory =", outputDirectory.value);
     console.log("outputDirectoryButtonDisabled =", outputDirectoryButtonDisabled.value);
@@ -492,12 +500,26 @@ async function userChooseOutputDirectory() {
         multiple: false,
 
     });
+
     console.log("outputDropdownChoice", outputDropdownChoice.value);
     console.log("outputDirectory =", outputDirectory.value);
     console.log("outputDirectoryButtonDisabled =", outputDirectoryButtonDisabled.value);
 }
 //  <-- === Rename Files on the Rust Backend === -->
 async function user_rename_files() {
+
+    if (!outputDirectory.value) {
+        outputDirectory.value = "";
+    }
+
+    // if outputdirectory is falsey
+    // if user hasn't selected output, or is replace
+    // set outputDirectory to empty string
+
+    // if the user has selected copy or move
+    // alert the user to select
+
+
     fileStatusReturn.value = await invoke("user_rename_files", { outputDropdownChoice: outputDropdownChoice.value, outputDirectory: outputDirectory.value });
 }
 
@@ -997,8 +1019,8 @@ async function user_rename_files() {
                     class="flex flex-row py-2 px-2 gap-2 bg-panelfooter border-t-1 rounded-b-lg border-bordercolor text-sm text-textprimary">
 
                     <Select v-model="outputDropdownChoice" :options="outputDropdownChoices" size="small"
-                        optionLabel="name" placeholder="Output Operation" optionValue="code"
-                        class="w-full flex-1 min-w-max" @change="userUpdateOutput" />
+                        optionLabel="name" optionValue="code" default-value="replace" class="w-full flex-1 min-w-max"
+                        @change="userUpdateOutput" />
 
                     <!-- <div id="separator" class="flex-1"></div> -->
 
