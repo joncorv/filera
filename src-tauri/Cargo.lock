@@ -1173,7 +1173,7 @@ dependencies = [
 
 [[package]]
 name = "filera"
-version = "0.4.2"
+version = "0.4.6"
 dependencies = [
  "clippy",
  "natord",

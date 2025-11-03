@@ -21,13 +21,20 @@
         packages.default = pkgs.callPackage ./default.nix { };
 
         devShells.default = pkgs.mkShell {
-          inputsFrom = [ self.packages.${system}.default ];
-
-          buildInputs = with pkgs; [
+          # Don't use inputsFrom - we want a clean dev environment
+          nativeBuildInputs = with pkgs; [
+            pkg-config
+            cargo
+            rustc
+            nodejs
+            cargo-tauri
+            # Development tools
             rust-analyzer
             cargo-watch
             nodePackages.typescript-language-server
+          ];
 
+          buildInputs = with pkgs; [
             # DBus (required)
             dbus.dev
 
@@ -50,6 +57,8 @@
           ];
 
           shellHook = ''
+            export PKG_CONFIG_PATH="${pkgs.dbus.dev}/lib/pkgconfig:${pkgs.openssl.dev}/lib/pkgconfig:$PKG_CONFIG_PATH"
+            export XDG_DATA_DIRS="${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}:${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}:$XDG_DATA_DIRS"
             echo "🚀 Filera development environment loaded!"
             echo "Run 'npm run tauri dev' to start the development server"
           '';
