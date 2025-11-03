@@ -1,0 +1,55 @@
+{
+  lib,
+  stdenv,
+  rustPlatform,
+  fetchNpmDeps,
+  cargo-tauri,
+  glib-networking,
+  nodejs,
+  npmHooks,
+  openssl,
+  pkg-config,
+  webkitgtk_4_1,
+  wrapGAppsHook4,
+}:
+
+rustPlatform.buildRustPackage rec {
+  pname = "filera";
+  version = "0.4.6";
+
+  src = ./.;
+
+  cargoHash = "sha256-lk+2fotYMS8Kt7bAxM/Or78+R4XpFrQLL6ZwYlPW1MM=";
+
+  npmDeps = fetchNpmDeps {
+    name = "${pname}-${version}-npm-deps";
+    inherit src;
+    hash = "sha256-MmIVmN3607QsBDwbPTc6NLCl+QvKL5aZHYz1QMKVZf4=";
+  };
+
+  nativeBuildInputs = [
+    cargo-tauri.hook
+    nodejs
+    npmHooks.npmConfigHook
+    pkg-config
+  ]
+  ++ lib.optionals stdenv.hostPlatform.isLinux [ wrapGAppsHook4 ];
+
+  buildInputs = lib.optionals stdenv.hostPlatform.isLinux [
+    glib-networking
+    openssl
+    webkitgtk_4_1
+  ];
+
+  cargoRoot = "src-tauri";
+  buildAndTestSubdir = cargoRoot;
+
+  meta = with lib; {
+    description = "Filera - A powerful, cross-platform batch file renaming tool";
+    homepage = "https://github.com/joncorv/filera";
+    license = licenses.mit;
+    maintainers = [ ];
+    mainProgram = "filera";
+    platforms = platforms.linux ++ platforms.darwin;
+  };
+}
