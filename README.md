@@ -1,104 +1,39 @@
-# Filera 🗂️
-
-A powerful, cross-platform batch file renaming tool written in Rust. Transform messy, disorganized filenames into clean, organized ones with ease.
+# Filera
+A powerful, cross-platform batch file renaming tool written in Rust.
 
 ![filera app ui](src/assets/app_ui.png?raw=true "Filera App UI")
 
-> **⚠️ WORK IN PROGRESS**: This project is under active development. Features, documentation, and functionality are subject to change without notice. Use at your own discretion.
+> ** Beta: Functional but still in development. Code signing certificates pending from Apple and Microsoft.
 
-> **Note**: Filera is currently in **Beta**. While functional, there are known issues being addressed before the first stable release.
+## Features
 
-## 🚀 Features
+- Batch rename files with pattern-based rules
+- Preview changes before applying
+- Recursive folder support
+- Light/dark mode
+- Cross-platform (Windows, macOS, Linux)
 
-- **Batch Rename**: Process thousands of files at once
-- **Cross-Platform**: Works seamlessly on Windows, macOS, and Linux
-- **Fast & Lightweight**: Built with Rust backend for optimal performance
-- **Modern UI**: Clean, intuitive interface built with Vue 3 and TypeScript
-- **Safe Operations**: Preview changes before applying them
+## Installation
+Download from [Releases](https://github.com/joncorv/filera/releases) 
 
-## 🎯 Why Filera?
-
-Have you ever found yourself with a folder full of files with messy names like:
-- `IMG_20231205_143022.jpg`
-- `Document (1) copy.pdf`
-- `untitled folder/New Text Document (3).txt`
-
-Instead of spending hours renaming files manually, Filera lets you batch process them all at once with powerful renaming patterns and rules.
-
-## 🛠️ Tech Stack
-
-- **Backend**: Rust with Tauri
-- **Frontend**: Vue 3 + TypeScript
-- **Cross-Platform**: Windows, macOS, Linux
-
-## 📦 Installation
-
-### Pre-built Releases
-Download the latest beta release from the [Releases](https://github.com/joncorv/filera/releases) page. Please note that I am in the process of receiving official signing certificates from Apple and Microsoft. Once those are in place, you should not see warnings about installing an app from an unknown developer.
-
-## 🤝 Contributing
-
-This is a **free and open-source** project - my way of giving back to the amazing open-source community that has provided so many incredible tools over the years.
-
-Contributions are welcome! Whether you're:
-- 🐛 Reporting bugs
-- 💡 Suggesting features  
-- 🔧 Fixing issues
-- 📚 Improving documentation
-- 🎨 Designing UI improvements
-
-### How to Contribute
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 🔧 Development Setup
-
-### Prerequisites
+### Building from Source
 - [Rust](https://rustup.rs/) (latest stable)
 - [Node.js](https://nodejs.org/) (v16 or higher)
-- [yarn](https://yarnpkg.com/)
-
-### Getting Started
+- [Tauri Dependencies](https://v2.tauri.app/start/prerequisites/)
 ```bash
-# Clone the repopsitory 
 git clone https://github.com/joncorv/filera.git
 cd filera
+npm install
+npm run tauri dev
 
-# Install frontend dependencies
-yarn install
-
-# Start development server
-yarn tauri dev
-
-# Optionally, if you are on linux, run the custom dev script
-./tauri_dev.sh
 ```
 
-## 📋 Roadmap
-
-- [x] Fix blank file handling
-- [x] Implement light mode
-- [x] Add output directory options
-- [x] Impliment Open Folders with recursion
+## Planned
 - [ ] Template Support
 - [ ] Undo functionality
 - [ ] Regex support
 - [ ] Batch folder renaming
-- [ ] Plugin system
 
-## 📄 License
+## License
 
-This project is licensed under an open-source Apache license.
-
-## 🙏 Acknowledgments
-
-Thank you to the open-source community for all the amazing tools and libraries that made this project possible. This is my small way of giving back.
-
----
-
-**Made with ❤️ for the community**
-
-*Have suggestions or found a bug? [Open an issue](https://github.com/joncorv/filera/issues) - all feedback helps make Filera better!*
+This project is licensed under an open-souce MIT License.
