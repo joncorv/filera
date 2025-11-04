@@ -19,13 +19,28 @@ Download from [Releases](https://github.com/joncorv/filera/releases)
 ### Building from Source
 - [Rust](https://rustup.rs/) (latest stable)
 - [Node.js](https://nodejs.org/) (v16 or higher)
+<<<<<<< HEAD
 - [Tauri Dependencies](https://v2.tauri.app/start/prerequisites/)
+=======
+- [npm](https://www.npmjs.com/)
+
+### Getting Started
+>>>>>>> 2e55abd (updated readme for yarn --> npm)
 ```bash
 git clone https://github.com/joncorv/filera.git
 cd filera
 npm install
 npm run tauri dev
 
+<<<<<<< HEAD
+=======
+# Install frontend dependencies
+npm install
+
+# Start development server
+npm run tauri dev
+
+>>>>>>> 2e55abd (updated readme for yarn --> npm)
 ```
 ## Nixos Dev
 If you're using nixos, run nix develop at the repo root and all dependencies will be met in a development shell.
