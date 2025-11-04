@@ -59,7 +59,7 @@ Contributions are welcome! Whether you're:
 ### Prerequisites
 - [Rust](https://rustup.rs/) (latest stable)
 - [Node.js](https://nodejs.org/) (v16 or higher)
-- [yarn](https://yarnpkg.com/)
+- [npm](https://www.npmjs.com/)
 
 ### Getting Started
 ```bash
@@ -68,13 +68,11 @@ git clone https://github.com/joncorv/filera.git
 cd filera
 
 # Install frontend dependencies
-yarn install
+npm install
 
 # Start development server
-yarn tauri dev
+npm run tauri dev
 
-# Optionally, if you are on linux, run the custom dev script
-./tauri_dev.sh
 ```
 
 ## 📋 Roadmap
