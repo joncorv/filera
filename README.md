@@ -91,7 +91,7 @@ yarn tauri dev
 
 ## 📄 License
 
-This project is licensed under an open-source Apache license.
+This project is licensed under an open-souce MIT License.
 
 ## 🙏 Acknowledgments
 
