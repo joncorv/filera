@@ -35,3 +35,28 @@ If you're using nixos, run nix develop at the repo root and all dependencies wil
 - Undo functionality
 - Regex support
 - Batch folder renaming
+
+## 📋 Roadmap
+- [x] Fix blank file handling
+- [x] Implement light mode
+- [x] Add output directory options
+- [x] Impliment Open Folders with recursion
+- [ ] Template Support
+- [ ] Undo functionality
+- [ ] Regex support
+- [ ] Batch folder renaming
+- [ ] Plugin system
+
+## 📄 License
+
+This project is licensed under an open-souce MIT License.
+
+## 🙏 Acknowledgments
+
+Thank you to the open-source community for all the amazing tools and libraries that made this project possible. This is my small way of giving back.
+
+---
+
+**Made with ❤️ for the community**
+
+*Have suggestions or found a bug? [Open an issue](https://github.com/joncorv/filera/issues) - all feedback helps make Filera better!*
