@@ -29,21 +29,7 @@ npm run tauri dev
 ```
 
 ## Planned
-<<<<<<< HEAD
-- [ ] Template Support
-- [ ] Undo functionality
-- [ ] Regex support
-- [ ] Batch folder renaming
-
-## License
-
-=======
 - Template Support
--Undo functionality
+- Undo functionality
 - Regex support
 - Batch folder renaming
-
-## License
-
->>>>>>> 5e918b3 (workflow updated)
-This project is licensed under an open-souce MIT License.
