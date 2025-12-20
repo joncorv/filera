@@ -27,6 +27,8 @@ npm install
 npm run tauri dev
 
 ```
+## Nixos Dev
+If you're using nixos, run nix develop at the repo root and all dependencies will be met in a development shell.
 
 ## Planned
 - Template Support
