@@ -64,6 +64,28 @@ enum Task {
     },
 }
 
+enum Filter {
+    FilterTimePeriod {
+        inclusive: bool,
+        start_time: String,
+        end_time: String,
+    },
+    FilterTime {
+        inclusive: bool,
+        before: bool,
+        start_time: String,
+        end_time: String,
+    },
+    FilterDocType {
+        inclusive: bool,
+        doc_types: Vec<String>,
+    },
+    FilterName {
+        inclusive: bool,
+        name: String,
+    },
+}
+
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, Default)]
 enum SortMetadata {
     #[default]
