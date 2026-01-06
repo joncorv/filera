@@ -1,6 +1,7 @@
 use notify_rust::Notification;
 use rfd::{AsyncMessageDialog, MessageDialogResult};
 use std::collections::HashMap;
+use std::os::unix::fs::MetadataExt;
 use std::path::Path;
 use std::sync::Mutex;
 use std::time::SystemTime;
@@ -62,27 +63,27 @@ enum Task {
         separator: String,
         active: bool,
     },
-}
-
-enum Filter {
+    FilterName {
+        inclusive: bool,
+        name: String,
+    },
+    FilterDocType {
+        inclusive: bool,
+        doc_types: Vec<String>,
+    },
     FilterTimePeriod {
         inclusive: bool,
         start_time: String,
         end_time: String,
     },
     FilterTime {
-        inclusive: bool,
         before: bool,
-        start_time: String,
-        end_time: String,
+        time: String,
     },
-    FilterDocType {
-        inclusive: bool,
-        doc_types: Vec<String>,
-    },
-    FilterName {
-        inclusive: bool,
-        name: String,
+    FilterSize {
+        greater_than: bool,
+        byte_base_size: u64,
+        size: u64,
     },
 }
 
@@ -240,10 +241,7 @@ fn sort_file_names(state: &State<'_, Mutex<AppState>>) {
                 .file_names
                 .iter()
                 .filter_map(|file| {
-                    let meta_data = std::fs::metadata(file)
-                        .ok()?
-                        .modified()
-                        .unwrap_or(SystemTime::UNIX_EPOCH);
+                    let meta_data = std::fs::metadata(file).ok()?.modified().unwrap_or(SystemTime::UNIX_EPOCH);
                     Some((file.clone(), meta_data))
                 })
                 .collect();
@@ -256,10 +254,7 @@ fn sort_file_names(state: &State<'_, Mutex<AppState>>) {
                 .file_names
                 .iter()
                 .filter_map(|file| {
-                    let meta_data = std::fs::metadata(file)
-                        .ok()?
-                        .created()
-                        .unwrap_or(SystemTime::UNIX_EPOCH);
+                    let meta_data = std::fs::metadata(file).ok()?.created().unwrap_or(SystemTime::UNIX_EPOCH);
                     Some((file.clone(), meta_data))
                 })
                 .collect();
@@ -385,7 +380,6 @@ fn process_tasks_on_working_files(state: &State<'_, Mutex<AppState>>) {
                             file_extension = "".to_string();
                         }
 
-                        // BUG: This is not working properly
                         if *at_start {
                             if start_period || !has_period {
                                 file.target.set_file_name(format!("{text}{file_stem}"));
@@ -518,13 +512,11 @@ fn process_tasks_on_working_files(state: &State<'_, Mutex<AppState>>) {
                         } else {
                             // build the file name without extension, and number at start
                             if *at_start {
-                                file.target
-                                    .set_file_name(format!("{sequence_num}{separator}{file_stem}"));
+                                file.target.set_file_name(format!("{sequence_num}{separator}{file_stem}"));
                             } else
                             // build the file name without an extension, and number at the end
                             {
-                                file.target
-                                    .set_file_name(format!("{file_stem}{separator}{sequence_num}",));
+                                file.target.set_file_name(format!("{file_stem}{separator}{sequence_num}",));
                             }
                         }
                     }
@@ -558,8 +550,7 @@ fn process_tasks_on_working_files(state: &State<'_, Mutex<AppState>>) {
                                         dates_combined_vector.push(year_val);
                                     }
                                     1 => {
-                                        dates_combined_vector
-                                            .push(year_val.chars().take(year_val.len().saturating_sub(2)).collect());
+                                        dates_combined_vector.push(year_val.chars().take(year_val.len().saturating_sub(2)).collect());
                                     }
                                     2_u8..=std::u8::MAX => {}
                                 };
@@ -595,22 +586,18 @@ fn process_tasks_on_working_files(state: &State<'_, Mutex<AppState>>) {
                                 if *at_start {
                                     if let Some(t) = file.target.extension() {
                                         file_extension = t.to_string_lossy().to_string();
-                                        file.target.set_file_name(format!(
-                                            "{dates_formatted_string}{separator}{file_stem}.{file_extension}"
-                                        ));
-                                    } else {
                                         file.target
-                                            .set_file_name(format!("{dates_formatted_string}{separator}{file_stem}"));
+                                            .set_file_name(format!("{dates_formatted_string}{separator}{file_stem}.{file_extension}"));
+                                    } else {
+                                        file.target.set_file_name(format!("{dates_formatted_string}{separator}{file_stem}"));
                                     }
                                 } else {
                                     if let Some(t) = file.target.extension() {
                                         file_extension = t.to_string_lossy().to_string();
-                                        file.target.set_file_name(format!(
-                                            "{file_stem}{separator}{dates_formatted_string}.{file_extension}"
-                                        ));
-                                    } else {
                                         file.target
-                                            .set_file_name(format!("{file_stem}{separator}{dates_formatted_string}"));
+                                            .set_file_name(format!("{file_stem}{separator}{dates_formatted_string}.{file_extension}"));
+                                    } else {
+                                        file.target.set_file_name(format!("{file_stem}{separator}{dates_formatted_string}"));
                                     }
                                 }
                             } else {
@@ -669,8 +656,8 @@ fn process_tasks_on_working_files(state: &State<'_, Mutex<AppState>>) {
                                     ));
                                     } else {
                                         file.target.set_file_name(format!(
-                                        "{datetime_hour}{separator}{datetime_minute}{separator}{datetime_second}{separator}{file_stem}"
-                                    ));
+                                            "{datetime_hour}{separator}{datetime_minute}{separator}{datetime_second}{separator}{file_stem}"
+                                        ));
                                     }
                                 } else {
                                     if let Some(t) = file.target.extension() {
@@ -680,8 +667,8 @@ fn process_tasks_on_working_files(state: &State<'_, Mutex<AppState>>) {
                                     ));
                                     } else {
                                         file.target.set_file_name(format!(
-                                        "{file_stem}{separator}{datetime_hour}{separator}{datetime_minute}{separator}{datetime_second}"
-                                    ));
+                                            "{file_stem}{separator}{datetime_hour}{separator}{datetime_minute}{separator}{datetime_second}"
+                                        ));
                                     }
                                 }
                             } else {
@@ -695,6 +682,72 @@ fn process_tasks_on_working_files(state: &State<'_, Mutex<AppState>>) {
                             // i guess we just skip this step altogether for now
                             // should probably bubble up an error to the user
                         }
+                    }
+                }
+                Task::FilterName { inclusive, name } => {
+                    if let Some(file_name) = file.target.file_name() {
+                        let file_name_string = file_name.to_string_lossy();
+                        let found = file_name_string.contains(name);
+
+                        if (found && *inclusive) || (!found && !inclusive) {
+                            file.active = false;
+                        }
+                    }
+                    // inclusive means that if we find it, it is filtered
+                    // if it's NOT inclusive, if it is NOT found, it will be filtered
+                }
+                Task::FilterDocType { inclusive, doc_types } => {
+                    let mut found = false;
+
+                    if let Some(suffix) = file.target.extension() {
+                        let suffix_string = suffix.to_string_lossy().to_string();
+
+                        doc_types.iter().for_each(|doc_type| {
+                            if *doc_type == suffix_string {
+                                found = true;
+                            }
+                        });
+                    };
+
+                    if (found && *inclusive) || (!found && !inclusive) {
+                        file.active = false;
+                    }
+                }
+                Task::FilterTime {
+                    inclusive,
+                    before,
+                    start_time,
+                    end_time,
+                } => {
+                    // todo here
+                }
+                Task::FilterTimePeriod {
+                    inclusive,
+                    start_time,
+                    end_time,
+                } => {
+                    // todo here
+                }
+                Task::FilterSize {
+                    greater_than,
+                    byte_base_size,
+                    size,
+                } => {
+                    if let Ok(metadata) = file.source.metadata() {
+                        let file_size = metadata.size();
+                        let search_size = byte_base_size * size;
+
+                        if *greater_than {
+                            if file_size >= search_size {
+                                file.active = false;
+                            }
+                        } else {
+                            if file_size < search_size {
+                                file.active = false;
+                            }
+                        }
+                    } else {
+                        println!("error metadata not found");
                     }
                 }
             }
@@ -756,18 +809,8 @@ fn convert_working_files_to_file_status(state: &State<'_, Mutex<AppState>>) -> V
         file_statuses
     } else {
         for working_file in &state.working_files {
-            let source = working_file
-                .source
-                .file_name()
-                .unwrap()
-                .to_string_lossy()
-                .contains(search_term);
-            let target = working_file
-                .target
-                .file_name()
-                .unwrap()
-                .to_string_lossy()
-                .contains(search_term);
+            let source = working_file.source.file_name().unwrap().to_string_lossy().contains(search_term);
+            let target = working_file.target.file_name().unwrap().to_string_lossy().contains(search_term);
 
             if source || target {
                 let file_status = FileStatus {
@@ -949,12 +992,7 @@ async fn user_rename_files(
 // TODO: If all platforms work, we need to properly do error handling.
 #[tauri::command]
 fn user_notification(_app: tauri::AppHandle) -> String {
-    Notification::new()
-        .summary("xxx")
-        .body("xxx")
-        .icon("firefox")
-        .show()
-        .unwrap();
+    Notification::new().summary("xxx").body("xxx").icon("firefox").show().unwrap();
 
     // this is the standard tauri notification that isn't working on macos
     // app.notification()
@@ -982,10 +1020,7 @@ async fn user_dialog() -> Result<String, String> {
     {
         MessageDialogResult::Ok => Ok({
             let inner = "innergood".to_string();
-            format!(
-                "outer:{}, inner:{}. Hello, you've been greeted from Rust!",
-                outer, inner
-            )
+            format!("outer:{}, inner:{}. Hello, you've been greeted from Rust!", outer, inner)
         }),
         MessageDialogResult::Cancel => Ok("User clicked cancel".to_string()),
         _ => Err("Shit hit the fan".to_string()),
