@@ -63,7 +63,12 @@ type Task =
             separator: string;
             active: boolean;
         };
-    };
+    }
+    | { FilterName: { inclusive: boolean; name: string } }
+    | { FilterDocType: { inclusive: boolean; doc_types: string[] } }
+    | { FilterTimePeriod: { inclusive: boolean; start_time: string; end_time: string } }
+    | { FilterTime: { before: boolean; time: string;  } }
+    | { FilterSize: { greater_than: boolean; byte_base_size: bigint; size: bigint } }
 
 //  <-- === Add unique ID to each task. Needed for proper animation in the DOM === -->
 interface TaskWithId {
