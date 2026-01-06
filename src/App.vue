@@ -67,7 +67,7 @@ type Task =
     | { FilterName: { inclusive: boolean; name: string } }
     | { FilterDocType: { inclusive: boolean; doc_types: string[] } }
     | { FilterTimePeriod: { inclusive: boolean; start_time: string; end_time: string } }
-    | { FilterTime: { before: boolean; time: string;  } }
+    | { FilterTime: { before: boolean; time: string; } }
     | { FilterSize: { greater_than: boolean; byte_base_size: bigint; size: bigint } }
 
 //  <-- === Add unique ID to each task. Needed for proper animation in the DOM === -->
@@ -250,6 +250,74 @@ const addTime = () => {
                 at_start: true,
                 separator: "_",
                 active: true,
+            },
+        },
+    });
+    user_update_tasks();
+};
+
+const addFilterName = () => {
+    taskList.value.push({
+        id: taskIdCounter++,
+        task: {
+            FilterName: {
+                inclusive: true,
+                name: "",
+            },
+        },
+    });
+    user_update_tasks();
+};
+
+const addFilterDocType = () => {
+    taskList.value.push({
+        id: taskIdCounter++,
+        task: {
+            FilterDocType: {
+                inclusive: true,
+                doc_types: [],
+            },
+        },
+    });
+    user_update_tasks();
+};
+
+const addFilterTimePeriod = () => {
+    taskList.value.push({
+        id: taskIdCounter++,
+        task: {
+            FilterTimePeriod: {
+                inclusive: true,
+                start_time: "",
+                end_time: "",
+            },
+        },
+    });
+    user_update_tasks();
+};
+
+const addFilterTime = () => {
+    taskList.value.push({
+        id: taskIdCounter++,
+        task: {
+            FilterTime: {
+                before: true,
+                time: "",
+            },
+        },
+    });
+    user_update_tasks();
+};
+
+
+const addFilterSize = () => {
+    taskList.value.push({
+        id: taskIdCounter++,
+        task: {
+            FilterSize: {
+                greater_than: false,
+                byte_base_size: 1000n,
+                size: 0n,
             },
         },
     });
