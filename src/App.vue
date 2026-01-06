@@ -514,6 +514,11 @@ const taskMenuToggleFunction = (event: any) => {
     taskMenuToggle.value.toggle(event);
 };
 
+const taskFilterMenuToggle = ref();
+const taskFilterToggleFunction = (event: any) => {
+    taskFilterMenuToggle.value.toggle(event);
+};
+
 const templateMenuToggle = ref();
 const templateMenuToggleFunction = (event: any) => {
     templateMenuToggle.value.toggle(event);
