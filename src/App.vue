@@ -309,7 +309,6 @@ const addFilterTime = () => {
     user_update_tasks();
 };
 
-
 const addFilterSize = () => {
     taskList.value.push({
         id: taskIdCounter++,
@@ -455,6 +454,34 @@ const taskMenuItems = ref([
         label: "Clear All",
         icon: "pi pi-eraser",
         command: () => addClearAll(),
+    },
+]);
+
+const taskFilterMenuItems = ref([
+    {
+        label: "Name Filter",
+        icon: "pi pi-search",
+        command: () => addFindReplace(),
+    },
+    {
+        label: "File Type Filter",
+        icon: "pi pi-sort-numeric-down",
+        command: () => addNumSequence(),
+    },
+    {
+        label: "Time Period Filter",
+        icon: "pi pi-arrow-circle-left",
+        command: () => addCustomText(),
+    },
+    {
+        label: "Time Filter",
+        icon: "pi pi-sort-alpha-down",
+        command: () => addChangeCase(),
+    },
+    {
+        label: "File Size Filter",
+        icon: "pi pi-calendar",
+        command: () => addDate(),
     },
 ]);
 
