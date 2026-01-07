@@ -713,12 +713,7 @@ fn process_tasks_on_working_files(state: &State<'_, Mutex<AppState>>) {
                         file.active = false;
                     }
                 }
-                Task::FilterTime {
-                    inclusive,
-                    before,
-                    start_time,
-                    end_time,
-                } => {
+                Task::FilterTime { before, time } => {
                     // todo here
                 }
                 Task::FilterTimePeriod {
