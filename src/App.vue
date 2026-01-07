@@ -155,6 +155,30 @@ const isTimeTask = (
     return "Time" in task;
 };
 
+
+const isFilterNameTask = (
+    task: Task
+): task is {
+    FilterName: {
+        inclusive: boolean;
+        name: string;
+    };
+} => {
+    return "FilterName" in task;
+};
+
+
+const isFilterDocType = (
+    task: Task
+): task is {
+    FilterDocType: {
+        inclusive: boolean;
+        doc_type: string[];
+    };
+} => {
+    return "FilterDocType" in task;
+};
+
 //  <-- === Create an array of TaskWithId === -->
 const taskList = ref<TaskWithId[]>([]);
 
@@ -1071,6 +1095,56 @@ async function user_rename_files() {
                         </template>
 
                         <!-- === Time Task === -->
+                        <template v-else-if="isTimeTask(item.task)">
+                            <div class="task-container">
+                                <!-- === Title and Description === -->
+                                <div class="flex flex-row items-center justify-between mb-1">
+                                    <div class="flex flex-row items-center gap-2">
+                                        <span class="pi pi-clock text-textprimary"></span>
+                                        <h4 class="text-sm font-semibold text-textprimary m-0">Time</h4>
+                                        <p class="text-xs text-textprimary m-0">Add modified time to file names.</p>
+                                    </div>
+
+                                    <!-- === Dummy Spacer === -->
+                                    <div class="flex-1"></div>
+
+                                    <!-- === Close Button === -->
+                                    <i class="pi pi-angle-up text-textprimary hover:cursor-pointer text-sm mr-1"
+                                        :class="{ 'opacity-30': index === 0 }" @click="moveSelectedTaskUp(index)"></i>
+                                    <i class="pi pi-angle-down text-textprimary hover:cursor-pointer text-sm mr-1"
+                                        :class="{
+                                            'opacity-30': index === taskList.length - 1,
+                                        }" @click="moveSelectedTaskDown(index)"></i>
+                                    <!-- === Close Button === -->
+                                    <div class="flex items-center" @click="deleteSelectedTask(index)">
+                                        <i class="pi pi-times hover:cursor-pointer text-sm text-textprimary hover:text-red-500 transition-colors"
+                                            style="font-size: 0.9rem"></i>
+                                    </div>
+                                </div>
+
+                                <!-- === Main Controls === -->
+                                <div class="flex flex-row gap-3 items-center">
+                                    <!-- === Separator === -->
+                                    <div class="flex">
+                                        <FloatLabel variant="on">
+                                            <InputText class="w-21" v-model="item.task.Time.separator"
+                                                :id="`separator-${index}`" size="small" @input="user_update_tasks" />
+                                            <label for="`separator-${index}`">Separator</label>
+                                        </FloatLabel>
+                                    </div>
+
+                                    <!-- === Position at Start or End === -->
+                                    <div class="flex-1">
+                                        <ToggleButton v-model="item.task.Time.at_start" onLabel="@ Start"
+                                            offLabel="@ End" size="small" @change="user_update_tasks" />
+                                    </div>
+
+                                </div>
+                            </div>
+                        </template>
+
+
+                        <!-- === Filter Name Task === -->
                         <template v-else-if="isTimeTask(item.task)">
                             <div class="task-container">
                                 <!-- === Title and Description === -->
