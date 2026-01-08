@@ -77,7 +77,7 @@ interface TaskWithId {
 }
 
 //  <-- === Type Guards === -->
-const isCustomTextTask = (
+const isCustomText = (
     task: Task
 ): task is {
     CustomText: { text: string; at_start: boolean; active: boolean };
@@ -85,7 +85,7 @@ const isCustomTextTask = (
     return "CustomText" in task;
 };
 
-const isFindAndReplaceTask = (
+const isFindAndReplace = (
     task: Task
 ): task is {
     FindAndReplace: {
@@ -97,7 +97,7 @@ const isFindAndReplaceTask = (
     return "FindAndReplace" in task;
 };
 
-const isClearAllTask = (
+const isClearAll = (
     task: Task
 ): task is {
     ClearAll: { active: boolean };
@@ -105,7 +105,7 @@ const isClearAllTask = (
     return "ClearAll" in task;
 };
 
-const isChangeCaseTask = (
+const isChangeCase = (
     task: Task
 ): task is {
     ChangeCase: { case_choice: number; active: boolean };
@@ -113,7 +113,7 @@ const isChangeCaseTask = (
     return "ChangeCase" in task;
 };
 
-const isNumSequenceTask = (
+const isNumSequence = (
     task: Task
 ): task is {
     NumSequence: {
@@ -127,7 +127,7 @@ const isNumSequenceTask = (
     return "NumSequence" in task;
 };
 
-const isDateTask = (
+const isDate = (
     task: Task
 ): task is {
     Date: {
@@ -142,7 +142,7 @@ const isDateTask = (
     return "Date" in task;
 };
 
-const isTimeTask = (
+const isTime = (
     task: Task
 ): task is {
     Time: {
@@ -156,7 +156,7 @@ const isTimeTask = (
 };
 
 
-const isFilterNameTask = (
+const isFilterName = (
     task: Task
 ): task is {
     FilterName: {
@@ -173,10 +173,45 @@ const isFilterDocType = (
 ): task is {
     FilterDocType: {
         inclusive: boolean;
-        doc_type: string[];
+        doc_types: string[];
     };
 } => {
     return "FilterDocType" in task;
+};
+
+const isFilterTimePeriod = (
+    task: Task
+): task is {
+    FilterTimePeriod: {
+        inclusive: boolean;
+        start_time: string;
+        end_time: string;
+    };
+} => {
+    return "FilterTimePeriod" in task;
+};
+
+const isFilterTime = (
+    task: Task
+): task is {
+    FilterTime: {
+        before: boolean;
+        time: string;
+    };
+} => {
+    return "FilterTime" in task;
+};
+
+const isFilterSize = (
+    task: Task
+): task is {
+    FilterSize: {
+        greater_than: boolean;
+        byte_base_size: bigint;
+        size: bigint;
+    };
+} => {
+    return "FilterSize" in task;
 };
 
 //  <-- === Create an array of TaskWithId === -->
@@ -777,7 +812,7 @@ async function user_rename_files() {
                     <div v-else v-for="(item, index) in taskList" :key="item.id"
                         class="ttasks-item mx-2 my-2 whitespace-nowrap">
                         <!-- === CustomText Task === -->
-                        <template v-if="isCustomTextTask(item.task)">
+                        <template v-if="isCustomText(item.task)">
                             <div class="task-container">
                                 <!-- === Title and Description === -->
                                 <div class="flex flex-row items-center justify-between mb-1">
@@ -826,7 +861,7 @@ async function user_rename_files() {
                         </template>
 
                         <!-- === Find & Replace Task === -->
-                        <template v-else-if="isFindAndReplaceTask(item.task)">
+                        <template v-else-if="isFindAndReplace(item.task)">
                             <div class="task-container">
                                 <!-- === Title and Description === -->
                                 <div class="flex flex-row items-center justify-between mb-1">
@@ -879,7 +914,7 @@ async function user_rename_files() {
                         </template>
 
                         <!-- === ClearAll Task === -->
-                        <template v-else-if="isClearAllTask(item.task)">
+                        <template v-else-if="isClearAll(item.task)">
                             <div class="task-container">
                                 <!-- === Title and Description === -->
                                 <div class="flex flex-row items-center justify-between mb-1">
@@ -909,7 +944,7 @@ async function user_rename_files() {
                         </template>
 
                         <!-- === ChangeCase Task === -->
-                        <template v-else-if="isChangeCaseTask(item.task)">
+                        <template v-else-if="isChangeCase(item.task)">
                             <div class="task-container">
                                 <!-- === Title and Description === -->
                                 <div class="flex flex-row items-center justify-between mb-1">
@@ -953,7 +988,7 @@ async function user_rename_files() {
                         </template>
 
                         <!-- === NumSequence Task === -->
-                        <template v-else-if="isNumSequenceTask(item.task)">
+                        <template v-else-if="isNumSequence(item.task)">
                             <div class="task-container">
                                 <!-- === Title and Description === -->
                                 <div class="flex flex-row items-center justify-between mb-1">
@@ -1023,7 +1058,7 @@ async function user_rename_files() {
                         </template>
 
                         <!-- === Date Task === -->
-                        <template v-else-if="isDateTask(item.task)">
+                        <template v-else-if="isDate(item.task)">
                             <div class="task-container">
                                 <!-- === Title and Description === -->
                                 <div class="flex flex-row items-center justify-between mb-1">
@@ -1095,7 +1130,7 @@ async function user_rename_files() {
                         </template>
 
                         <!-- === Time Task === -->
-                        <template v-else-if="isTimeTask(item.task)">
+                        <template v-else-if="isTime(item.task)">
                             <div class="task-container">
                                 <!-- === Title and Description === -->
                                 <div class="flex flex-row items-center justify-between mb-1">
@@ -1145,7 +1180,7 @@ async function user_rename_files() {
 
 
                         <!-- === Filter Name Task === -->
-                        <template v-else-if="isTimeTask(item.task)">
+                        <template v-else-if="isTime(item.task)">
                             <div class="task-container">
                                 <!-- === Title and Description === -->
                                 <div class="flex flex-row items-center justify-between mb-1">
