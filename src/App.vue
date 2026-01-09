@@ -17,8 +17,8 @@ import InputNumber from "primevue/inputnumber";
 import IconField from "primevue/iconfield";
 import InputIcon from "primevue/inputicon";
 import FloatLabel from "primevue/floatlabel";
-import MultiSelect from "primevue";
-import DatePicker from "primevue";
+import MultiSelect from "primevue/multiselect";
+import DatePicker from "primevue/datepicker";
 import "primeicons/primeicons.css";
 
 //  <-- === WorkingFile Interface === -->
@@ -522,27 +522,27 @@ const taskFilterMenuItems = ref([
     {
         label: "Name Filter",
         icon: "pi pi-search",
-        command: () => addFindReplace(),
+        command: () => addFilterName(),
     },
     {
         label: "File Type Filter",
         icon: "pi pi-sort-numeric-down",
-        command: () => addNumSequence(),
+        command: () => addFilterDocType(),
     },
     {
         label: "Time Period Filter",
         icon: "pi pi-arrow-circle-left",
-        command: () => addCustomText(),
+        command: () => addFilterTimePeriod(),
     },
     {
         label: "Time Filter",
         icon: "pi pi-sort-alpha-down",
-        command: () => addChangeCase(),
+        command: () => addFilterTime(),
     },
     {
         label: "File Size Filter",
         icon: "pi pi-calendar",
-        command: () => addDate(),
+        command: () => addFilterSize(),
     },
 ]);
 
@@ -572,6 +572,14 @@ const templateMenuItems = ref([
 
 const docTypeItems = ["pdf", "zip", "jpg", "doc", "html"]
 
+const byteBaseSizeChoice = ref("");
+const byteBaseSizeChoices = [
+    { name: "Bytes", code: 1n },
+    { name: "Kilobytes", code: 1000n },
+    { name: "Megabytes", code: 1000000n },
+    { name: "Gigabytes", code: 1000000000n },
+    { name: "Terbytes", code: 1000000000000n },
+];
 const taskMenuToggle = ref();
 const taskMenuToggleFunction = (event: any) => {
     taskMenuToggle.value.toggle(event);
@@ -787,6 +795,12 @@ async function user_rename_files() {
                         severity="secondary" @click="taskMenuToggleFunction" aria-haspopup="true"
                         aria-controls="custom_text_menu" />
                     <Menu ref="taskMenuToggle" id="custom_text_menu" :model="taskMenuItems" :popup="true" />
+
+
+                    <Button type="button" label="Filters" size="small" icon="pi pi-plus" class="min-w-max"
+                        severity="secondary" @click="taskFilterToggleFunction" aria-haspopup="true"
+                        aria-controls="custom_text_menu" />
+                    <Menu ref="taskFilterMenuToggle" id="filter_menu" :model="taskFilterMenuItems" :popup="true" />
 
                     <!-- <Button label="Make Notification" @click="userNotification" size="small" severity="secondary" /> -->
                     <!-- <Button label="Make Dialog" @click="userDialog" size="small" severity="secondary" /> -->
@@ -1340,7 +1354,7 @@ async function user_rename_files() {
 
                                     <!-- === Position at Start or End === -->
                                     <div class="flex-1">
-                                        <ToggleButton v-model="item.task.FilterName.inclusive" onLabel="Inclusive"
+                                        <ToggleButton v-model="item.task.FilterTimePeriod.inclusive" onLabel="Inclusive"
                                             offLabel="Exclusive" size="small" @change="user_update_tasks" />
                                     </div>
 
@@ -1429,6 +1443,7 @@ async function user_rename_files() {
 
                                 <!-- === Main Controls === -->
                                 <div class="flex flex-row gap-3 items-center">
+
                                     <!-- === Start Date Picker === -->
                                     <div class="flex">
                                         <FloatLabel variant="on">
@@ -1450,6 +1465,7 @@ async function user_rename_files() {
 
                     </div>
                 </TransitionGroup>
+
                 <footer id="footer_right_panel"
                     class="flex flex-row py-2 px-2 gap-2 bg-panelfooter border-t-1 rounded-b-lg border-bordercolor text-sm text-textprimary">
 
