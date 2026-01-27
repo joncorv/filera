@@ -650,7 +650,7 @@ const outputDirectoryButtonDisabled = computed(() => (
 ));
 
 // when user chooses from the dropdown, we run this function
-// this should take in 
+// this should take in
 async function userUpdateOutput() {
     // if anything but replace, and a output directory doesn't exist, then ask the user to choose an output directory
     if (outputDropdownChoice.value != "replace" && !outputDirectory.value) {
@@ -1227,19 +1227,22 @@ async function user_rename_files() {
 
                                 <!-- === Main Controls === -->
                                 <div class="flex flex-row gap-3 items-center">
-                                    <!-- === Separator === -->
-                                    <div class="flex">
-                                        <FloatLabel variant="on">
-                                            <InputText class="w-21" v-model="item.task.FilterName.name"
-                                                :id="`separator-${index}`" size="small" @input="user_update_tasks" />
+
+                                    <!-- === Filter Name Field === -->
+                                    <div class="w-full">
+                                        <FloatLabel variant="on" class="font-thin">
+                                            <InputText class="w-full" v-model="item.task.FilterName.name" fluid
+                                                placeholder="" :id="`separator-${index}`" size="small"
+                                                @input="user_update_tasks" />
                                             <label for="`name-${index}`">Name</label>
                                         </FloatLabel>
                                     </div>
 
                                     <!-- === Position at Start or End === -->
                                     <div class="flex-1">
-                                        <ToggleButton v-model="item.task.FilterName.inclusive" onLabel="Inclusive"
-                                            offLabel="Exclusive" size="small" @change="user_update_tasks" />
+                                        <ToggleButton v-model="item.task.FilterName.inclusive"
+                                            onLabel="Include All Matches" offLabel="Exclude All Matches" size="small"
+                                            @change="user_update_tasks" />
                                     </div>
 
                                 </div>
