@@ -1337,28 +1337,32 @@ async function user_rename_files() {
 
                                 <!-- === Main Controls === -->
                                 <div class="flex flex-row gap-3 items-center">
+
                                     <!-- === Start Date Picker === -->
-                                    <div class="flex">
+                                    <div class="w-full">
                                         <FloatLabel variant="on">
-                                            <DatePicker class="w-21" v-model="item.task.FilterTimePeriod.start_time"
+                                            <DatePicker class="w-full" v-model="item.task.FilterTimePeriod.start_time"
                                                 :id="`separator-${index}`" size="small" @input="user_update_tasks" />
                                             <label for="`name-${index}`">Start Time</label>
                                         </FloatLabel>
                                     </div>
 
                                     <!-- === End Date Picker === -->
-                                    <div class="flex">
+                                    <div class="flex-1">
                                         <FloatLabel variant="on">
-                                            <DatePicker class="w-21" v-model="item.task.FilterTimePeriod.end_time"
+                                            <DatePicker class="flex-1" v-model="item.task.FilterTimePeriod.end_time"
                                                 :id="`separator-${index}`" size="small" @input="user_update_tasks" />
                                             <label for="`name-${index}`">End Time</label>
                                         </FloatLabel>
                                     </div>
 
+                                    <div class="w-full bg-red"> </div>
+
                                     <!-- === Position at Start or End === -->
                                     <div class="flex-1">
-                                        <ToggleButton v-model="item.task.FilterTimePeriod.inclusive" onLabel="Inclusive"
-                                            offLabel="Exclusive" size="small" @change="user_update_tasks" />
+                                        <ToggleButton v-model="item.task.FilterTimePeriod.inclusive"
+                                            onLabel="Filter Inner" offLabel="Filter Outer" size="small"
+                                            @change="user_update_tasks" />
                                     </div>
 
                                 </div>
