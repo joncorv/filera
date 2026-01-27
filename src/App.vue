@@ -1401,7 +1401,7 @@ async function user_rename_files() {
                                 <!-- === Main Controls === -->
                                 <div class="flex flex-row gap-3 items-center">
                                     <!-- === Start Date Picker === -->
-                                    <div class="flex">
+                                    <div class="w-full">
                                         <FloatLabel variant="on">
                                             <DatePicker class="w-21" v-model="item.task.FilterTime.time"
                                                 :id="`separator-${index}`" size="small" @input="user_update_tasks" />
@@ -1409,11 +1409,15 @@ async function user_rename_files() {
                                         </FloatLabel>
                                     </div>
 
+                                    <!-- <div class="w-64 bg-red"> </div> -->
+
                                     <!-- === Position at Start or End === -->
                                     <div class="flex-1">
-                                        <ToggleButton v-model="item.task.FilterTime.before" onLabel="Before"
-                                            offLabel="After" size="small" @change="user_update_tasks" />
+                                        <ToggleButton v-model="item.task.FilterTime.before" onLabel="Filter Older Dates"
+                                            offLabel="Filter Newer Dates" size="small" @change="user_update_tasks" />
                                     </div>
+
+                                    <!-- <div class="w-full bg-red"> </div> -->
 
                                 </div>
                             </div>
