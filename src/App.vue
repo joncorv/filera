@@ -1341,22 +1341,22 @@ async function user_rename_files() {
                                     <!-- === Start Date Picker === -->
                                     <div class="w-full">
                                         <FloatLabel variant="on">
-                                            <DatePicker class="w-full" v-model="item.task.FilterTimePeriod.start_time"
+                                            <DatePicker class="" fluid v-model="item.task.FilterTimePeriod.start_time"
                                                 :id="`separator-${index}`" size="small" @input="user_update_tasks" />
                                             <label for="`name-${index}`">Start Time</label>
                                         </FloatLabel>
                                     </div>
 
                                     <!-- === End Date Picker === -->
-                                    <div class="flex-1">
+                                    <div class="w-full">
                                         <FloatLabel variant="on">
-                                            <DatePicker class="flex-1" v-model="item.task.FilterTimePeriod.end_time"
+                                            <DatePicker class="" fluid v-model="item.task.FilterTimePeriod.end_time"
                                                 :id="`separator-${index}`" size="small" @input="user_update_tasks" />
                                             <label for="`name-${index}`">End Time</label>
                                         </FloatLabel>
                                     </div>
 
-                                    <div class="w-full bg-red"> </div>
+                                    <!-- <div class="w-full bg-red"> </div> -->
 
                                     <!-- === Position at Start or End === -->
                                     <div class="flex-1">
@@ -1401,15 +1401,15 @@ async function user_rename_files() {
                                 <!-- === Main Controls === -->
                                 <div class="flex flex-row gap-3 items-center">
                                     <!-- === Start Date Picker === -->
-                                    <div class="w-full">
+                                    <div class="w-full max-w-78">
                                         <FloatLabel variant="on">
-                                            <DatePicker class="w-21" v-model="item.task.FilterTime.time"
-                                                :id="`separator-${index}`" size="small" @input="user_update_tasks" />
+                                            <DatePicker v-model="item.task.FilterTime.time" :id="`separator-${index}`"
+                                                fluid size="small" @input="user_update_tasks" />
                                             <label for="`name-${index}`">Date</label>
                                         </FloatLabel>
                                     </div>
 
-                                    <!-- <div class="w-64 bg-red"> </div> -->
+                                    <div class="w-full bg-red"> </div>
 
                                     <!-- === Position at Start or End === -->
                                     <div class="flex-1">
