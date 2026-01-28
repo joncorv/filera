@@ -70,7 +70,7 @@ type Task =
     | { FilterDocType: { inclusive: boolean; doc_types: string[] } }
     | { FilterTimePeriod: { inclusive: boolean; start_time: string; end_time: string } }
     | { FilterTime: { before: boolean; time: string; } }
-    | { FilterSize: { greater_than: boolean; byte_base_size: bigint; size: bigint } }
+    | { FilterSize: { greater_than: boolean; byte_base_size: number; size: number } }
 
 //  <-- === Add unique ID to each task. Needed for proper animation in the DOM === -->
 interface TaskWithId {
@@ -209,8 +209,8 @@ const isFilterSize = (
 ): task is {
     FilterSize: {
         greater_than: boolean;
-        byte_base_size: bigint;
-        size: bigint;
+        byte_base_size: number;
+        size: number;
     };
 } => {
     return "FilterSize" in task;
@@ -376,8 +376,8 @@ const addFilterSize = () => {
         task: {
             FilterSize: {
                 greater_than: false,
-                byte_base_size: 1000n,
-                size: 0n,
+                byte_base_size: 2,
+                size: 0,
             },
         },
     });
@@ -574,11 +574,11 @@ const docTypeItems = ["pdf", "zip", "jpg", "doc", "html"]
 
 const byteBaseSizeChoice = ref("");
 const byteBaseSizeChoices = [
-    { name: "Bytes", code: 1n },
-    { name: "Kilobytes", code: 1000n },
-    { name: "Megabytes", code: 1000000n },
-    { name: "Gigabytes", code: 1000000000n },
-    { name: "Terbytes", code: 1000000000000n },
+    { name: "Bytes", code: 0 },
+    { name: "Kilobytes", code: 1 },
+    { name: "Megabytes", code: 2 },
+    { name: "Gigabytes", code: 3 },
+    { name: "Terabytes", code: 4 },
 ];
 const taskMenuToggle = ref();
 const taskMenuToggleFunction = (event: any) => {
@@ -993,6 +993,7 @@ async function user_rename_files() {
 
                                 <!-- === Main Controls === -->
                                 <div class="flex flex-row gap-3 items-center">
+
                                     <!-- === Case Choice Dropdown === -->
                                     <Dropdown v-model="item.task.ChangeCase.case_choice" :options="[
                                         { label: 'lowercase', value: 0 },
@@ -1177,6 +1178,7 @@ async function user_rename_files() {
 
                                 <!-- === Main Controls === -->
                                 <div class="flex flex-row gap-3 items-center">
+
                                     <!-- === Separator === -->
                                     <div class="flex">
                                         <FloatLabel variant="on">
@@ -1400,6 +1402,7 @@ async function user_rename_files() {
 
                                 <!-- === Main Controls === -->
                                 <div class="flex flex-row gap-3 items-center">
+
                                     <!-- === Start Date Picker === -->
                                     <div class="w-full max-w-78">
                                         <FloatLabel variant="on">
@@ -1455,19 +1458,34 @@ async function user_rename_files() {
                                 <!-- === Main Controls === -->
                                 <div class="flex flex-row gap-3 items-center">
 
-                                    <!-- === Start Date Picker === -->
-                                    <div class="flex">
-                                        <FloatLabel variant="on">
-                                            <DatePicker class="w-21" v-model="item.task.FilterTime.time"
-                                                :id="`separator-${index}`" size="small" @input="user_update_tasks" />
-                                            <label for="`name-${index}`">Date</label>
-                                        </FloatLabel>
+
+                                    <!-- === Size Number === -->
+                                    <div class="w-full min-w-36">
+                                        <!-- <FloatLabel variant="on" class=""> -->
+                                        <InputNumber v-model="item.task.FilterSize.size" :id="`size-${index}`"
+                                            :input-id="`size-inputid-${index}`" fluid show-buttons
+                                            buttonLayout="horizontal" size="small" class="w-full"
+                                            @value-change="user_update_tasks" />
+                                        <!-- <label for="`start-num-inputid-${index}`">Start #</label> -->
+                                        <!-- </FloatLabel> -->
+                                    </div>
+
+                                    <!-- === File Size Byte Size Dropdown === -->
+                                    <div class="w-full">
+                                        <Select v-model="item.task.FilterSize.byte_base_size" :options="[
+                                            { label: 'Bytes', value: 0 },
+                                            { label: 'Kilobytes', value: 1 },
+                                            { label: 'Megabytes', value: 2 },
+                                            { label: 'Gigabytes', value: 3 },
+                                            { label: 'Terabytes', value: 4 },
+                                        ]" optionLabel="label" optionValue="value" fluid size="small" class="flex-1"
+                                            @change="user_update_tasks" />
                                     </div>
 
                                     <!-- === Position at Start or End === -->
                                     <div class="flex-1">
-                                        <ToggleButton v-model="item.task.FilterTime.before" onLabel="Before"
-                                            offLabel="After" size="small" @change="user_update_tasks" />
+                                        <ToggleButton v-model="item.task.FilterSize.greater_than" onLabel="Greater Than"
+                                            offLabel="Less Than" size="small" @change="user_update_tasks" />
                                     </div>
 
                                 </div>
