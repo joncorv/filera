@@ -1345,7 +1345,7 @@ async function user_rename_files() {
                                         <FloatLabel variant="on">
                                             <DatePicker class="" fluid v-model="item.task.FilterTimePeriod.start_time"
                                                 :id="`separator-${index}`" size="small" @input="user_update_tasks" />
-                                            <label for="`name-${index}`">Start Time</label>
+                                            <label for="`name-${index}`">Start Date</label>
                                         </FloatLabel>
                                     </div>
 
@@ -1354,7 +1354,7 @@ async function user_rename_files() {
                                         <FloatLabel variant="on">
                                             <DatePicker class="" fluid v-model="item.task.FilterTimePeriod.end_time"
                                                 :id="`separator-${index}`" size="small" @input="user_update_tasks" />
-                                            <label for="`name-${index}`">End Time</label>
+                                            <label for="`name-${index}`">End Date</label>
                                         </FloatLabel>
                                     </div>
 
@@ -1363,8 +1363,8 @@ async function user_rename_files() {
                                     <!-- === Position at Start or End === -->
                                     <div class="flex-1">
                                         <ToggleButton v-model="item.task.FilterTimePeriod.inclusive"
-                                            onLabel="Filter Inner" offLabel="Filter Outer" size="small"
-                                            @change="user_update_tasks" />
+                                            onLabel="Filter Matching Dates" offLabel="Filter Non-Matching Dates"
+                                            size="small" @change="user_update_tasks" />
                                     </div>
 
                                 </div>
