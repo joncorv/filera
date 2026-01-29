@@ -7,10 +7,8 @@ import { Button } from "primevue";
 import Splitter from "primevue/splitter";
 import SplitterPanel from "primevue/splitterpanel";
 import InputText from "primevue/inputtext";
-// import ToggleSwitch from "primevue/toggleswitch";
 import ToggleButton from "primevue/togglebutton";
 import Select from "primevue/select";
-// import Menubar from "primevue/menubar";
 import Menu from "primevue/menu";
 import Dropdown from "primevue/dropdown";
 import InputNumber from "primevue/inputnumber";
@@ -701,14 +699,6 @@ async function user_rename_files() {
         outputDirectory.value = "";
     }
 
-    // if outputdirectory is falsey
-    // if user hasn't selected output, or is replace
-    // set outputDirectory to empty string
-
-    // if the user has selected copy or move
-    // alert the user to select
-
-
     fileStatusReturn.value = await invoke("user_rename_files", { outputDropdownChoice: outputDropdownChoice.value, outputDirectory: outputDirectory.value });
 }
 
@@ -842,175 +832,100 @@ async function user_rename_files() {
 
                     <div v-else v-for="(item, index) in taskList" :key="item.id"
                         class="ttasks-item mx-2 my-2 whitespace-nowrap">
+
                         <!-- === CustomText Task === -->
                         <template v-if="isCustomText(item.task)">
-                            <CustomTextTask
-                                :task="item.task"
-                                :index="index"
-                                :isFirst="index === 0"
-                                :isLast="index === taskList.length - 1"
-                                @update="user_update_tasks"
-                                @delete="deleteSelectedTask"
-                                @move-up="moveSelectedTaskUp"
-                                @move-down="moveSelectedTaskDown"
-                            />
+                            <CustomTextTask :task="item.task" :index="index" :isFirst="index === 0"
+                                :isLast="index === taskList.length - 1" @update="user_update_tasks"
+                                @delete="deleteSelectedTask" @move-up="moveSelectedTaskUp"
+                                @move-down="moveSelectedTaskDown" />
                         </template>
 
                         <!-- === Find & Replace Task === -->
                         <template v-else-if="isFindAndReplace(item.task)">
-                            <FindAndReplaceTask
-                                :task="item.task"
-                                :index="index"
-                                :isFirst="index === 0"
-                                :isLast="index === taskList.length - 1"
-                                @update="user_update_tasks"
-                                @delete="deleteSelectedTask"
-                                @move-up="moveSelectedTaskUp"
-                                @move-down="moveSelectedTaskDown"
-                            />
+                            <FindAndReplaceTask :task="item.task" :index="index" :isFirst="index === 0"
+                                :isLast="index === taskList.length - 1" @update="user_update_tasks"
+                                @delete="deleteSelectedTask" @move-up="moveSelectedTaskUp"
+                                @move-down="moveSelectedTaskDown" />
                         </template>
 
                         <!-- === ClearAll Task === -->
                         <template v-else-if="isClearAll(item.task)">
-                            <ClearAllTask
-                                :index="index"
-                                :isFirst="index === 0"
-                                :isLast="index === taskList.length - 1"
-                                @delete="deleteSelectedTask"
-                                @move-up="moveSelectedTaskUp"
-                                @move-down="moveSelectedTaskDown"
-                            />
+                            <ClearAllTask :index="index" :isFirst="index === 0" :isLast="index === taskList.length - 1"
+                                @delete="deleteSelectedTask" @move-up="moveSelectedTaskUp"
+                                @move-down="moveSelectedTaskDown" />
                         </template>
 
                         <!-- === ChangeCase Task === -->
                         <template v-else-if="isChangeCase(item.task)">
-                            <ChangeCaseTask
-                                :task="item.task"
-                                :index="index"
-                                :isFirst="index === 0"
-                                :isLast="index === taskList.length - 1"
-                                @update="user_update_tasks"
-                                @delete="deleteSelectedTask"
-                                @move-up="moveSelectedTaskUp"
-                                @move-down="moveSelectedTaskDown"
-                            />
+                            <ChangeCaseTask :task="item.task" :index="index" :isFirst="index === 0"
+                                :isLast="index === taskList.length - 1" @update="user_update_tasks"
+                                @delete="deleteSelectedTask" @move-up="moveSelectedTaskUp"
+                                @move-down="moveSelectedTaskDown" />
                         </template>
 
                         <!-- === NumSequence Task === -->
                         <template v-else-if="isNumSequence(item.task)">
-                            <NumSequenceTask
-                                :task="item.task"
-                                :index="index"
-                                :isFirst="index === 0"
-                                :isLast="index === taskList.length - 1"
-                                @update="user_update_tasks"
-                                @delete="deleteSelectedTask"
-                                @move-up="moveSelectedTaskUp"
-                                @move-down="moveSelectedTaskDown"
-                            />
+                            <NumSequenceTask :task="item.task" :index="index" :isFirst="index === 0"
+                                :isLast="index === taskList.length - 1" @update="user_update_tasks"
+                                @delete="deleteSelectedTask" @move-up="moveSelectedTaskUp"
+                                @move-down="moveSelectedTaskDown" />
                         </template>
 
                         <!-- === Date Task === -->
                         <template v-else-if="isDate(item.task)">
-                            <DateTask
-                                :task="item.task"
-                                :index="index"
-                                :isFirst="index === 0"
-                                :isLast="index === taskList.length - 1"
-                                @update="user_update_tasks"
-                                @delete="deleteSelectedTask"
-                                @move-up="moveSelectedTaskUp"
-                                @move-down="moveSelectedTaskDown"
-                            />
+                            <DateTask :task="item.task" :index="index" :isFirst="index === 0"
+                                :isLast="index === taskList.length - 1" @update="user_update_tasks"
+                                @delete="deleteSelectedTask" @move-up="moveSelectedTaskUp"
+                                @move-down="moveSelectedTaskDown" />
                         </template>
 
                         <!-- === Time Task === -->
                         <template v-else-if="isTime(item.task)">
-                            <TimeTask
-                                :task="item.task"
-                                :index="index"
-                                :isFirst="index === 0"
-                                :isLast="index === taskList.length - 1"
-                                @update="user_update_tasks"
-                                @delete="deleteSelectedTask"
-                                @move-up="moveSelectedTaskUp"
-                                @move-down="moveSelectedTaskDown"
-                            />
+                            <TimeTask :task="item.task" :index="index" :isFirst="index === 0"
+                                :isLast="index === taskList.length - 1" @update="user_update_tasks"
+                                @delete="deleteSelectedTask" @move-up="moveSelectedTaskUp"
+                                @move-down="moveSelectedTaskDown" />
                         </template>
-
 
                         <!-- === Filter Name Task === -->
                         <template v-else-if="isFilterName(item.task)">
-                            <FilterNameTask
-                                :task="item.task"
-                                :index="index"
-                                :isFirst="index === 0"
-                                :isLast="index === taskList.length - 1"
-                                @update="user_update_tasks"
-                                @delete="deleteSelectedTask"
-                                @move-up="moveSelectedTaskUp"
-                                @move-down="moveSelectedTaskDown"
-                            />
+                            <FilterNameTask :task="item.task" :index="index" :isFirst="index === 0"
+                                :isLast="index === taskList.length - 1" @update="user_update_tasks"
+                                @delete="deleteSelectedTask" @move-up="moveSelectedTaskUp"
+                                @move-down="moveSelectedTaskDown" />
                         </template>
-
 
                         <!-- === Filter Doc Type Task === -->
                         <template v-else-if="isFilterDocType(item.task)">
-                            <FilterDocTypeTask
-                                :task="item.task"
-                                :index="index"
-                                :isFirst="index === 0"
-                                :isLast="index === taskList.length - 1"
-                                @update="user_update_tasks"
-                                @delete="deleteSelectedTask"
-                                @move-up="moveSelectedTaskUp"
-                                @move-down="moveSelectedTaskDown"
-                            />
+                            <FilterDocTypeTask :task="item.task" :index="index" :isFirst="index === 0"
+                                :isLast="index === taskList.length - 1" @update="user_update_tasks"
+                                @delete="deleteSelectedTask" @move-up="moveSelectedTaskUp"
+                                @move-down="moveSelectedTaskDown" />
                         </template>
-
 
                         <!-- === Filter Time Period === -->
                         <template v-else-if="isFilterTimePeriod(item.task)">
-                            <FilterTimePeriodTask
-                                :task="item.task"
-                                :index="index"
-                                :isFirst="index === 0"
-                                :isLast="index === taskList.length - 1"
-                                @update="user_update_tasks"
-                                @delete="deleteSelectedTask"
-                                @move-up="moveSelectedTaskUp"
-                                @move-down="moveSelectedTaskDown"
-                            />
+                            <FilterTimePeriodTask :task="item.task" :index="index" :isFirst="index === 0"
+                                :isLast="index === taskList.length - 1" @update="user_update_tasks"
+                                @delete="deleteSelectedTask" @move-up="moveSelectedTaskUp"
+                                @move-down="moveSelectedTaskDown" />
                         </template>
-
 
                         <!-- === Filter Time === -->
                         <template v-else-if="isFilterTime(item.task)">
-                            <FilterTimeTask
-                                :task="item.task"
-                                :index="index"
-                                :isFirst="index === 0"
-                                :isLast="index === taskList.length - 1"
-                                @update="user_update_tasks"
-                                @delete="deleteSelectedTask"
-                                @move-up="moveSelectedTaskUp"
-                                @move-down="moveSelectedTaskDown"
-                            />
+                            <FilterTimeTask :task="item.task" :index="index" :isFirst="index === 0"
+                                :isLast="index === taskList.length - 1" @update="user_update_tasks"
+                                @delete="deleteSelectedTask" @move-up="moveSelectedTaskUp"
+                                @move-down="moveSelectedTaskDown" />
                         </template>
-
 
                         <!-- === Filter Size === -->
                         <template v-else-if="isFilterSize(item.task)">
-                            <FilterSizeTask
-                                :task="item.task"
-                                :index="index"
-                                :isFirst="index === 0"
-                                :isLast="index === taskList.length - 1"
-                                @update="user_update_tasks"
-                                @delete="deleteSelectedTask"
-                                @move-up="moveSelectedTaskUp"
-                                @move-down="moveSelectedTaskDown"
-                            />
+                            <FilterSizeTask :task="item.task" :index="index" :isFirst="index === 0"
+                                :isLast="index === taskList.length - 1" @update="user_update_tasks"
+                                @delete="deleteSelectedTask" @move-up="moveSelectedTaskUp"
+                                @move-down="moveSelectedTaskDown" />
                         </template>
 
                     </div>
