@@ -19,6 +19,7 @@ import InputIcon from "primevue/inputicon";
 import FloatLabel from "primevue/floatlabel";
 import MultiSelect from "primevue/multiselect";
 import DatePicker from "primevue/datepicker";
+import Chip from 'primevue/chip';
 import "primeicons/primeicons.css";
 
 //  <-- === WorkingFile Interface === -->
@@ -1259,7 +1260,7 @@ async function user_rename_files() {
                                 <div class="flex flex-row items-center justify-between mb-1">
                                     <div class="flex flex-row items-center gap-2">
                                         <span class="pi pi-clock text-textprimary"></span>
-                                        <h4 class="text-sm font-semibold text-textprimary m-0">Doc Type Filter</h4>
+                                        <h4 class="text-sm font-semibold text-textprimary m-0">File Type Filter</h4>
                                         <p class="text-xs text-textprimary m-0">Filter out files by Document Type</p>
                                     </div>
 
@@ -1283,19 +1284,38 @@ async function user_rename_files() {
                                 <!-- === Main Controls === -->
                                 <div class="flex flex-row gap-3 items-center">
                                     <!-- === Separator === -->
-                                    <div class="flex">
 
-                                        <!-- <FloatLabel variant="on"> -->
-                                        <!--     <InputText class="w-21" v-model="item.task.FilterDocType.doc_types" -->
-                                        <!--         :id="`separator-${index}`" size="small" @input="user_update_tasks" /> -->
-                                        <!--     <label for="`name-${index}`">Name</label> -->
-                                        <!-- </FloatLabel> -->
+                                    <!-- <FloatLabel variant="on"> -->
+                                    <!--     <InputText class="w-21" v-model="item.task.FilterDocType.doc_types" -->
+                                    <!--         :id="`separator-${index}`" size="small" @input="user_update_tasks" /> -->
+                                    <!--     <label for="`name-${index}`">Name</label> -->
+                                    <!-- </FloatLabel> -->
 
-                                        <!-- <FloatLabel variant="on"> -->
-                                        <MultiSelect :options="docTypeItems" class="w-21"
-                                            v-model="item.task.FilterDocType.doc_types" :id="`separator-${index}`"
-                                            size="small" @input="user_update_tasks" />
-                                        <!-- </FloatLabel> -->
+                                    <div class="flex gap-2">
+                                        <InputText v-model="item.task.FilterDocType.newDocTypeInput"
+                                            :id="`doc-type-input-${index}`" size="small" placeholder="Enter doc type"
+                                            @keyup.enter="() => {
+                                                if (item.task.FilterDocType.newDocTypeInput?.trim()) {
+                                                    item.task.FilterDocType.doc_types.push(item.task.FilterDocType.newDocTypeInput.trim());
+                                                    item.task.FilterDocType.newDocTypeInput = '';
+                                                    user_update_tasks();
+                                                }
+                                            }" />
+                                        <Button label="Add" size="small" @click="() => {
+                                            if (item.task.FilterDocType.newDocTypeInput?.trim()) {
+                                                item.task.FilterDocType.doc_types.push(item.task.FilterDocType.newDocTypeInput.trim());
+                                                item.task.FilterDocType.newDocTypeInput = '';
+                                                user_update_tasks();
+                                            }
+                                        }" />
+                                    </div>
+
+                                    <div class="w-full flex flex-row items-center ">
+                                        <div v-for="(foo, chipIndex) in item.task.FilterDocType.doc_types"
+                                            :key="`${foo}-${chipIndex}`">
+                                            <Chip :label="foo" removable
+                                                @remove="item.task.FilterDocType.doc_types.splice(chipIndex, 1); user_update_tasks()" />
+                                        </div>
                                     </div>
 
                                     <!-- === Position at Start or End === -->
