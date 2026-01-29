@@ -28,6 +28,7 @@ import CustomTextTask from './components/CustomTextTask.vue';
 import DateTask from './components/DateTask.vue';
 import TimeTask from './components/TimeTask.vue';
 import FilterNameTask from './components/FilterNameTask.vue';
+import FilterDocTypeTask from './components/FilterDocTypeTask.vue';
 import "primeicons/primeicons.css";
 
 //  <-- === WorkingFile Interface === -->
@@ -952,77 +953,16 @@ async function user_rename_files() {
 
                         <!-- === Filter Doc Type Task === -->
                         <template v-else-if="isFilterDocType(item.task)">
-                            <div class="task-container">
-                                <!-- === Title and Description === -->
-                                <div class="flex flex-row items-center justify-between mb-1">
-                                    <div class="flex flex-row items-center gap-2">
-                                        <span class="pi pi-clock text-textprimary"></span>
-                                        <h4 class="text-sm font-semibold text-textprimary m-0">File Type Filter</h4>
-                                        <p class="text-xs text-textprimary m-0">Filter out files by Document Type</p>
-                                    </div>
-
-                                    <!-- === Dummy Spacer === -->
-                                    <div class="flex-1"></div>
-
-                                    <!-- === Close Button === -->
-                                    <i class="pi pi-angle-up text-textprimary hover:cursor-pointer text-sm mr-1"
-                                        :class="{ 'opacity-30': index === 0 }" @click="moveSelectedTaskUp(index)"></i>
-                                    <i class="pi pi-angle-down text-textprimary hover:cursor-pointer text-sm mr-1"
-                                        :class="{
-                                            'opacity-30': index === taskList.length - 1,
-                                        }" @click="moveSelectedTaskDown(index)"></i>
-                                    <!-- === Close Button === -->
-                                    <div class="flex items-center" @click="deleteSelectedTask(index)">
-                                        <i class="pi pi-times hover:cursor-pointer text-sm text-textprimary hover:text-red-500 transition-colors"
-                                            style="font-size: 0.9rem"></i>
-                                    </div>
-                                </div>
-
-                                <!-- === Main Controls === -->
-                                <div class="flex flex-row gap-3 items-center">
-                                    <!-- === Separator === -->
-
-                                    <!-- <FloatLabel variant="on"> -->
-                                    <!--     <InputText class="w-21" v-model="item.task.FilterDocType.doc_types" -->
-                                    <!--         :id="`separator-${index}`" size="small" @input="user_update_tasks" /> -->
-                                    <!--     <label for="`name-${index}`">Name</label> -->
-                                    <!-- </FloatLabel> -->
-
-                                    <div class="flex gap-2">
-                                        <InputText v-model="item.task.FilterDocType.newDocTypeInput"
-                                            :id="`doc-type-input-${index}`" size="small" placeholder="Enter doc type"
-                                            @keyup.enter="() => {
-                                                if (item.task.FilterDocType.newDocTypeInput?.trim()) {
-                                                    item.task.FilterDocType.doc_types.push(item.task.FilterDocType.newDocTypeInput.trim());
-                                                    item.task.FilterDocType.newDocTypeInput = '';
-                                                    user_update_tasks();
-                                                }
-                                            }" />
-                                        <Button label="Add" size="small" @click="() => {
-                                            if (item.task.FilterDocType.newDocTypeInput?.trim()) {
-                                                item.task.FilterDocType.doc_types.push(item.task.FilterDocType.newDocTypeInput.trim());
-                                                item.task.FilterDocType.newDocTypeInput = '';
-                                                user_update_tasks();
-                                            }
-                                        }" />
-                                    </div>
-
-                                    <div class="w-full flex flex-row items-center ">
-                                        <div v-for="(foo, chipIndex) in item.task.FilterDocType.doc_types"
-                                            :key="`${foo}-${chipIndex}`">
-                                            <Chip :label="foo" removable
-                                                @remove="item.task.FilterDocType.doc_types.splice(chipIndex, 1); user_update_tasks()" />
-                                        </div>
-                                    </div>
-
-                                    <!-- === Position at Start or End === -->
-                                    <div class="flex-1">
-                                        <ToggleButton v-model="item.task.FilterDocType.inclusive" onLabel="Inclusive"
-                                            offLabel="Exclusive" size="small" @change="user_update_tasks" />
-                                    </div>
-
-                                </div>
-                            </div>
+                            <FilterDocTypeTask
+                                :task="item.task"
+                                :index="index"
+                                :isFirst="index === 0"
+                                :isLast="index === taskList.length - 1"
+                                @update="user_update_tasks"
+                                @delete="deleteSelectedTask"
+                                @move-up="moveSelectedTaskUp"
+                                @move-down="moveSelectedTaskDown"
+                            />
                         </template>
 
 
