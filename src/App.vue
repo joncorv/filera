@@ -20,6 +20,7 @@ import FloatLabel from "primevue/floatlabel";
 import MultiSelect from "primevue/multiselect";
 import DatePicker from "primevue/datepicker";
 import Chip from 'primevue/chip';
+import FindAndReplaceTask from './components/FindAndReplaceTask.vue';
 import "primeicons/primeicons.css";
 
 //  <-- === WorkingFile Interface === -->
@@ -881,55 +882,16 @@ async function user_rename_files() {
 
                         <!-- === Find & Replace Task === -->
                         <template v-else-if="isFindAndReplace(item.task)">
-                            <div class="task-container">
-                                <!-- === Title and Description === -->
-                                <div class="flex flex-row items-center justify-between mb-1">
-                                    <div class="flex flex-row items-center gap-2">
-                                        <span class="pi pi-search text-textprimary"></span>
-                                        <h4 class="text-sm font-semibold text-textprimary m-0">Find & Replace</h4>
-                                        <p class="text-xs text-textprimary m-0">Replace text in file names</p>
-                                    </div>
-                                    <!-- === Dummy Spacer === -->
-                                    <div class="flex-1"></div>
-
-                                    <!-- === Close Button === -->
-                                    <i class="pi pi-angle-up text-textprimary hover:cursor-pointer text-sm mr-1"
-                                        :class="{ 'opacity-30': index === 0 }" @click="moveSelectedTaskUp(index)"></i>
-                                    <i class="pi pi-angle-down text-textprimary hover:cursor-pointer text-sm mr-1"
-                                        :class="{
-                                            'opacity-30': index === taskList.length - 1,
-                                        }" @click="moveSelectedTaskDown(index)"></i>
-                                    <!-- === Close Button === -->
-                                    <div class="flex items-center" @click="deleteSelectedTask(index)">
-                                        <i class="pi pi-times hover:cursor-pointer text-sm text-textprimary hover:text-red-500 transition-colors"
-                                            style="font-size: 0.9rem"></i>
-                                    </div>
-                                </div>
-
-                                <!-- === Main Controls === -->
-                                <div class="flex flex-row gap-3 items-center">
-                                    <!-- === Find Text Field === -->
-
-                                    <div class="w-full min-w-36">
-                                        <FloatLabel variant="on" class="font-thin">
-                                            <InputText :id="`find-text-${index}`" fluid placeholder="" size="small"
-                                                v-model="item.task.FindAndReplace.find_text" @input="user_update_tasks"
-                                                class="flex-1" />
-                                            <label class="font-thin" for="`find-text-${index}`">Find</label>
-                                        </FloatLabel>
-                                    </div>
-
-                                    <!-- === Replace Text Field === -->
-                                    <div class="w-full min-w-36">
-                                        <FloatLabel variant="on" class="font-thin">
-                                            <InputText :id="`replace-text-${index}`" fluid placeholder="" size="small"
-                                                v-model="item.task.FindAndReplace.replace_text"
-                                                @input="user_update_tasks" class="flex-1" />
-                                            <label class="font-thin" for="`replace-text-${index}`">Replace</label>
-                                        </FloatLabel>
-                                    </div>
-                                </div>
-                            </div>
+                            <FindAndReplaceTask
+                                :task="item.task"
+                                :index="index"
+                                :isFirst="index === 0"
+                                :isLast="index === taskList.length - 1"
+                                @update="user_update_tasks"
+                                @delete="deleteSelectedTask"
+                                @move-up="moveSelectedTaskUp"
+                                @move-down="moveSelectedTaskDown"
+                            />
                         </template>
 
                         <!-- === ClearAll Task === -->
