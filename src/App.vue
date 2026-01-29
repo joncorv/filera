@@ -392,16 +392,6 @@ const templateMenuItems = ref([
     },
 ]);
 
-const docTypeItems = ["pdf", "zip", "jpg", "doc", "html"]
-
-const byteBaseSizeChoice = ref("");
-const byteBaseSizeChoices = [
-    { name: "Bytes", code: 0 },
-    { name: "Kilobytes", code: 1 },
-    { name: "Megabytes", code: 2 },
-    { name: "Gigabytes", code: 3 },
-    { name: "Terabytes", code: 4 },
-];
 const taskMenuToggle = ref();
 const taskMenuToggleFunction = (event: any) => {
     taskMenuToggle.value.toggle(event);
@@ -522,7 +512,7 @@ async function user_rename_files() {
         <Splitter style="flex: 1; overflow: hidden; background-color: transparent; z-index: 40">
             <!-- === Left Splitter Panel === -->
             <SplitterPanel
-                class="flex flex-2/3 flex-col gap-0 ml-1 mr-0.25 mt-1 mb-1 border-1 rounded-lg border-bordercolor z-50 bg-panelheader ">
+                class="flex flex-2/3 flex-col gap-0 ml-1 mr-0.25 mt-1 mb-1 border rounded-lg border-bordercolor z-50 bg-panelheader ">
                 <!-- === Left SplitterPanel Menubar === -->
                 <div id="file_buttons" class="flex flex-row items-center gap-2 justify-start m-2">
                     <!-- <div class="bg-test2"> test test </div> -->
@@ -551,7 +541,7 @@ async function user_rename_files() {
                 <Transition mode="out-in">
                     <!-- === No Files Selected === -->
                     <div v-if="!numFileStatusItems"
-                        class="flex flex-1 bg-panelbody flex-col justify-center items-center w-full h-full whitespace-nowrap bg-panelbody">
+                        class="flex flex-1 flex-col justify-center items-center w-full h-full whitespace-nowrap bg-panelbody">
                         <span class="text-center mb-0 text-textprimary">Drag your files here.</span>
                         <span class="text-center text-sm text-textsecondary">NOTE: drag functionality is not
                             implimented,</span>
@@ -586,7 +576,7 @@ async function user_rename_files() {
                     </div>
                 </Transition>
                 <footer id="footer_left_panel"
-                    class="flex flex-row py-2 px-2 bg-panelfooter border-t-1 rounded-b-lg border-bordercolor text-sm text-textprimary">
+                    class="flex flex-row py-2 px-2 bg-panelfooter border-t rounded-b-lg border-bordercolor text-sm text-textprimary">
                     <div id="total-files-selected">
                         <span class="">Total Files Selected: </span>
                         <Transition mode="out-in">
@@ -600,7 +590,7 @@ async function user_rename_files() {
 
             <!-- === Right Splitter Panel === -->
             <SplitterPanel
-                class="flex flex-col flex-1/3 ml-0.25 mb-1 mt-1 mr-1 bg-panelheader rounded-lg border-1 border-bordercolor">
+                class="flex flex-col flex-1/3 ml-0.25 mb-1 mt-1 mr-1 bg-panelheader rounded-lg border border-bordercolor">
                 <!-- === Right SplitterPanel Menubar === -->
                 <div id="file_buttons" class="flex flex-row m-2 gap-2 items-center justify-start bg-panelheader">
                     <!-- <Menu id="customTextOverlayMenu" :model="customTextMenuItems" popup="true" /> -->
@@ -743,7 +733,7 @@ async function user_rename_files() {
                 </TransitionGroup>
 
                 <footer id="footer_right_panel"
-                    class="flex flex-row py-2 px-2 gap-2 bg-panelfooter border-t-1 rounded-b-lg border-bordercolor text-sm text-textprimary">
+                    class="flex flex-row py-2 px-2 gap-2 bg-panelfooter border-t rounded-b-lg border-bordercolor text-sm text-textprimary">
 
                     <Select v-model="outputDropdownChoice" :options="outputDropdownChoices" size="small"
                         optionLabel="name" optionValue="code" default-value="replace" class="w-full flex-1 min-w-max"
