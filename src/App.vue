@@ -7,17 +7,10 @@ import { Button } from "primevue";
 import Splitter from "primevue/splitter";
 import SplitterPanel from "primevue/splitterpanel";
 import InputText from "primevue/inputtext";
-import ToggleButton from "primevue/togglebutton";
 import Select from "primevue/select";
 import Menu from "primevue/menu";
-import Dropdown from "primevue/dropdown";
-import InputNumber from "primevue/inputnumber";
 import IconField from "primevue/iconfield";
 import InputIcon from "primevue/inputicon";
-import FloatLabel from "primevue/floatlabel";
-import MultiSelect from "primevue/multiselect";
-import DatePicker from "primevue/datepicker";
-import Chip from 'primevue/chip';
 import FindAndReplaceTask from './components/FindAndReplaceTask.vue';
 import ClearAllTask from './components/ClearAllTask.vue';
 import ChangeCaseTask from './components/ChangeCaseTask.vue';
@@ -31,7 +24,7 @@ import FilterTimePeriodTask from './components/FilterTimePeriodTask.vue';
 import FilterTimeTask from './components/FilterTimeTask.vue';
 import FilterSizeTask from './components/FilterSizeTask.vue';
 import "primeicons/primeicons.css";
-import type { FileStatus, Task, TaskWithId } from './types';
+import type { FileStatus, TaskWithId } from './types';
 import {
     isCustomText, isFindAndReplace, isClearAll, isChangeCase,
     isNumSequence, isDate, isTime, isFilterName, isFilterDocType,
