@@ -30,6 +30,7 @@ import TimeTask from './components/TimeTask.vue';
 import FilterNameTask from './components/FilterNameTask.vue';
 import FilterDocTypeTask from './components/FilterDocTypeTask.vue';
 import FilterTimePeriodTask from './components/FilterTimePeriodTask.vue';
+import FilterTimeTask from './components/FilterTimeTask.vue';
 import "primeicons/primeicons.css";
 
 //  <-- === WorkingFile Interface === -->
@@ -984,56 +985,16 @@ async function user_rename_files() {
 
                         <!-- === Filter Time === -->
                         <template v-else-if="isFilterTime(item.task)">
-                            <div class="task-container">
-                                <!-- === Title and Description === -->
-                                <div class="flex flex-row items-center justify-between mb-1">
-                                    <div class="flex flex-row items-center gap-2">
-                                        <span class="pi pi-clock text-textprimary"></span>
-                                        <h4 class="text-sm font-semibold text-textprimary m-0">Time Filter</h4>
-                                        <p class="text-xs text-textprimary m-0">Filter before or after a date</p>
-                                    </div>
-
-                                    <!-- === Dummy Spacer === -->
-                                    <div class="flex-1"></div>
-
-                                    <!-- === Close Button === -->
-                                    <i class="pi pi-angle-up text-textprimary hover:cursor-pointer text-sm mr-1"
-                                        :class="{ 'opacity-30': index === 0 }" @click="moveSelectedTaskUp(index)"></i>
-                                    <i class="pi pi-angle-down text-textprimary hover:cursor-pointer text-sm mr-1"
-                                        :class="{
-                                            'opacity-30': index === taskList.length - 1,
-                                        }" @click="moveSelectedTaskDown(index)"></i>
-                                    <!-- === Close Button === -->
-                                    <div class="flex items-center" @click="deleteSelectedTask(index)">
-                                        <i class="pi pi-times hover:cursor-pointer text-sm text-textprimary hover:text-red-500 transition-colors"
-                                            style="font-size: 0.9rem"></i>
-                                    </div>
-                                </div>
-
-                                <!-- === Main Controls === -->
-                                <div class="flex flex-row gap-3 items-center">
-
-                                    <!-- === Start Date Picker === -->
-                                    <div class="w-full max-w-78">
-                                        <FloatLabel variant="on">
-                                            <DatePicker v-model="item.task.FilterTime.time" :id="`separator-${index}`"
-                                                fluid size="small" @input="user_update_tasks" />
-                                            <label for="`name-${index}`">Date</label>
-                                        </FloatLabel>
-                                    </div>
-
-                                    <div class="w-full bg-red"> </div>
-
-                                    <!-- === Position at Start or End === -->
-                                    <div class="flex-1">
-                                        <ToggleButton v-model="item.task.FilterTime.before" onLabel="Filter Older Dates"
-                                            offLabel="Filter Newer Dates" size="small" @change="user_update_tasks" />
-                                    </div>
-
-                                    <!-- <div class="w-full bg-red"> </div> -->
-
-                                </div>
-                            </div>
+                            <FilterTimeTask
+                                :task="item.task"
+                                :index="index"
+                                :isFirst="index === 0"
+                                :isLast="index === taskList.length - 1"
+                                @update="user_update_tasks"
+                                @delete="deleteSelectedTask"
+                                @move-up="moveSelectedTaskUp"
+                                @move-down="moveSelectedTaskDown"
+                            />
                         </template>
 
 
