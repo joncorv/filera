@@ -31,6 +31,7 @@ import FilterNameTask from './components/FilterNameTask.vue';
 import FilterDocTypeTask from './components/FilterDocTypeTask.vue';
 import FilterTimePeriodTask from './components/FilterTimePeriodTask.vue';
 import FilterTimeTask from './components/FilterTimeTask.vue';
+import FilterSizeTask from './components/FilterSizeTask.vue';
 import "primeicons/primeicons.css";
 
 //  <-- === WorkingFile Interface === -->
@@ -1000,67 +1001,16 @@ async function user_rename_files() {
 
                         <!-- === Filter Size === -->
                         <template v-else-if="isFilterSize(item.task)">
-                            <div class="task-container">
-                                <!-- === Title and Description === -->
-                                <div class="flex flex-row items-center justify-between mb-1">
-                                    <div class="flex flex-row items-center gap-2">
-                                        <span class="pi pi-clock text-textprimary"></span>
-                                        <h4 class="text-sm font-semibold text-textprimary m-0">Size Filter</h4>
-                                        <p class="text-xs text-textprimary m-0">Filter by file size</p>
-                                    </div>
-
-                                    <!-- === Dummy Spacer === -->
-                                    <div class="flex-1"></div>
-
-                                    <!-- === Close Button === -->
-                                    <i class="pi pi-angle-up text-textprimary hover:cursor-pointer text-sm mr-1"
-                                        :class="{ 'opacity-30': index === 0 }" @click="moveSelectedTaskUp(index)"></i>
-                                    <i class="pi pi-angle-down text-textprimary hover:cursor-pointer text-sm mr-1"
-                                        :class="{
-                                            'opacity-30': index === taskList.length - 1,
-                                        }" @click="moveSelectedTaskDown(index)"></i>
-                                    <!-- === Close Button === -->
-                                    <div class="flex items-center" @click="deleteSelectedTask(index)">
-                                        <i class="pi pi-times hover:cursor-pointer text-sm text-textprimary hover:text-red-500 transition-colors"
-                                            style="font-size: 0.9rem"></i>
-                                    </div>
-                                </div>
-
-                                <!-- === Main Controls === -->
-                                <div class="flex flex-row gap-3 items-center">
-
-
-                                    <!-- === Size Number === -->
-                                    <div class="w-full min-w-36">
-                                        <!-- <FloatLabel variant="on" class=""> -->
-                                        <InputNumber v-model="item.task.FilterSize.size" :id="`size-${index}`"
-                                            :input-id="`size-inputid-${index}`" fluid show-buttons
-                                            buttonLayout="horizontal" size="small" class="w-full"
-                                            @value-change="user_update_tasks" />
-                                        <!-- <label for="`start-num-inputid-${index}`">Start #</label> -->
-                                        <!-- </FloatLabel> -->
-                                    </div>
-
-                                    <!-- === File Size Byte Size Dropdown === -->
-                                    <div class="w-full">
-                                        <Select v-model="item.task.FilterSize.byte_base_size" :options="[
-                                            { label: 'Bytes', value: 0 },
-                                            { label: 'Kilobytes', value: 1 },
-                                            { label: 'Megabytes', value: 2 },
-                                            { label: 'Gigabytes', value: 3 },
-                                            { label: 'Terabytes', value: 4 },
-                                        ]" optionLabel="label" optionValue="value" fluid size="small" class="flex-1"
-                                            @change="user_update_tasks" />
-                                    </div>
-
-                                    <!-- === Position at Start or End === -->
-                                    <div class="flex-1">
-                                        <ToggleButton v-model="item.task.FilterSize.greater_than" onLabel="Greater Than"
-                                            offLabel="Less Than" size="small" @change="user_update_tasks" />
-                                    </div>
-
-                                </div>
-                            </div>
+                            <FilterSizeTask
+                                :task="item.task"
+                                :index="index"
+                                :isFirst="index === 0"
+                                :isLast="index === taskList.length - 1"
+                                @update="user_update_tasks"
+                                @delete="deleteSelectedTask"
+                                @move-up="moveSelectedTaskUp"
+                                @move-down="moveSelectedTaskDown"
+                            />
                         </template>
 
                     </div>
