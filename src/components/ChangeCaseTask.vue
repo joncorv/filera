@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Dropdown from "primevue/dropdown";
+import Select from "primevue/select"
 
 defineProps<{
     task: {
@@ -52,12 +52,12 @@ const emit = defineEmits<{
         <div class="flex flex-row gap-3 items-center">
 
             <!-- === Case Choice Dropdown === -->
-            <Dropdown v-model="task.ChangeCase.case_choice" :options="[
+            <Select v-model="task.ChangeCase.case_choice" :options="[
                 { label: 'lowercase', value: 0 },
                 { label: 'UPPERCASE', value: 1 },
                 // { label: 'Title Case', value: 2 },
-            ]" optionLabel="label" optionValue="value" placeholder="Select case type"
-                size="small" class="flex-1" @change="emit('update')" />
+            ]" optionLabel="label" optionValue="value" placeholder="Select case type" size="small" class="flex-1"
+                @change="emit('update')" />
 
         </div>
     </div>
