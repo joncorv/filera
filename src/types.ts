@@ -2,51 +2,52 @@
 export interface FileStatus {
     old_file_name: string;
     new_file_name: string;
+    active: boolean;
 }
 
 //  <-- === Task Type. Contains all Sub Tasks within === -->
 export type Task =
     | { CustomText: { text: string; at_start: boolean; active: boolean } }
     | {
-        FindAndReplace: {
-            find_text: string;
-            replace_text: string;
-            active: boolean;
-        };
-    }
+          FindAndReplace: {
+              find_text: string;
+              replace_text: string;
+              active: boolean;
+          };
+      }
     | { ClearAll: { active: boolean } }
     | { ChangeCase: { case_choice: number; active: boolean } }
     | {
-        NumSequence: {
-            start_num: number;
-            num_padding: number;
-            at_start: boolean;
-            separator: string;
-            active: boolean;
-        };
-    }
+          NumSequence: {
+              start_num: number;
+              num_padding: number;
+              at_start: boolean;
+              separator: string;
+              active: boolean;
+          };
+      }
     | {
-        Date: {
-            year: number;
-            month: boolean;
-            day: boolean;
-            separator: string;
-            at_start: boolean;
-            active: boolean;
-        };
-    }
+          Date: {
+              year: number;
+              month: boolean;
+              day: boolean;
+              separator: string;
+              at_start: boolean;
+              active: boolean;
+          };
+      }
     | {
-        Time: {
-            at_start: boolean;
-            separator: string;
-            active: boolean;
-        };
-    }
+          Time: {
+              at_start: boolean;
+              separator: string;
+              active: boolean;
+          };
+      }
     | { FilterName: { inclusive: boolean; name: string } }
     | { FilterDocType: { inclusive: boolean; doc_types: string[] } }
     | { FilterTimePeriod: { inclusive: boolean; start_time: string; end_time: string } }
     | { FilterTime: { before: boolean; time: string } }
-    | { FilterSize: { greater_than: boolean; byte_base_size: number; size: number } }
+    | { FilterSize: { greater_than: boolean; byte_base_size: number; size: number } };
 
 //  <-- === Add unique ID to each task. Needed for proper animation in the DOM === -->
 export interface TaskWithId {
@@ -54,9 +55,58 @@ export interface TaskWithId {
     task: Task;
 }
 
+//  <-- === Task Factory Functions === -->
+export const createCustomTextTask = (): Task => ({
+    CustomText: { text: "", at_start: true, active: true },
+});
+
+export const createFindReplaceTask = (): Task => ({
+    FindAndReplace: { find_text: "", replace_text: "", active: true },
+});
+
+export const createClearAllTask = (): Task => ({
+    ClearAll: { active: true },
+});
+
+export const createChangeCaseTask = (): Task => ({
+    ChangeCase: { case_choice: 0, active: true },
+});
+
+export const createNumSequenceTask = (): Task => ({
+    NumSequence: { start_num: 0, num_padding: 4, at_start: true, separator: "_", active: true },
+});
+
+export const createDateTask = (): Task => ({
+    Date: { year: 0, month: true, day: true, at_start: true, separator: "_", active: true },
+});
+
+export const createTimeTask = (): Task => ({
+    Time: { at_start: true, separator: "_", active: true },
+});
+
+export const createFilterNameTask = (): Task => ({
+    FilterName: { inclusive: true, name: "" },
+});
+
+export const createFilterDocTypeTask = (): Task => ({
+    FilterDocType: { inclusive: true, doc_types: [] },
+});
+
+export const createFilterTimePeriodTask = (): Task => ({
+    FilterTimePeriod: { inclusive: true, start_time: "", end_time: "" },
+});
+
+export const createFilterTimeTask = (): Task => ({
+    FilterTime: { before: true, time: "" },
+});
+
+export const createFilterSizeTask = (): Task => ({
+    FilterSize: { greater_than: false, byte_base_size: 2, size: 0 },
+});
+
 //  <-- === Type Guards === -->
 export const isCustomText = (
-    task: Task
+    task: Task,
 ): task is {
     CustomText: { text: string; at_start: boolean; active: boolean };
 } => {
@@ -64,7 +114,7 @@ export const isCustomText = (
 };
 
 export const isFindAndReplace = (
-    task: Task
+    task: Task,
 ): task is {
     FindAndReplace: {
         find_text: string;
@@ -76,7 +126,7 @@ export const isFindAndReplace = (
 };
 
 export const isClearAll = (
-    task: Task
+    task: Task,
 ): task is {
     ClearAll: { active: boolean };
 } => {
@@ -84,7 +134,7 @@ export const isClearAll = (
 };
 
 export const isChangeCase = (
-    task: Task
+    task: Task,
 ): task is {
     ChangeCase: { case_choice: number; active: boolean };
 } => {
@@ -92,7 +142,7 @@ export const isChangeCase = (
 };
 
 export const isNumSequence = (
-    task: Task
+    task: Task,
 ): task is {
     NumSequence: {
         start_num: number;
@@ -106,7 +156,7 @@ export const isNumSequence = (
 };
 
 export const isDate = (
-    task: Task
+    task: Task,
 ): task is {
     Date: {
         year: number;
@@ -121,7 +171,7 @@ export const isDate = (
 };
 
 export const isTime = (
-    task: Task
+    task: Task,
 ): task is {
     Time: {
         at_start: boolean;
@@ -134,7 +184,7 @@ export const isTime = (
 };
 
 export const isFilterName = (
-    task: Task
+    task: Task,
 ): task is {
     FilterName: {
         inclusive: boolean;
@@ -145,7 +195,7 @@ export const isFilterName = (
 };
 
 export const isFilterDocType = (
-    task: Task
+    task: Task,
 ): task is {
     FilterDocType: {
         inclusive: boolean;
@@ -156,7 +206,7 @@ export const isFilterDocType = (
 };
 
 export const isFilterTimePeriod = (
-    task: Task
+    task: Task,
 ): task is {
     FilterTimePeriod: {
         inclusive: boolean;
@@ -168,7 +218,7 @@ export const isFilterTimePeriod = (
 };
 
 export const isFilterTime = (
-    task: Task
+    task: Task,
 ): task is {
     FilterTime: {
         before: boolean;
@@ -179,7 +229,7 @@ export const isFilterTime = (
 };
 
 export const isFilterSize = (
-    task: Task
+    task: Task,
 ): task is {
     FilterSize: {
         greater_than: boolean;
