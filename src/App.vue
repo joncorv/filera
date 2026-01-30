@@ -28,8 +28,13 @@ import type { FileStatus, TaskWithId } from './types';
 import {
     isCustomText, isFindAndReplace, isClearAll, isChangeCase,
     isNumSequence, isDate, isTime, isFilterName, isFilterDocType,
-    isFilterTimePeriod, isFilterTime, isFilterSize
+    isFilterTimePeriod, isFilterTime, isFilterSize,
+    createCustomTextTask, createFindReplaceTask, createClearAllTask,
+    createChangeCaseTask, createNumSequenceTask, createDateTask,
+    createTimeTask, createFilterNameTask, createFilterDocTypeTask,
+    createFilterTimePeriodTask, createFilterTimeTask, createFilterSizeTask,
 } from './types';
+import { deleteTask, moveTaskUp, moveTaskDown } from './utils/taskUtils';
 
 //  <-- === Create an array of TaskWithId === -->
 const taskList = ref<TaskWithId[]>([]);
@@ -37,167 +42,23 @@ const taskList = ref<TaskWithId[]>([]);
 //  <-- === Counter for generating unique IDs === -->
 let taskIdCounter = 0;
 
-const addCustomText = () => {
-    taskList.value.push({
-        id: taskIdCounter++,
-        task: {
-            CustomText: {
-                text: "",
-                at_start: true,
-                active: true,
-            },
-        },
-    });
+const addTask = (factory: () => import('./types').Task) => {
+    taskList.value.push({ id: taskIdCounter++, task: factory() });
     user_update_tasks();
 };
 
-const addFindReplace = () => {
-    taskList.value.push({
-        id: taskIdCounter++,
-        task: {
-            FindAndReplace: {
-                find_text: "",
-                replace_text: "",
-                active: true,
-            },
-        },
-    });
-    user_update_tasks();
-};
-
-const addClearAll = () => {
-    taskList.value.push({
-        id: taskIdCounter++,
-        task: {
-            ClearAll: { active: true },
-        },
-    });
-    user_update_tasks();
-};
-
-const addChangeCase = () => {
-    taskList.value.push({
-        id: taskIdCounter++,
-        task: {
-            ChangeCase: { case_choice: 0, active: true },
-        },
-    });
-    user_update_tasks();
-};
-
-const addNumSequence = () => {
-    taskList.value.push({
-        id: taskIdCounter++,
-        task: {
-            NumSequence: {
-                start_num: 0,
-                num_padding: 4,
-                at_start: true,
-                separator: "_",
-                active: true,
-            },
-        },
-    });
-    user_update_tasks();
-};
-
-const addDate = () => {
-    taskList.value.push({
-        id: taskIdCounter++,
-        task: {
-            Date: {
-                year: 0,
-                month: true,
-                day: true,
-                at_start: true,
-                separator: "_",
-                active: true,
-            },
-        },
-    });
-    user_update_tasks();
-};
-
-const addTime = () => {
-    taskList.value.push({
-        id: taskIdCounter++,
-        task: {
-            Time: {
-                at_start: true,
-                separator: "_",
-                active: true,
-            },
-        },
-    });
-    user_update_tasks();
-};
-
-const addFilterName = () => {
-    taskList.value.push({
-        id: taskIdCounter++,
-        task: {
-            FilterName: {
-                inclusive: true,
-                name: "",
-            },
-        },
-    });
-    user_update_tasks();
-};
-
-const addFilterDocType = () => {
-    taskList.value.push({
-        id: taskIdCounter++,
-        task: {
-            FilterDocType: {
-                inclusive: true,
-                doc_types: [],
-            },
-        },
-    });
-    user_update_tasks();
-};
-
-const addFilterTimePeriod = () => {
-    taskList.value.push({
-        id: taskIdCounter++,
-        task: {
-            FilterTimePeriod: {
-                inclusive: true,
-                start_time: "",
-                end_time: "",
-            },
-        },
-    });
-    user_update_tasks();
-};
-
-const addFilterTime = () => {
-    taskList.value.push({
-        id: taskIdCounter++,
-        task: {
-            FilterTime: {
-                before: true,
-                time: "",
-            },
-        },
-    });
-    user_update_tasks();
-};
-
-const addFilterSize = () => {
-    taskList.value.push({
-        id: taskIdCounter++,
-        task: {
-            FilterSize: {
-                greater_than: false,
-                byte_base_size: 2,
-                size: 0,
-            },
-        },
-    });
-    user_update_tasks();
-};
+const addCustomText = () => addTask(createCustomTextTask);
+const addFindReplace = () => addTask(createFindReplaceTask);
+const addClearAll = () => addTask(createClearAllTask);
+const addChangeCase = () => addTask(createChangeCaseTask);
+const addNumSequence = () => addTask(createNumSequenceTask);
+const addDate = () => addTask(createDateTask);
+const addTime = () => addTask(createTimeTask);
+const addFilterName = () => addTask(createFilterNameTask);
+const addFilterDocType = () => addTask(createFilterDocTypeTask);
+const addFilterTimePeriod = () => addTask(createFilterTimePeriodTask);
+const addFilterTime = () => addTask(createFilterTimeTask);
+const addFilterSize = () => addTask(createFilterSizeTask);
 
 const search = ref("");
 // where data is stored
@@ -277,22 +138,14 @@ async function clearTasks() {
 }
 
 function deleteSelectedTask(index: number) {
-    taskList.value.splice(index, 1);
+    deleteTask(taskList.value, index);
     user_update_tasks();
 }
 function moveSelectedTaskUp(index: number) {
-    if (index > 0) {
-        const [item] = taskList.value.splice(index, 1);
-        taskList.value.splice(index - 1, 0, item);
-        user_update_tasks();
-    }
+    if (moveTaskUp(taskList.value, index)) user_update_tasks();
 }
 function moveSelectedTaskDown(index: number) {
-    if (index < taskList.value.length - 1) {
-        const [item] = taskList.value.splice(index, 1);
-        taskList.value.splice(index + 1, 0, item);
-        user_update_tasks();
-    }
+    if (moveTaskDown(taskList.value, index)) user_update_tasks();
 }
 
 const taskMenuItems = ref([
