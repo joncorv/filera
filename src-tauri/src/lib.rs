@@ -22,6 +22,7 @@ struct WorkingFile {
 struct FileStatus {
     old_file_name: String,
     new_file_name: String,
+    active: bool,
 }
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
@@ -798,6 +799,7 @@ fn convert_working_files_to_file_status(state: &State<'_, Mutex<AppState>>) -> V
             let file_status = FileStatus {
                 old_file_name: working_file.source.file_name().unwrap().to_string_lossy().into_owned(),
                 new_file_name: working_file.target.file_name().unwrap().to_string_lossy().into_owned(),
+                active: working_file.active,
             };
             file_statuses.push(file_status);
         }
@@ -811,6 +813,7 @@ fn convert_working_files_to_file_status(state: &State<'_, Mutex<AppState>>) -> V
                 let file_status = FileStatus {
                     old_file_name: working_file.source.file_name().unwrap().to_string_lossy().into_owned(),
                     new_file_name: working_file.target.file_name().unwrap().to_string_lossy().into_owned(),
+                    active: working_file.active,
                 };
                 file_statuses.push(file_status);
             }
