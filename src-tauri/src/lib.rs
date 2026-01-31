@@ -355,6 +355,11 @@ fn process_tasks_on_working_files(state: &State<'_, Mutex<AppState>>) {
     let mut state = state.lock().unwrap();
     let tasks = &state.tasks.clone();
 
+    // reset status to true on each change
+    for file in &mut state.working_files.iter_mut() {
+        file.active = true;
+    }
+
     for (index, file) in &mut state.working_files.iter_mut().enumerate() {
         // for each WorkingFile in the array, copy from source => target
         file.target = file.source.clone();
@@ -689,14 +694,19 @@ fn process_tasks_on_working_files(state: &State<'_, Mutex<AppState>>) {
                     }
                 }
                 Task::FilterName { inclusive, name } => {
-                    if let Some(file_name) = file.target.file_name() {
-                        let file_name_string = file_name.to_string_lossy();
-                        let found = file_name_string.contains(name);
+                    // println!("filter processing now status on {}: {}", file.source.to_string_lossy(), file.active);
 
-                        if (found && *inclusive) || (!found && !inclusive) {
-                            file.active = false;
+                    if !name.is_empty() {
+                        if let Some(file_name) = file.target.file_name() {
+                            let file_name_string = file_name.to_string_lossy();
+                            let found = file_name_string.contains(name);
+
+                            if (found && *inclusive) || (!found && !inclusive) {
+                                file.active = false;
+                            }
                         }
                     }
+
                     // inclusive means that if we find it, it is filtered
                     // if it's NOT inclusive, if it is NOT found, it will be filtered
                 }
