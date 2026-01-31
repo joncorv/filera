@@ -340,7 +340,10 @@ fn convert_file_names_to_working_files(state: &State<'_, Mutex<AppState>>) {
             target: PathBuf::new(),
             active: true,
         };
-        new_working_files.push(working_file);
+
+        if working_file.source.is_file() {
+            new_working_files.push(working_file);
+        }
     }
     state.working_files = new_working_files;
 }
