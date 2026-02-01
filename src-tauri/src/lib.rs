@@ -341,7 +341,17 @@ fn convert_file_names_to_working_files(state: &State<'_, Mutex<AppState>>) {
             active: true,
         };
 
-        if working_file.source.is_file() {
+        let is_file = working_file.source.is_file();
+
+        let is_legal_file;
+
+        if file_path.contains(".DS_Store") {
+            is_legal_file = false;
+        } else {
+            is_legal_file = true;
+        }
+
+        if is_file && is_legal_file {
             new_working_files.push(working_file);
         }
     }
