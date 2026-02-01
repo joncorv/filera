@@ -1,7 +1,6 @@
 use notify_rust::Notification;
 use rfd::{AsyncMessageDialog, MessageDialogResult};
 use std::collections::HashMap;
-use std::os::unix::fs::MetadataExt;
 use std::path::Path;
 use std::sync::Mutex;
 use std::time::SystemTime;
@@ -791,7 +790,7 @@ fn process_tasks_on_working_files(state: &State<'_, Mutex<AppState>>) {
                     size,
                 } => {
                     if let Ok(metadata) = file.source.metadata() {
-                        let file_size = metadata.size();
+                        let file_size = metadata.len();
                         // byte_base_size is a tier: 0=Bytes, 1=KB, 2=MB, 3=GB, 4=TB
                         let multiplier: u64 = 1024_u64.pow(*byte_base_size as u32);
                         let search_size = multiplier * size;
