@@ -409,12 +409,27 @@ async function user_rename_files() {
                             <table class="w-full">
                                 <tbody>
                                     <tr v-for="(item, index) in fileStatusReturn" :key="index">
-                                        <td class="px-4 py-2 border-b border-bordercolor">
-                                            {{ item.old_file_name }}
-                                        </td>
-                                        <td class="px-4 py-2 border-b border-bordercolor">
-                                            {{ item.new_file_name }}
-                                        </td>
+
+                                        <template v-if="item.active">
+                                            <td class="px-4 py-2 border-b border-bordercolor">
+                                                {{ item.old_file_name }}
+                                            </td>
+                                            <td class="px-4 py-2 border-b border-bordercolor">
+                                                {{ item.new_file_name }}
+                                            </td>
+                                        </template>
+
+                                        <template v-else>
+                                            <td
+                                                class="px-4 py-2 border-b border-bordercolor bg-panelfooter italic opacity-50 ">
+                                                {{ item.old_file_name }}
+                                            </td>
+                                            <td
+                                                class="px-4 py-2 border-b border-bordercolor bg-panelfooter italic opacity-50 ">
+                                                {{ item.new_file_name }}
+                                            </td>
+                                        </template>
+
                                     </tr>
                                 </tbody>
                             </table>
