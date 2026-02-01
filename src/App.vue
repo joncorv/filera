@@ -194,22 +194,22 @@ const taskFilterMenuItems = ref([
     },
     {
         label: "File Type Filter",
-        icon: "pi pi-sort-numeric-down",
+        icon: "pi pi-file",
         command: () => addFilterDocType(),
     },
     {
         label: "Time Period Filter",
-        icon: "pi pi-arrow-circle-left",
+        icon: "pi pi-calendar-plus",
         command: () => addFilterTimePeriod(),
     },
     {
         label: "Time Filter",
-        icon: "pi pi-sort-alpha-down",
+        icon: "pi pi-clock",
         command: () => addFilterTime(),
     },
     {
         label: "File Size Filter",
-        icon: "pi pi-calendar",
+        icon: "pi pi-arrows-v",
         command: () => addFilterSize(),
     },
 ]);
