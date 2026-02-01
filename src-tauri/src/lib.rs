@@ -8,6 +8,7 @@ use std::time::SystemTime;
 use std::{fs::copy, fs::rename, path::PathBuf};
 use tauri::{Manager, State};
 use tauri_plugin_notification::NotificationExt;
+use time::format_description::well_known::Iso8601;
 use time::OffsetDateTime;
 use walkdir::WalkDir;
 
@@ -738,14 +739,50 @@ fn process_tasks_on_working_files(state: &State<'_, Mutex<AppState>>) {
                     }
                 }
                 Task::FilterTime { before, time } => {
-                    // todo here
+                    if !time.is_empty() {
+                        if let Ok(filter_datetime) = OffsetDateTime::parse(time, &Iso8601::DEFAULT) {
+                            if let Ok(metadata) = file.source.metadata() {
+                                if let Ok(modified) = metadata.modified() {
+                                    let file_datetime = OffsetDateTime::from(modified);
+
+                                    if *before {
+                                        // "Filter Older Dates" — hide files older than selected date
+                                        if file_datetime < filter_datetime {
+                                            file.active = false;
+                                        }
+                                    } else {
+                                        // "Filter Newer Dates" — hide files newer than selected date
+                                        if file_datetime > filter_datetime {
+                                            file.active = false;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
                 Task::FilterTimePeriod {
                     inclusive,
                     start_time,
                     end_time,
                 } => {
-                    // todo here
+                    if !start_time.is_empty() && !end_time.is_empty() {
+                        if let (Ok(start_dt), Ok(end_dt)) = (
+                            OffsetDateTime::parse(start_time, &Iso8601::DEFAULT),
+                            OffsetDateTime::parse(end_time, &Iso8601::DEFAULT),
+                        ) {
+                            if let Ok(metadata) = file.source.metadata() {
+                                if let Ok(modified) = metadata.modified() {
+                                    let file_datetime = OffsetDateTime::from(modified);
+                                    let in_range = file_datetime >= start_dt && file_datetime <= end_dt;
+
+                                    if (in_range && *inclusive) || (!in_range && !inclusive) {
+                                        file.active = false;
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
                 Task::FilterSize {
                     greater_than,
