@@ -725,10 +725,11 @@ fn process_tasks_on_working_files(state: &State<'_, Mutex<AppState>>) {
                     let mut found = false;
 
                     if let Some(suffix) = file.target.extension() {
-                        let suffix_string = suffix.to_string_lossy().to_string();
+                        let suffix_lower = suffix.to_string_lossy().to_lowercase();
 
                         doc_types.iter().for_each(|doc_type| {
-                            if *doc_type == suffix_string {
+                            let cleaned = doc_type.trim_start_matches('.').to_lowercase();
+                            if cleaned == suffix_lower {
                                 found = true;
                             }
                         });
