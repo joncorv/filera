@@ -792,7 +792,9 @@ fn process_tasks_on_working_files(state: &State<'_, Mutex<AppState>>) {
                 } => {
                     if let Ok(metadata) = file.source.metadata() {
                         let file_size = metadata.size();
-                        let search_size = byte_base_size * size;
+                        // byte_base_size is a tier: 0=Bytes, 1=KB, 2=MB, 3=GB, 4=TB
+                        let multiplier: u64 = 1024_u64.pow(*byte_base_size as u32);
+                        let search_size = multiplier * size;
 
                         if *greater_than {
                             if file_size >= search_size {
@@ -803,8 +805,6 @@ fn process_tasks_on_working_files(state: &State<'_, Mutex<AppState>>) {
                                 file.active = false;
                             }
                         }
-                    } else {
-                        println!("error metadata not found");
                     }
                 }
             }
