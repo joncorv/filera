@@ -63,6 +63,8 @@ const addFilterSize = () => addTask(createFilterSizeTask);
 const search = ref("");
 // where data is stored
 const sortChoice = ref();
+const sortAscending = ref(true);
+const previousSortChoice = ref("");
 const metadata = [
     { name: "Name", code: "name" },
     { name: "Date Created", code: "created" },
@@ -109,8 +111,16 @@ async function open_folders() {
 }
 
 async function user_update_sort() {
-    // console.log("Vue starting user_update_sort function.")
-    fileStatusReturn.value = await invoke("user_update_sort", { sortChoice: sortChoice.value });
+    if (sortChoice.value === previousSortChoice.value) {
+        sortAscending.value = !sortAscending.value;
+    } else {
+        sortAscending.value = true;
+        previousSortChoice.value = sortChoice.value;
+    }
+    fileStatusReturn.value = await invoke("user_update_sort", {
+        sortChoice: sortChoice.value,
+        sortAscending: sortAscending.value,
+    });
 }
 
 //  <-- === Update interface to show latest files === -->
@@ -375,7 +385,16 @@ async function user_rename_files() {
 
                     <!-- === Sort Select === -->
                     <Select v-model="sortChoice" :options="metadata" size="small" optionLabel="name"
-                        placeholder="Sort By" optionValue="code" class="w-full flex-1/4" @change="user_update_sort" />
+                        placeholder="Sort By" optionValue="code" class="w-full flex-1/4" @change="user_update_sort">
+                        <template #value="{ value: selectedSort }">
+                            <span v-if="selectedSort">
+                                <i :class="sortAscending ? 'pi pi-sort-amount-down' : 'pi pi-sort-amount-up'"
+                                    class=" inline-block text-xs mr-1 -mt-0.5 align-middle"></i>
+                                {{metadata.find(m => m.code === selectedSort)?.name}}
+                            </span>
+                            <span v-else>Sort By</span>
+                        </template>
+                    </Select>
 
                     <!-- === Hamburger Select === -->
                     <Button icon="pi pi-trash" class="whitespace-nowrap flex-none" @click="clearFiles"

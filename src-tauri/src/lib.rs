@@ -117,6 +117,7 @@ struct AppState {
     working_files: Vec<WorkingFile>,
     tasks: Vec<Task>,
     sort_choice: String,
+    sort_ascending: bool,
     search: String,
     output: Output,
 }
@@ -184,8 +185,8 @@ fn user_clear_files(state: State<'_, Mutex<AppState>>) {
 }
 
 #[tauri::command]
-fn user_update_sort(sort_choice: String, state: State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
-    state_update_sort(sort_choice, &state);
+fn user_update_sort(sort_choice: String, sort_ascending: bool, state: State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
+    state_update_sort(sort_choice, sort_ascending, &state);
     sort_file_names(&state);
     convert_file_names_to_working_files(&state);
     process_tasks_on_working_files(&state);
@@ -309,11 +310,16 @@ fn sort_file_names(state: &State<'_, Mutex<AppState>>) {
             state.file_names_sorted = valid_files.into_iter().map(|(path, _)| path).collect();
         }
     }
+
+    if !state.sort_ascending {
+        state.file_names_sorted.reverse();
+    }
 }
 
-fn state_update_sort(sort_choice: String, state: &State<'_, Mutex<AppState>>) {
+fn state_update_sort(sort_choice: String, sort_ascending: bool, state: &State<'_, Mutex<AppState>>) {
     let mut state = state.lock().unwrap();
     state.sort_choice = sort_choice;
+    state.sort_ascending = sort_ascending;
 }
 
 #[tauri::command]
