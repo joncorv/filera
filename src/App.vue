@@ -372,10 +372,9 @@ async function user_rename_files() {
                 <!-- === Left SplitterPanel Menubar === -->
                 <div id="file_buttons" class="flex flex-row items-center gap-2 justify-start m-2">
                     <!-- <div class="bg-test2"> test test </div> -->
-                    <Button size="small" icon="pi pi-file" label="Open Files" @click="open_files" class="min-w-max"
-                        severity="secondary" />
+                    <Button size="small" icon="pi pi-file" label="Open Files" @click="open_files" class="min-w-max" />
                     <Button size="small" icon="pi pi-folder-open" label="Open Folders" @click="open_folders"
-                        severity="secondary" class="min-w-max" />
+                        class="min-w-max" />
                     <!-- === Search Field === -->
                     <IconField class="flex-3/4 w-full">
                         <InputIcon class="pi pi-search" />
@@ -476,14 +475,12 @@ async function user_rename_files() {
                     <!-- <Menu id="customTextOverlayMenu" :model="customTextMenuItems" popup="true" /> -->
 
                     <Button type="button" label="File Tasks & Effects" size="small" icon="pi pi-plus" class="min-w-max"
-                        severity="secondary" @click="taskMenuToggleFunction" aria-haspopup="true"
-                        aria-controls="custom_text_menu" />
+                        @click="taskMenuToggleFunction" aria-haspopup="true" aria-controls="custom_text_menu" />
                     <Menu ref="taskMenuToggle" id="custom_text_menu" :model="taskMenuItems" :popup="true" />
 
 
                     <Button type="button" label="Filters" size="small" icon="pi pi-plus" class="min-w-max"
-                        severity="secondary" @click="taskFilterToggleFunction" aria-haspopup="true"
-                        aria-controls="custom_text_menu" />
+                        @click="taskFilterToggleFunction" aria-haspopup="true" aria-controls="custom_text_menu" />
                     <Menu ref="taskFilterMenuToggle" id="filter_menu" :model="taskFilterMenuItems" :popup="true" />
 
                     <!-- <Button label="Make Notification" @click="userNotification" size="small" severity="secondary" /> -->
