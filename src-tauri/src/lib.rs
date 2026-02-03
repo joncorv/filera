@@ -965,15 +965,17 @@ async fn user_rename_files(
                         // directory
                         let mut state = state.lock().unwrap();
                         for file in &mut state.working_files {
-                            let temp_filename = file.target.file_name();
+                            if file.active {
+                                let temp_filename = file.target.file_name();
 
-                            if let Some(t) = temp_filename {
-                                file.target = PathBuf::from(output_directory).join(t);
+                                if let Some(t) = temp_filename {
+                                    file.target = PathBuf::from(output_directory).join(t);
 
-                                let rename_result = copy(&file.source, &file.target);
+                                    let rename_result = copy(&file.source, &file.target);
 
-                                if let Err(t) = rename_result {
-                                    println!("{t}");
+                                    if let Err(t) = rename_result {
+                                        println!("{t}");
+                                    }
                                 }
                             }
                         }
@@ -995,15 +997,17 @@ async fn user_rename_files(
                         // same rename function, but each file needs new parent directory
                         let mut state = state.lock().unwrap();
                         for file in &mut state.working_files {
-                            let temp_filename = file.target.file_name();
+                            if file.active {
+                                let temp_filename = file.target.file_name();
 
-                            if let Some(t) = temp_filename {
-                                file.target = PathBuf::from(output_directory).join(t);
+                                if let Some(t) = temp_filename {
+                                    file.target = PathBuf::from(output_directory).join(t);
 
-                                let rename_result = rename(&file.source, &file.target);
+                                    let rename_result = rename(&file.source, &file.target);
 
-                                if let Err(t) = rename_result {
-                                    println!("{t}");
+                                    if let Err(t) = rename_result {
+                                        println!("{t}");
+                                    }
                                 }
                             }
                         }
@@ -1024,10 +1028,12 @@ async fn user_rename_files(
                         // here is our replace commands
                         let mut state = state.lock().unwrap();
                         for file in &mut state.working_files {
-                            let rename_result = rename(&file.source, &file.target);
+                            if file.active {
+                                let rename_result = rename(&file.source, &file.target);
 
-                            if let Err(t) = rename_result {
-                                println!("{t}");
+                                if let Err(t) = rename_result {
+                                    println!("{t}");
+                                }
                             }
                         }
                         state.file_names.clear();
