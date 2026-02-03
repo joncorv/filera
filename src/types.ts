@@ -45,8 +45,8 @@ export type Task =
       }
     | { FilterName: { inclusive: boolean; name: string } }
     | { FilterDocType: { inclusive: boolean; doc_types: string[] } }
-    | { FilterTimePeriod: { inclusive: boolean; start_time: string; end_time: string } }
-    | { FilterTime: { before: boolean; time: string } }
+    | { FilterTimePeriod: { inclusive: boolean; start_time: Date | null; end_time: Date | null } }
+    | { FilterTime: { before: boolean; time: Date | null } }
     | { FilterSize: { greater_than: boolean; byte_base_size: number; size: number } };
 
 //  <-- === Add unique ID to each task. Needed for proper animation in the DOM === -->
@@ -93,11 +93,11 @@ export const createFilterDocTypeTask = (): Task => ({
 });
 
 export const createFilterTimePeriodTask = (): Task => ({
-    FilterTimePeriod: { inclusive: true, start_time: "", end_time: "" },
+    FilterTimePeriod: { inclusive: true, start_time: null, end_time: null },
 });
 
 export const createFilterTimeTask = (): Task => ({
-    FilterTime: { before: true, time: "" },
+    FilterTime: { before: true, time: null },
 });
 
 export const createFilterSizeTask = (): Task => ({
@@ -210,8 +210,8 @@ export const isFilterTimePeriod = (
 ): task is {
     FilterTimePeriod: {
         inclusive: boolean;
-        start_time: string;
-        end_time: string;
+        start_time: Date | null;
+        end_time: Date | null;
     };
 } => {
     return "FilterTimePeriod" in task;
@@ -222,7 +222,7 @@ export const isFilterTime = (
 ): task is {
     FilterTime: {
         before: boolean;
-        time: string;
+        time: Date | null;
     };
 } => {
     return "FilterTime" in task;

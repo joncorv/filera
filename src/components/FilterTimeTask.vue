@@ -7,7 +7,7 @@ defineProps<{
     task: {
         FilterTime: {
             before: boolean;
-            time: string;
+            time: Date | null;
         };
     };
     index: number;
@@ -54,8 +54,8 @@ const emit = defineEmits<{
             <!-- === Start Date Picker === -->
             <div class="w-full max-w-78">
                 <FloatLabel variant="on">
-                    <DatePicker v-model="task.FilterTime.time" :id="`separator-${index}`"
-                        fluid size="small" @input="emit('update')" />
+                    <DatePicker v-model="task.FilterTime.time" :id="`separator-${index}`" fluid size="small"
+                        @update:modelValue="emit('update')" />
                     <label for="`name-${index}`">Date</label>
                 </FloatLabel>
             </div>

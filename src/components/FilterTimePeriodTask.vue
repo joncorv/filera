@@ -7,8 +7,8 @@ defineProps<{
     task: {
         FilterTimePeriod: {
             inclusive: boolean;
-            start_time: string;
-            end_time: string;
+            start_time: Date | null;
+            end_time: Date | null;
         };
     };
     index: number;
@@ -55,8 +55,8 @@ const emit = defineEmits<{
             <!-- === Start Date Picker === -->
             <div class="w-full">
                 <FloatLabel variant="on">
-                    <DatePicker class="" fluid v-model="task.FilterTimePeriod.start_time"
-                        :id="`separator-${index}`" size="small" @input="emit('update')" />
+                    <DatePicker class="" fluid v-model="task.FilterTimePeriod.start_time" :id="`separator-${index}`"
+                        size="small" @update:modelValue="emit('update')" />
                     <label for="`name-${index}`">Start Date</label>
                 </FloatLabel>
             </div>
@@ -64,17 +64,16 @@ const emit = defineEmits<{
             <!-- === End Date Picker === -->
             <div class="w-full">
                 <FloatLabel variant="on">
-                    <DatePicker class="" fluid v-model="task.FilterTimePeriod.end_time"
-                        :id="`separator-${index}`" size="small" @input="emit('update')" />
+                    <DatePicker class="" fluid v-model="task.FilterTimePeriod.end_time" :id="`separator-${index}`"
+                        size="small" @update:modelValue="emit('update')" />
                     <label for="`name-${index}`">End Date</label>
                 </FloatLabel>
             </div>
 
             <!-- === Position at Start or End === -->
             <div class="flex-1">
-                <ToggleButton v-model="task.FilterTimePeriod.inclusive"
-                    onLabel="Filter Matching Dates" offLabel="Filter Non-Matching Dates"
-                    size="small" @change="emit('update')" />
+                <ToggleButton v-model="task.FilterTimePeriod.inclusive" onLabel="Filter Matching Dates"
+                    offLabel="Filter Non-Matching Dates" size="small" @change="emit('update')" />
             </div>
 
         </div>
