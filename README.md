@@ -20,20 +20,20 @@ Download from [Releases](https://github.com/joncorv/filera/releases)
 - [Rust](https://rustup.rs/) (latest stable)
 - [Node.js](https://nodejs.org/) (v16 or higher)
 - [Tauri Dependencies](https://v2.tauri.app/start/prerequisites/)
-- [npm](https://www.npmjs.com/)
 
 ### Getting Started
 ```bash
 git clone https://github.com/joncorv/filera.git
 cd filera
-npm install
-npm run tauri dev
 
 # Install frontend dependencies
 npm install
 
 # Start development server
 npm run tauri dev
+
+# ... or build the app
+npm run tauri build
 
 ```
 ## Nixos Dev
