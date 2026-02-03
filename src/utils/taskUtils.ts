@@ -1,4 +1,4 @@
-import type { TaskWithId } from "./types";
+import type { TaskWithId } from "../types";
 
 export function deleteTask(list: TaskWithId[], index: number): void {
     list.splice(index, 1);
