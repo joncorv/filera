@@ -74,12 +74,12 @@ enum Task {
     },
     FilterTimePeriod {
         inclusive: bool,
-        start_time: String,
-        end_time: String,
+        start_time: Option<String>,
+        end_time: Option<String>,
     },
     FilterTime {
         before: bool,
-        time: String,
+        time: Option<String>,
     },
     FilterSize {
         greater_than: bool,
@@ -745,7 +745,7 @@ fn process_tasks_on_working_files(state: &State<'_, Mutex<AppState>>) {
                     }
                 }
                 Task::FilterTime { before, time } => {
-                    if !time.is_empty() {
+                    if let Some(time) = time {
                         if let Ok(filter_datetime) = OffsetDateTime::parse(time, &Iso8601::DEFAULT) {
                             if let Ok(metadata) = file.source.metadata() {
                                 if let Ok(modified) = metadata.modified() {
@@ -772,7 +772,7 @@ fn process_tasks_on_working_files(state: &State<'_, Mutex<AppState>>) {
                     start_time,
                     end_time,
                 } => {
-                    if !start_time.is_empty() && !end_time.is_empty() {
+                    if let (Some(start_time), Some(end_time)) = (start_time, end_time) {
                         if let (Ok(start_dt), Ok(end_dt)) = (
                             OffsetDateTime::parse(start_time, &Iso8601::DEFAULT),
                             OffsetDateTime::parse(end_time, &Iso8601::DEFAULT),
