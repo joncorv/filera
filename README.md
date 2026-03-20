@@ -3,8 +3,6 @@ A powerful, cross-platform batch file renaming tool written in Rust.
 
 ![filera app ui](src/assets/app_ui.png?raw=true "Filera App UI")
 
-> ** Beta: Functional but still in development. Code signing certificates pending from Apple and Microsoft.
-
 ## Features
 
 - Batch rename files with pattern-based rules
