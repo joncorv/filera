@@ -406,10 +406,8 @@ async function user_rename_files() {
                     <!-- === No Files Selected === -->
                     <div v-if="!numFileStatusItems"
                         class="flex flex-1 flex-col justify-center items-center w-full h-full whitespace-nowrap bg-panelbody">
-                        <span class="text-center mb-0 text-textprimary">Drag your files here.</span>
-                        <span class="text-center text-sm text-textsecondary">NOTE: drag functionality is not
-                            implimented,</span>
-                        <span class="text-center text-sm text-textsecondary">Please use the add buttons above.</span>
+                        <span class="text-center -mt-4 mb-1 text-textprimary">Your files live here</span>
+                        <span class="text-center text-sm text-textsecondary">Please use the open buttons above</span>
                     </div>
 
                     <!-- === File Table === -->
@@ -504,8 +502,8 @@ async function user_rename_files() {
                     <!-- === No Files Selected === -->
                     <div v-if="!numTaskListItems"
                         class="flex flex-1 flex-col justify-center items-center w-full h-full whitespace-nowrap">
-                        <span class="text-center mb-2 text-textprimary">File tasks & effects go here.</span>
-                        <span class="text-center text-sm text-textsecondary">Please use the add buttons above.</span>
+                        <span class="text-center mb-1 text-textprimary">File tasks & effects go here</span>
+                        <span class="text-center text-sm text-textsecondary">Please use the add buttons above</span>
                     </div>
 
                     <div v-else v-for="(item, index) in taskList" :key="item.id"
