@@ -60,18 +60,10 @@ jobs:
           prerelease: false
           args: ${{ matrix.args }}
 
-  # macOS → App Store Connect (Apple Distribution cert, no notarization)
+  # macOS → App Store Connect (universal binary)
   publish-macos-appstore:
     permissions:
       contents: write
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - target: aarch64-apple-darwin
-            arch: aarch64
-          - target: x86_64-apple-darwin
-            arch: x86_64
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -123,28 +115,27 @@ jobs:
           security list-keychain -d user -s $KEYCHAIN_PATH
           security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
 
-      - name: Build app
-        # No APPLE_ID/APPLE_PASSWORD/APPLE_TEAM_ID = no notarization attempt
+      - name: Build app (universal)
         env:
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
-        run: npm run tauri build -- --target ${{ matrix.target }}
-
-      - name: Create installer package
-        run: |
-          APP_PATH="src-tauri/target/${{ matrix.target }}/release/bundle/macos/filera.app"
-
-          xcrun productbuild \
-            --component "$APP_PATH" /Applications \
-            --sign "3rd Party Mac Developer Installer: Jonathan Corriveau (46T87AFCFB)" \
-            filera-${{ matrix.arch }}.pkg
+        run: npm run tauri build -- --target universal-apple-darwin
 
       - name: Get version from tauri config
         id: get_version
         run: |
           VERSION=$(jq -r '.version' src-tauri/tauri.conf.json)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Create installer package
+        run: |
+          APP_PATH="src-tauri/target/universal-apple-darwin/release/bundle/macos/filera.app"
+
+          xcrun productbuild \
+            --component "$APP_PATH" /Applications \
+            --sign "3rd Party Mac Developer Installer: Jonathan Corriveau (46T87AFCFB)" \
+            filera-universal.pkg
 
       - name: Upload to App Store Connect
         env:
@@ -158,11 +149,11 @@ jobs:
             > ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_API_KEY_ID}.p8
 
           xcrun altool \
-            --upload-package filera-${{ matrix.arch }}.pkg \
+            --upload-package filera-universal.pkg \
             --type macos \
             --apple-id "$APP_STORE_APPLE_ID" \
             --bundle-id "com.joncorv.filera" \
-            --bundle-version "${{ steps.get_version.outputs.version }}" \
+            --bundle-version "${{ github.run_number }}" \
             --bundle-short-version-string "${{ steps.get_version.outputs.version }}" \
             --apiKey "$APP_STORE_API_KEY_ID" \
             --apiIssuer "$APP_STORE_ISSUER_ID" \
