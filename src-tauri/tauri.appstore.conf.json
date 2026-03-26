@@ -1,0 +1,10 @@
+{
+  "bundle": {
+    "macOS": {
+      "entitlements": "./EntitlementsAppStore.plist",
+      "files": {
+        "embedded.provisionprofile": "./filera.provisionprofile"
+      }
+    }
+  }
+}

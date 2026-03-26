@@ -217,7 +217,7 @@ jobs:
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
-        run: npm run tauri build -- --target universal-apple-darwin
+        run: npm run tauri build -- --target universal-apple-darwin --config src-tauri/tauri.appstore.conf.json
 
       - name: Get version from tauri config
         id: get_version
