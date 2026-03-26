@@ -19,12 +19,12 @@ rustPlatform.buildRustPackage rec {
 
   src = ./.;
 
-  cargoHash = "";
+  cargoHash = "sha256-VWk0NaXMcY8CiiiM5B/zzm4qK0BDtiy8UFmJDjMT+iw=";
 
   npmDeps = fetchNpmDeps {
     name = "${pname}-${version}-npm-deps";
     inherit src;
-    hash = "";
+    hash = "sha256-wYu0YR63phxm7iVo0l9UXT5wZJocVjifzT+e6bnYtI8=";
   };
 
   nativeBuildInputs = [
