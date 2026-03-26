@@ -15,7 +15,7 @@
 
 rustPlatform.buildRustPackage rec {
   pname = "filera";
-  version = "0.4.16";
+  version = "0.4.17";
 
   src = ./.;
 
