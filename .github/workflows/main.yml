@@ -260,7 +260,7 @@ jobs:
         if: always()
         run: security delete-keychain $KEYCHAIN_PATH || true
 
-  build-nix:
+  publish-nix:
     permissions:
       contents: write
     runs-on: ubuntu-latest
