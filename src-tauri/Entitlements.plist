@@ -8,6 +8,9 @@
     <key>com.apple.security.files.user-selected.read-write</key>
     <true/>
 
+    <key>com.apple.security.automation.apple-events</key>
+    <true/>
+
     <key>com.apple.application-identifier</key>
     <string>46T87AFCFB.com.joncorv.filera</string>
 
