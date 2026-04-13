@@ -7,6 +7,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
 import { Button } from "primevue";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
+import type { UnlistenFn } from "@tauri-apps/api/event";
 import Splitter from "primevue/splitter";
 import SplitterPanel from "primevue/splitterpanel";
 import InputText from "primevue/inputtext";
@@ -121,10 +122,10 @@ async function user_dragdrop_files(paths: string[]) {
     }
 }
 
-let unlisten = null;
+let unlisten: UnlistenFn | null = null;
 
 onMounted(async () => {
-    unlisten = await getCurrentWebview().onDragDropEvent((event) => {
+    unlisten =  await getCurrentWebview().onDragDropEvent((event) => {
         if (event.payload.type === 'drop') {
             user_dragdrop_files(event.payload.paths)
         }
@@ -132,7 +133,7 @@ onMounted(async () => {
 })
 
 onUnmounted(() => {
-  unlisten()
+  unlisten?.()
 })
 
 async function user_update_sort() {
