@@ -116,27 +116,23 @@ async function open_folders() {
 async function user_dragdrop_files(paths: string[]) {
     if (paths) {
         fileStatusReturn.value = await invoke("user_dragdrop_files", {
-            paths: paths,
+            files: paths,
         });
     }
 }
 
-let unlisten  = null;
+let unlisten = null;
 
 onMounted(async () => {
-  unlisten = await getCurrentWebview().onDragDropEvent((event) => {
-    if (event.payload.type === 'over') {
-      console.log('User hovering', event.payload.position)
-    } else if (event.payload.type === 'drop') {
-      user_dragdrop_files(event.payload.paths)
-    } else {
-      console.log('File drop cancelled')
-    }
-  })
+    unlisten = await getCurrentWebview().onDragDropEvent((event) => {
+        if (event.payload.type === 'drop') {
+            user_dragdrop_files(event.payload.paths)
+        }
+    })
 })
 
 onUnmounted(() => {
-  unlisten?.()
+  unlisten()
 })
 
 async function user_update_sort() {
