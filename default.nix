@@ -15,11 +15,11 @@
 
 rustPlatform.buildRustPackage rec {
   pname = "filera";
-  version = "0.4.24";
+  version = "0.4.25";
 
   src = ./.;
 
-  cargoHash = "sha256-VWk0NaXMcY8CiiiM5B/zzm4qK0BDtiy8UFmJDjMT+iw=";
+  cargoHash = "sha256-411ZeqGELSKnnrbZqPUjXKVkiGW7pVe6rcsvpM90/Sw=";
 
   npmDeps = fetchNpmDeps {
     name = "${pname}-${version}-npm-deps";
