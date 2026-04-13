@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { ref, Ref, computed } from "vue";
+import { onMounted, onUnmounted } from 'vue'
+
 import "./styles.css"; // Tailwind Stuff
 import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
 import { Button } from "primevue";
+import { getCurrentWebview } from "@tauri-apps/api/webview";
 import Splitter from "primevue/splitter";
 import SplitterPanel from "primevue/splitterpanel";
 import InputText from "primevue/inputtext";
@@ -109,6 +112,32 @@ async function open_folders() {
         console.log("There was no previous selection or current selection. No Updates to make.");
     }
 }
+
+async function user_dragdrop_files(paths: string[]) {
+    if (paths) {
+        fileStatusReturn.value = await invoke("user_dragdrop_files", {
+            paths: paths,
+        });
+    }
+}
+
+let unlisten  = null;
+
+onMounted(async () => {
+  unlisten = await getCurrentWebview().onDragDropEvent((event) => {
+    if (event.payload.type === 'over') {
+      console.log('User hovering', event.payload.position)
+    } else if (event.payload.type === 'drop') {
+      user_dragdrop_files(event.payload.paths)
+    } else {
+      console.log('File drop cancelled')
+    }
+  })
+})
+
+onUnmounted(() => {
+  unlisten?.()
+})
 
 async function user_update_sort() {
     if (sortChoice.value === previousSortChoice.value) {
