@@ -5,7 +5,7 @@ use std::path::Path;
 use std::sync::Mutex;
 use std::time::SystemTime;
 use std::{fs::copy, fs::rename, path::PathBuf};
-use tauri::{Manager, State};
+use tauri::{DragDropEvent, Manager, State, WindowEvent};
 use tauri_plugin_notification::NotificationExt;
 use time::format_description::well_known::Iso8601;
 use time::OffsetDateTime;
@@ -133,6 +133,18 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_opener::init())
+        .on_window_event(|window, event| match event {
+            WindowEvent::DragDrop(dd_event) => match dd_event {
+                DragDropEvent::Enter { paths, position } => {
+                    println!("dragging at {position:#?}");
+                }
+                DragDropEvent::Drop { paths, position } => {
+                    println!("dragging {paths:#?}, at {position:#?}");
+                }
+                _ => {}
+            },
+            _ => {}
+        })
         .invoke_handler(tauri::generate_handler![
             user_open_files,
             user_open_folders,
@@ -143,7 +155,8 @@ pub fn run() {
             user_update_search,
             user_rename_files,
             user_notification,
-            user_dialog
+            user_dialog,
+            user_dragdrop_files
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -166,6 +179,30 @@ fn user_open_folders(directories: Vec<String>, state: State<'_, Mutex<AppState>>
     for dir in directories {
         for entry in WalkDir::new(dir).into_iter().filter_map(|e| e.ok()) {
             file_names.push(entry.path().to_string_lossy().to_string());
+        }
+    }
+
+    solve_duplicates(file_names, &state);
+    sort_file_names(&state);
+    convert_file_names_to_working_files(&state);
+    process_tasks_on_working_files(&state);
+    resolve_workingfile_duplicates(&state);
+    convert_working_files_to_file_status(&state)
+}
+
+#[tauri::command]
+fn user_dragdrop_files(files: Vec<String>, state: State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
+    let mut file_names: Vec<String> = Vec::new();
+
+    for file in files {
+        let current_file = PathBuf::from(file.clone());
+
+        if current_file.is_file() {
+            file_names.push(file);
+        } else if current_file.is_dir() {
+            for entry in WalkDir::new(current_file).into_iter().filter_map(|e| e.ok()) {
+                file_names.push(entry.path().to_string_lossy().to_string());
+            }
         }
     }
 
