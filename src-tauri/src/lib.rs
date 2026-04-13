@@ -5,7 +5,7 @@ use std::path::Path;
 use std::sync::Mutex;
 use std::time::SystemTime;
 use std::{fs::copy, fs::rename, path::PathBuf};
-use tauri::{DragDropEvent, Manager, State, WindowEvent};
+use tauri::{Manager, State};
 use tauri_plugin_notification::NotificationExt;
 use time::format_description::well_known::Iso8601;
 use time::OffsetDateTime;
@@ -133,18 +133,6 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_opener::init())
-        .on_window_event(|window, event| match event {
-            WindowEvent::DragDrop(dd_event) => match dd_event {
-                DragDropEvent::Enter { paths, position } => {
-                    println!("dragging at {position:#?}");
-                }
-                DragDropEvent::Drop { paths, position } => {
-                    println!("dragging {paths:#?}, at {position:#?}");
-                }
-                _ => {}
-            },
-            _ => {}
-        })
         .invoke_handler(tauri::generate_handler![
             user_open_files,
             user_open_folders,
