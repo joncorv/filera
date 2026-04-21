@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, Ref, computed } from "vue";
-import { onMounted, onUnmounted } from 'vue'
+import { onMounted, onUnmounted } from "vue";
 
 import "./styles.css"; // Tailwind Stuff
 import { invoke } from "@tauri-apps/api/core";
@@ -15,30 +15,50 @@ import Select from "primevue/select";
 import Menu from "primevue/menu";
 import IconField from "primevue/iconfield";
 import InputIcon from "primevue/inputicon";
-import FindAndReplaceTask from './components/FindAndReplaceTask.vue';
-import ClearAllTask from './components/ClearAllTask.vue';
-import ChangeCaseTask from './components/ChangeCaseTask.vue';
-import NumSequenceTask from './components/NumSequenceTask.vue';
-import CustomTextTask from './components/CustomTextTask.vue';
-import DateTask from './components/DateTask.vue';
-import TimeTask from './components/TimeTask.vue';
-import FilterNameTask from './components/FilterNameTask.vue';
-import FilterDocTypeTask from './components/FilterDocTypeTask.vue';
-import FilterTimePeriodTask from './components/FilterTimePeriodTask.vue';
-import FilterTimeTask from './components/FilterTimeTask.vue';
-import FilterSizeTask from './components/FilterSizeTask.vue';
+import DataTable from "primevue/datatable";
+import Column from "primevue/column";
+import FindAndReplaceTask from "./components/tasks/FindAndReplaceTask.vue";
+import ClearAllTask from "./components/tasks/ClearAllTask.vue";
+import ChangeCaseTask from "./components/tasks/ChangeCaseTask.vue";
+import NumSequenceTask from "./components/tasks/NumSequenceTask.vue";
+import CustomTextTask from "./components/tasks/CustomTextTask.vue";
+import DateTask from "./components/tasks/DateTask.vue";
+import TimeTask from "./components/tasks/TimeTask.vue";
+import FilterNameTask from "./components/tasks/FilterNameTask.vue";
+import FilterDocTypeTask from "./components/tasks/FilterDocTypeTask.vue";
+import FilterTimePeriodTask from "./components/tasks/FilterTimePeriodTask.vue";
+import FilterTimeTask from "./components/tasks/FilterTimeTask.vue";
+import FilterSizeTask from "./components/tasks/FilterSizeTask.vue";
+import FileStatusTable from "./components/FileStatusTable.vue";
 import "primeicons/primeicons.css";
-import type { FileStatus, TaskWithId } from './types';
+import type { FileStatus, TaskWithId } from "./types";
 import {
-    isCustomText, isFindAndReplace, isClearAll, isChangeCase,
-    isNumSequence, isDate, isTime, isFilterName, isFilterDocType,
-    isFilterTimePeriod, isFilterTime, isFilterSize,
-    createCustomTextTask, createFindReplaceTask, createClearAllTask,
-    createChangeCaseTask, createNumSequenceTask, createDateTask,
-    createTimeTask, createFilterNameTask, createFilterDocTypeTask,
-    createFilterTimePeriodTask, createFilterTimeTask, createFilterSizeTask,
-} from './types';
-import { deleteTask, moveTaskUp, moveTaskDown } from './utils/taskUtils';
+    isCustomText,
+    isFindAndReplace,
+    isClearAll,
+    isChangeCase,
+    isNumSequence,
+    isDate,
+    isTime,
+    isFilterName,
+    isFilterDocType,
+    isFilterTimePeriod,
+    isFilterTime,
+    isFilterSize,
+    createCustomTextTask,
+    createFindReplaceTask,
+    createClearAllTask,
+    createChangeCaseTask,
+    createNumSequenceTask,
+    createDateTask,
+    createTimeTask,
+    createFilterNameTask,
+    createFilterDocTypeTask,
+    createFilterTimePeriodTask,
+    createFilterTimeTask,
+    createFilterSizeTask,
+} from "./types";
+import { deleteTask, moveTaskUp, moveTaskDown } from "./utils/taskUtils";
 
 //  <-- === Create an array of TaskWithId === -->
 const taskList = ref<TaskWithId[]>([]);
@@ -46,7 +66,7 @@ const taskList = ref<TaskWithId[]>([]);
 //  <-- === Counter for generating unique IDs === -->
 let taskIdCounter = 0;
 
-const addTask = (factory: () => import('./types').Task) => {
+const addTask = (factory: () => import("./types").Task) => {
     taskList.value.push({ id: taskIdCounter++, task: factory() });
     user_update_tasks();
 };
@@ -125,16 +145,16 @@ async function user_dragdrop_files(paths: string[]) {
 let unlisten: UnlistenFn | null = null;
 
 onMounted(async () => {
-    unlisten =  await getCurrentWebview().onDragDropEvent((event) => {
-        if (event.payload.type === 'drop') {
-            user_dragdrop_files(event.payload.paths)
+    unlisten = await getCurrentWebview().onDragDropEvent((event) => {
+        if (event.payload.type === "drop") {
+            user_dragdrop_files(event.payload.paths);
         }
-    })
-})
+    });
+});
 
 onUnmounted(() => {
-  unlisten?.()
-})
+    unlisten?.();
+});
 
 async function user_update_sort() {
     if (sortChoice.value === previousSortChoice.value) {
@@ -160,7 +180,6 @@ async function user_update_tasks() {
         taskList: taskList.value.map((t) => t.task),
     });
 }
-
 
 //  <-- === All Task Functions === -->
 async function clearFiles() {
@@ -319,7 +338,6 @@ const createTemplate = () => {
 //     console.log("Export configuration");
 // };
 
-
 // async function userNotification() {
 //     await invoke("user_notification");
 // }
@@ -335,13 +353,12 @@ const outputDropdownChoices = [
     { name: "Move files to new directory", code: "move" },
 ];
 
-const outputDirectory = ref()
+const outputDirectory = ref();
 
 // const outputDirectoryVisibility = computed(() => (outputDirectory.value != null));
-const outputDirectoryButtonDisabled = computed(() => (
-    outputDropdownChoice.value == "replace" || outputDropdownChoice.value == ""
-
-));
+const outputDirectoryButtonDisabled = computed(
+    () => outputDropdownChoice.value == "replace" || outputDropdownChoice.value == "",
+);
 
 // when user chooses from the dropdown, we run this function
 // this should take in
@@ -356,8 +373,7 @@ async function userUpdateOutput() {
         if (!outputDirectory.value) {
             outputDropdownChoice.value = "replace";
         }
-
-    };
+    }
 
     console.log("outputDropdownChoice", outputDropdownChoice.value);
     console.log("outputDirectory =", outputDirectory.value);
@@ -368,7 +384,6 @@ async function userChooseOutputDirectory() {
     outputDirectory.value = await open({
         directory: true,
         multiple: false,
-
     });
 
     console.log("outputDropdownChoice", outputDropdownChoice.value);
@@ -377,109 +392,89 @@ async function userChooseOutputDirectory() {
 }
 //  <-- === Rename Files on the Rust Backend === -->
 async function user_rename_files() {
-
     if (!outputDirectory.value) {
         outputDirectory.value = "";
     }
 
-    fileStatusReturn.value = await invoke("user_rename_files", { outputDropdownChoice: outputDropdownChoice.value, outputDirectory: outputDirectory.value });
+    fileStatusReturn.value = await invoke("user_rename_files", {
+        outputDropdownChoice: outputDropdownChoice.value,
+        outputDirectory: outputDirectory.value,
+    });
 }
-
 </script>
 
 <template>
-
     <body class="flex flex-col box-border w-screen h-screen m-0 p-0 overflow-hidden z-0">
         <!-- === Master Splitter Panel === -->
         <Splitter style="flex: 1; overflow: hidden; background-color: transparent; z-index: 40">
             <!-- === Left Splitter Panel === -->
             <SplitterPanel
-                class="flex flex-2/3 flex-col gap-0 ml-1 mr-0.25 mt-1 mb-1 border rounded-lg border-bordercolor z-50 bg-panelheader ">
+                class="flex flex-2/3 flex-col gap-0 ml-1 mr-0.25 mt-1 mb-1 border rounded-lg border-bordercolor z-50 bg-panelheader"
+            >
                 <!-- === Left SplitterPanel Menubar === -->
                 <div id="file_buttons" class="flex flex-row items-center gap-2 justify-start m-2">
                     <!-- <div class="bg-test2"> test test </div> -->
                     <Button size="small" icon="pi pi-file" label="Open Files" @click="open_files" class="min-w-max" />
-                    <Button size="small" icon="pi pi-folder-open" label="Open Folders" @click="open_folders"
-                        class="min-w-max" />
+                    <Button
+                        size="small"
+                        icon="pi pi-folder-open"
+                        label="Open Folders"
+                        @click="open_folders"
+                        class="min-w-max"
+                    />
                     <!-- === Search Field === -->
                     <IconField class="flex-3/4 w-full">
                         <InputIcon class="pi pi-search" />
-                        <InputText v-model="search" @input="user_update_search" placeholder="Search your files..."
-                            size="small" class="w-full" />
+                        <InputText
+                            v-model="search"
+                            @input="user_update_search"
+                            placeholder="Search your files..."
+                            size="small"
+                            class="w-full"
+                        />
                     </IconField>
 
                     <!-- === Sort Select === -->
-                    <Select v-model="sortChoice" :options="metadata" size="small" optionLabel="name"
-                        placeholder="Sort By" optionValue="code" class="w-full flex-1/4" @change="user_update_sort">
+                    <Select
+                        v-model="sortChoice"
+                        :options="metadata"
+                        size="small"
+                        optionLabel="name"
+                        placeholder="Sort By"
+                        optionValue="code"
+                        class="w-full flex-1/4"
+                        @change="user_update_sort"
+                    >
                         <template #value="{ value: selectedSort }">
                             <span v-if="selectedSort">
-                                <i :class="sortAscending ? 'pi pi-sort-amount-down' : 'pi pi-sort-amount-up'"
-                                    class=" inline-block text-xs mr-1 -mt-0.5 align-middle"></i>
-                                {{metadata.find(m => m.code === selectedSort)?.name}}
+                                <i
+                                    :class="sortAscending ? 'pi pi-sort-amount-down' : 'pi pi-sort-amount-up'"
+                                    class="inline-block text-xs mr-1 -mt-0.5 align-middle"
+                                ></i>
+                                {{ metadata.find((m) => m.code === selectedSort)?.name }}
                             </span>
                             <span v-else>Sort By</span>
                         </template>
                     </Select>
 
                     <!-- === Hamburger Select === -->
-                    <Button icon="pi pi-trash" class="whitespace-nowrap flex-none" @click="clearFiles"
-                        severity="secondary" size="small" />
+                    <Button
+                        icon="pi pi-trash"
+                        class="whitespace-nowrap flex-none"
+                        @click="clearFiles"
+                        severity="secondary"
+                        size="small"
+                    />
                 </div>
 
                 <hr class="border-bordercolor" />
 
-                <Transition mode="out-in">
-                    <!-- === No Files Selected === -->
-                    <div v-if="!numFileStatusItems"
-                        class="flex flex-1 flex-col justify-center items-center w-full h-full whitespace-nowrap bg-panelbody">
-                        <span class="text-center -mt-4 mb-1 text-textprimary">Your files live here</span>
-                        <span class="text-center text-sm text-textsecondary">Please use the open buttons above</span>
-                    </div>
+                <FileStatusTable :data="fileStatusReturn" :numItems="numFileStatusItems" />
 
-                    <!-- === File Table === -->
-                    <div v-else id="table-container" class="flex-1/2 flex flex-col mb-0 min-h-0 text-sm bg-panelbody">
-                        <table class="w-full text-textprimary bg-panelheader/50">
-                            <thead>
-                                <tr>
-                                    <th class="px-4 pt-2.5 pb-1.5 text-left border-b border-bordercolor">Old Name</th>
-                                    <th class="px-4 pt-2.5 pb-1.5 text-left border-b border-bordercolor">New Name</th>
-                                </tr>
-                            </thead>
-                        </table>
-
-                        <div class="flex-1/2 overflow-y-auto min-h-0 text-textprimary">
-                            <table class="w-full">
-                                <tbody>
-                                    <tr v-for="(item, index) in fileStatusReturn" :key="index">
-
-                                        <template v-if="item.active">
-                                            <td class="px-4 py-2 border-b border-bordercolor">
-                                                {{ item.old_file_name }}
-                                            </td>
-                                            <td class="px-4 py-2 border-b border-bordercolor">
-                                                {{ item.new_file_name }}
-                                            </td>
-                                        </template>
-
-                                        <template v-else>
-                                            <td
-                                                class="px-4 py-2 border-b border-bordercolor bg-panelfooter italic opacity-50 ">
-                                                {{ item.old_file_name }}
-                                            </td>
-                                            <td
-                                                class="px-4 py-2 border-b border-bordercolor bg-panelfooter italic opacity-50 ">
-                                                {{ item.new_file_name }}
-                                            </td>
-                                        </template>
-
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </Transition>
-                <footer id="footer_left_panel"
-                    class="flex flex-row py-2 px-2 bg-panelfooter border-t rounded-b-lg border-bordercolor text-sm text-textprimary">
+                <footer
+                    id="footer_left_panel"
+                    class="flex flex-row py-2 px-2 bg-panelfooter border-t rounded-b-lg border-bordercolor text-sm text-textprimary"
+                >
                     <div id="total-files-selected">
                         <span class="">Total Files Selected: </span>
                         <Transition mode="out-in">
@@ -493,18 +488,34 @@ async function user_rename_files() {
 
             <!-- === Right Splitter Panel === -->
             <SplitterPanel
-                class="flex flex-col flex-1/3 ml-0.25 mb-1 mt-1 mr-1 bg-panelheader rounded-lg border border-bordercolor">
+                class="flex flex-col flex-1/3 ml-0.25 mb-1 mt-1 mr-1 bg-panelheader rounded-lg border border-bordercolor"
+            >
                 <!-- === Right SplitterPanel Menubar === -->
                 <div id="file_buttons" class="flex flex-row m-2 gap-2 items-center justify-start bg-panelheader">
                     <!-- <Menu id="customTextOverlayMenu" :model="customTextMenuItems" popup="true" /> -->
 
-                    <Button type="button" label="File Tasks & Effects" size="small" icon="pi pi-plus" class="min-w-max"
-                        @click="taskMenuToggleFunction" aria-haspopup="true" aria-controls="custom_text_menu" />
+                    <Button
+                        type="button"
+                        label="File Tasks & Effects"
+                        size="small"
+                        icon="pi pi-plus"
+                        class="min-w-max"
+                        @click="taskMenuToggleFunction"
+                        aria-haspopup="true"
+                        aria-controls="custom_text_menu"
+                    />
                     <Menu ref="taskMenuToggle" id="custom_text_menu" :model="taskMenuItems" :popup="true" />
 
-
-                    <Button type="button" label="Filters" size="small" icon="pi pi-plus" class="min-w-max"
-                        @click="taskFilterToggleFunction" aria-haspopup="true" aria-controls="custom_text_menu" />
+                    <Button
+                        type="button"
+                        label="Filters"
+                        size="small"
+                        icon="pi pi-plus"
+                        class="min-w-max"
+                        @click="taskFilterToggleFunction"
+                        aria-haspopup="true"
+                        aria-controls="custom_text_menu"
+                    />
                     <Menu ref="taskFilterMenuToggle" id="filter_menu" :model="taskFilterMenuItems" :popup="true" />
 
                     <!-- <Button label="Make Notification" @click="userNotification" size="small" severity="secondary" /> -->
@@ -512,145 +523,252 @@ async function user_rename_files() {
                     <!-- === Separator === -->
                     <div class="flex-1"></div>
 
-                    <Button type="button" label="Templates" disabled severity="secondary" size="small"
-                        icon="pi pi-bookmark" class="min-w-max" @click="templateMenuToggleFunction" aria-haspopup="true"
-                        aria-controls="custom_text_menu" />
+                    <Button
+                        type="button"
+                        label="Templates"
+                        disabled
+                        severity="secondary"
+                        size="small"
+                        icon="pi pi-bookmark"
+                        class="min-w-max"
+                        @click="templateMenuToggleFunction"
+                        aria-haspopup="true"
+                        aria-controls="custom_text_menu"
+                    />
                     <Menu ref="templateMenuToggle" id="template_menu" :model="templateMenuItems" :popup="true" />
 
                     <!-- === Hamburger Select === -->
-                    <Button icon="pi pi-trash" class="whitespace-nowrap flex-none" @click="clearTasks"
-                        severity="secondary" size="small" />
+                    <Button
+                        icon="pi pi-trash"
+                        class="whitespace-nowrap flex-none"
+                        @click="clearTasks"
+                        severity="secondary"
+                        size="small"
+                    />
                 </div>
 
                 <hr class="border-bordercolor" />
 
                 <TransitionGroup tag="div" name="ttasks" class="h-full relative overflow-y-auto bg-panelbody">
                     <!-- === No Files Selected === -->
-                    <div v-if="!numTaskListItems"
-                        class="flex flex-1 flex-col justify-center items-center w-full h-full whitespace-nowrap">
+                    <div
+                        v-if="!numTaskListItems"
+                        class="flex flex-1 flex-col justify-center items-center w-full h-full whitespace-nowrap"
+                    >
                         <span class="text-center mb-1 text-textprimary">File tasks & effects go here</span>
                         <span class="text-center text-sm text-textsecondary">Please use the add buttons above</span>
                     </div>
 
-                    <div v-else v-for="(item, index) in taskList" :key="item.id"
-                        class="ttasks-item mx-2 my-2 whitespace-nowrap">
-
+                    <div
+                        v-else
+                        v-for="(item, index) in taskList"
+                        :key="item.id"
+                        class="ttasks-item mx-2 my-2 whitespace-nowrap"
+                    >
                         <!-- === CustomText Task === -->
                         <template v-if="isCustomText(item.task)">
-                            <CustomTextTask :task="item.task" :index="index" :isFirst="index === 0"
-                                :isLast="index === taskList.length - 1" @update="user_update_tasks"
-                                @delete="deleteSelectedTask" @move-up="moveSelectedTaskUp"
-                                @move-down="moveSelectedTaskDown" />
+                            <CustomTextTask
+                                :task="item.task"
+                                :index="index"
+                                :isFirst="index === 0"
+                                :isLast="index === taskList.length - 1"
+                                @update="user_update_tasks"
+                                @delete="deleteSelectedTask"
+                                @move-up="moveSelectedTaskUp"
+                                @move-down="moveSelectedTaskDown"
+                            />
                         </template>
 
                         <!-- === Find & Replace Task === -->
                         <template v-else-if="isFindAndReplace(item.task)">
-                            <FindAndReplaceTask :task="item.task" :index="index" :isFirst="index === 0"
-                                :isLast="index === taskList.length - 1" @update="user_update_tasks"
-                                @delete="deleteSelectedTask" @move-up="moveSelectedTaskUp"
-                                @move-down="moveSelectedTaskDown" />
+                            <FindAndReplaceTask
+                                :task="item.task"
+                                :index="index"
+                                :isFirst="index === 0"
+                                :isLast="index === taskList.length - 1"
+                                @update="user_update_tasks"
+                                @delete="deleteSelectedTask"
+                                @move-up="moveSelectedTaskUp"
+                                @move-down="moveSelectedTaskDown"
+                            />
                         </template>
 
                         <!-- === ClearAll Task === -->
                         <template v-else-if="isClearAll(item.task)">
-                            <ClearAllTask :index="index" :isFirst="index === 0" :isLast="index === taskList.length - 1"
-                                @delete="deleteSelectedTask" @move-up="moveSelectedTaskUp"
-                                @move-down="moveSelectedTaskDown" />
+                            <ClearAllTask
+                                :index="index"
+                                :isFirst="index === 0"
+                                :isLast="index === taskList.length - 1"
+                                @delete="deleteSelectedTask"
+                                @move-up="moveSelectedTaskUp"
+                                @move-down="moveSelectedTaskDown"
+                            />
                         </template>
 
                         <!-- === ChangeCase Task === -->
                         <template v-else-if="isChangeCase(item.task)">
-                            <ChangeCaseTask :task="item.task" :index="index" :isFirst="index === 0"
-                                :isLast="index === taskList.length - 1" @update="user_update_tasks"
-                                @delete="deleteSelectedTask" @move-up="moveSelectedTaskUp"
-                                @move-down="moveSelectedTaskDown" />
+                            <ChangeCaseTask
+                                :task="item.task"
+                                :index="index"
+                                :isFirst="index === 0"
+                                :isLast="index === taskList.length - 1"
+                                @update="user_update_tasks"
+                                @delete="deleteSelectedTask"
+                                @move-up="moveSelectedTaskUp"
+                                @move-down="moveSelectedTaskDown"
+                            />
                         </template>
 
                         <!-- === NumSequence Task === -->
                         <template v-else-if="isNumSequence(item.task)">
-                            <NumSequenceTask :task="item.task" :index="index" :isFirst="index === 0"
-                                :isLast="index === taskList.length - 1" @update="user_update_tasks"
-                                @delete="deleteSelectedTask" @move-up="moveSelectedTaskUp"
-                                @move-down="moveSelectedTaskDown" />
+                            <NumSequenceTask
+                                :task="item.task"
+                                :index="index"
+                                :isFirst="index === 0"
+                                :isLast="index === taskList.length - 1"
+                                @update="user_update_tasks"
+                                @delete="deleteSelectedTask"
+                                @move-up="moveSelectedTaskUp"
+                                @move-down="moveSelectedTaskDown"
+                            />
                         </template>
 
                         <!-- === Date Task === -->
                         <template v-else-if="isDate(item.task)">
-                            <DateTask :task="item.task" :index="index" :isFirst="index === 0"
-                                :isLast="index === taskList.length - 1" @update="user_update_tasks"
-                                @delete="deleteSelectedTask" @move-up="moveSelectedTaskUp"
-                                @move-down="moveSelectedTaskDown" />
+                            <DateTask
+                                :task="item.task"
+                                :index="index"
+                                :isFirst="index === 0"
+                                :isLast="index === taskList.length - 1"
+                                @update="user_update_tasks"
+                                @delete="deleteSelectedTask"
+                                @move-up="moveSelectedTaskUp"
+                                @move-down="moveSelectedTaskDown"
+                            />
                         </template>
 
                         <!-- === Time Task === -->
                         <template v-else-if="isTime(item.task)">
-                            <TimeTask :task="item.task" :index="index" :isFirst="index === 0"
-                                :isLast="index === taskList.length - 1" @update="user_update_tasks"
-                                @delete="deleteSelectedTask" @move-up="moveSelectedTaskUp"
-                                @move-down="moveSelectedTaskDown" />
+                            <TimeTask
+                                :task="item.task"
+                                :index="index"
+                                :isFirst="index === 0"
+                                :isLast="index === taskList.length - 1"
+                                @update="user_update_tasks"
+                                @delete="deleteSelectedTask"
+                                @move-up="moveSelectedTaskUp"
+                                @move-down="moveSelectedTaskDown"
+                            />
                         </template>
 
                         <!-- === Filter Name Task === -->
                         <template v-else-if="isFilterName(item.task)">
-                            <FilterNameTask :task="item.task" :index="index" :isFirst="index === 0"
-                                :isLast="index === taskList.length - 1" @update="user_update_tasks"
-                                @delete="deleteSelectedTask" @move-up="moveSelectedTaskUp"
-                                @move-down="moveSelectedTaskDown" />
+                            <FilterNameTask
+                                :task="item.task"
+                                :index="index"
+                                :isFirst="index === 0"
+                                :isLast="index === taskList.length - 1"
+                                @update="user_update_tasks"
+                                @delete="deleteSelectedTask"
+                                @move-up="moveSelectedTaskUp"
+                                @move-down="moveSelectedTaskDown"
+                            />
                         </template>
 
                         <!-- === Filter Doc Type Task === -->
                         <template v-else-if="isFilterDocType(item.task)">
-                            <FilterDocTypeTask :task="item.task" :index="index" :isFirst="index === 0"
-                                :isLast="index === taskList.length - 1" @update="user_update_tasks"
-                                @delete="deleteSelectedTask" @move-up="moveSelectedTaskUp"
-                                @move-down="moveSelectedTaskDown" />
+                            <FilterDocTypeTask
+                                :task="item.task"
+                                :index="index"
+                                :isFirst="index === 0"
+                                :isLast="index === taskList.length - 1"
+                                @update="user_update_tasks"
+                                @delete="deleteSelectedTask"
+                                @move-up="moveSelectedTaskUp"
+                                @move-down="moveSelectedTaskDown"
+                            />
                         </template>
 
                         <!-- === Filter Time Period === -->
                         <template v-else-if="isFilterTimePeriod(item.task)">
-                            <FilterTimePeriodTask :task="item.task" :index="index" :isFirst="index === 0"
-                                :isLast="index === taskList.length - 1" @update="user_update_tasks"
-                                @delete="deleteSelectedTask" @move-up="moveSelectedTaskUp"
-                                @move-down="moveSelectedTaskDown" />
+                            <FilterTimePeriodTask
+                                :task="item.task"
+                                :index="index"
+                                :isFirst="index === 0"
+                                :isLast="index === taskList.length - 1"
+                                @update="user_update_tasks"
+                                @delete="deleteSelectedTask"
+                                @move-up="moveSelectedTaskUp"
+                                @move-down="moveSelectedTaskDown"
+                            />
                         </template>
 
                         <!-- === Filter Time === -->
                         <template v-else-if="isFilterTime(item.task)">
-                            <FilterTimeTask :task="item.task" :index="index" :isFirst="index === 0"
-                                :isLast="index === taskList.length - 1" @update="user_update_tasks"
-                                @delete="deleteSelectedTask" @move-up="moveSelectedTaskUp"
-                                @move-down="moveSelectedTaskDown" />
+                            <FilterTimeTask
+                                :task="item.task"
+                                :index="index"
+                                :isFirst="index === 0"
+                                :isLast="index === taskList.length - 1"
+                                @update="user_update_tasks"
+                                @delete="deleteSelectedTask"
+                                @move-up="moveSelectedTaskUp"
+                                @move-down="moveSelectedTaskDown"
+                            />
                         </template>
 
                         <!-- === Filter Size === -->
                         <template v-else-if="isFilterSize(item.task)">
-                            <FilterSizeTask :task="item.task" :index="index" :isFirst="index === 0"
-                                :isLast="index === taskList.length - 1" @update="user_update_tasks"
-                                @delete="deleteSelectedTask" @move-up="moveSelectedTaskUp"
-                                @move-down="moveSelectedTaskDown" />
+                            <FilterSizeTask
+                                :task="item.task"
+                                :index="index"
+                                :isFirst="index === 0"
+                                :isLast="index === taskList.length - 1"
+                                @update="user_update_tasks"
+                                @delete="deleteSelectedTask"
+                                @move-up="moveSelectedTaskUp"
+                                @move-down="moveSelectedTaskDown"
+                            />
                         </template>
-
                     </div>
                 </TransitionGroup>
 
-                <footer id="footer_right_panel"
-                    class="flex flex-row py-2 px-2 gap-2 bg-panelfooter border-t rounded-b-lg border-bordercolor text-sm text-textprimary">
-
-                    <Select v-model="outputDropdownChoice" :options="outputDropdownChoices" size="small"
-                        optionLabel="name" optionValue="code" default-value="replace" class="w-full flex-1 min-w-max"
-                        @change="userUpdateOutput" />
+                <footer
+                    id="footer_right_panel"
+                    class="flex flex-row py-2 px-2 gap-2 bg-panelfooter border-t rounded-b-lg border-bordercolor text-sm text-textprimary"
+                >
+                    <Select
+                        v-model="outputDropdownChoice"
+                        :options="outputDropdownChoices"
+                        size="small"
+                        optionLabel="name"
+                        optionValue="code"
+                        default-value="replace"
+                        class="w-full flex-1 min-w-max"
+                        @change="userUpdateOutput"
+                    />
 
                     <!-- <div id="separator" class="flex-1"></div> -->
 
-                    <Button size="small" icon="pi pi-folder-open" label="Choose Output Directory" severity="secondary"
-                        class="min-w-max" :disabled="outputDirectoryButtonDisabled"
-                        @click="userChooseOutputDirectory" />
-                    <Button size="small" icon="pi pi-check-square" label="Batch Rename Files" class="min-w-max"
-                        @click="user_rename_files" />
+                    <Button
+                        size="small"
+                        icon="pi pi-folder-open"
+                        label="Choose Output Directory"
+                        severity="secondary"
+                        class="min-w-max"
+                        :disabled="outputDirectoryButtonDisabled"
+                        @click="userChooseOutputDirectory"
+                    />
+                    <Button
+                        size="small"
+                        icon="pi pi-check-square"
+                        label="Batch Rename Files"
+                        class="min-w-max"
+                        @click="user_rename_files"
+                    />
                 </footer>
             </SplitterPanel>
         </Splitter>
-
     </body>
 </template>
 
@@ -751,7 +869,10 @@ html {
     font-size: var(--text-sm);
     line-height: var(--tw-leading, var(--text-sm--line-height));
     background-color: color-mix(in oklab, var(--color-white) 80%, transparent);
-    box-shadow: black 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -1px;
+    box-shadow:
+        black 0px 0px 0px 0px,
+        rgba(0, 0, 0, 0.05) 0px 4px 6px -1px,
+        rgba(0, 0, 0, 0.1) 0px 2px 4px -1px;
     transition: background-color 0.2s ease;
     backdrop-filter: blur(10px);
 
@@ -776,7 +897,10 @@ html {
     font-size: var(--text-med);
     line-height: var(--tw-leading, var(--text-sm--line-height));
     background-color: color-mix(in oklab, var(--color-green-400) 80%, transparent);
-    box-shadow: black 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -1px;
+    box-shadow:
+        black 0px 0px 0px 0px,
+        rgba(0, 0, 0, 0.05) 0px 4px 6px -1px,
+        rgba(0, 0, 0, 0.1) 0px 2px 4px -1px;
     transition: background-color 0.2s ease;
     backdrop-filter: blur(10px);
 
