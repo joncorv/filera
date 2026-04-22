@@ -18,31 +18,29 @@ const lastSelectedRow: Ref<number | null> = ref(null);
 const selectedRows: Ref<number[]> = ref<number[]>([]);
 
 function rowClick(index: number) {
+    console.log("clicked on index: ", index);
     lastSelectedRow.value = index;
     selectedRows.value.push(index);
 }
 
 function rowShiftClick(index: number) {
-    if (lastSelectedRow.value) {
-        let start: number = 0;
-        let end: number = 0;
+    console.log("shift-click function begin", "current index", index, "previous index", lastSelectedRow.value);
 
-        if (lastSelectedRow.value > index) {
-            start = index;
-            end = lastSelectedRow.value;
-        } else {
-            start = lastSelectedRow.value;
-            end = index;
-        }
+    // if there wasn't a previous selection, just run the regular click function
+    if (lastSelectedRow.value == null) {
+        rowClick(index);
+    } else {
+        // iterate from smallest index until greatest index
+        let start: number = Math.min(lastSelectedRow.value, index);
+        let end: number = Math.max(lastSelectedRow.value, index);
+        console.log("shift-click", "start", start, "end", end);
 
+        // add
         for (let i = start; i <= end; i++) {
             selectedRows.value.push(i);
+            console.log("pushing index:", i);
         }
-    } else {
-        selectedRows.value.push(index);
     }
-
-    console.log("result of shift click: ", selectedRows.value);
 }
 </script>
 
@@ -71,7 +69,7 @@ function rowShiftClick(index: number) {
                     <tr
                         v-for="(item, index) in data"
                         :key="index"
-                        @click="rowClick(index)"
+                        @click.exact="rowClick(index)"
                         @click.shift="rowShiftClick(index)"
                     >
                         <template v-if="item.active">
