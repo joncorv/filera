@@ -11,18 +11,24 @@ use time::format_description::well_known::Iso8601;
 use time::OffsetDateTime;
 use walkdir::WalkDir;
 
+mod filestatus_selections;
+use filestatus_selections::{
+    user_filestatus_click, user_filestatus_ctrl_click, user_filestatus_delete, user_filestatus_selection_clear, user_filestatus_shift_click,
+};
+
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-struct WorkingFile {
+pub struct WorkingFile {
     source: PathBuf,
     target: PathBuf,
     active: bool,
 }
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-struct FileStatus {
+pub struct FileStatus {
     old_file_name: String,
     new_file_name: String,
     active: bool,
+    selected: bool,
 }
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
@@ -89,7 +95,7 @@ enum Task {
 }
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, Default)]
-enum SortMetadata {
+pub enum SortMetadata {
     #[default]
     Name,
     DateCreated,
@@ -99,7 +105,7 @@ enum SortMetadata {
 }
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, Default)]
-enum Output {
+pub enum Output {
     #[default]
     Replace,
     Copy {
@@ -111,7 +117,7 @@ enum Output {
 }
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, Default)]
-struct AppState {
+pub struct AppState {
     file_names: Vec<String>,
     file_names_sorted: Vec<String>,
     working_files: Vec<WorkingFile>,
@@ -120,6 +126,9 @@ struct AppState {
     sort_ascending: bool,
     search: String,
     output: Output,
+    file_statuses: Option<Vec<FileStatus>>,
+    selected_filestatuses: Option<Vec<usize>>,
+    last_selected_filestatus: Option<usize>,
 }
 
 // App Entry Point
@@ -144,7 +153,12 @@ pub fn run() {
             user_rename_files,
             user_notification,
             user_dialog,
-            user_dragdrop_files
+            user_dragdrop_files,
+            user_filestatus_click,
+            user_filestatus_ctrl_click,
+            user_filestatus_shift_click,
+            user_filestatus_selection_clear,
+            user_filestatus_delete,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
