@@ -899,12 +899,14 @@ fn convert_working_files_to_file_status(state: &State<'_, Mutex<AppState>>) -> V
     let search_is_empty = state.search.is_empty();
     let search_term = &state.search;
     let mut file_statuses: Vec<FileStatus> = Vec::with_capacity(state.working_files.len());
+    let selected_filestatuses = state.selected_filestatuses;
     if search_is_empty {
         for working_file in &state.working_files {
             let file_status = FileStatus {
                 old_file_name: working_file.source.file_name().unwrap().to_string_lossy().into_owned(),
                 new_file_name: working_file.target.file_name().unwrap().to_string_lossy().into_owned(),
                 active: working_file.active,
+                selected: false,
             };
             file_statuses.push(file_status);
         }
@@ -919,6 +921,7 @@ fn convert_working_files_to_file_status(state: &State<'_, Mutex<AppState>>) -> V
                     old_file_name: working_file.source.file_name().unwrap().to_string_lossy().into_owned(),
                     new_file_name: working_file.target.file_name().unwrap().to_string_lossy().into_owned(),
                     active: working_file.active,
+                    selected: false,
                 };
                 file_statuses.push(file_status);
             }
