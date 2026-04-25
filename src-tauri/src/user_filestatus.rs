@@ -7,11 +7,11 @@ use crate::atomics::{
 };
 
 #[tauri::command]
-pub fn user_filestatus_click(selected_filename_index: usize, state: State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
+pub fn user_filestatus_click(index: usize, state: State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
     {
         let mut state = state.lock().unwrap();
         let mut new_hash: HashSet<usize> = HashSet::new();
-        new_hash.insert(selected_filename_index);
+        new_hash.insert(index);
         state.selected_filestatuses = Some(new_hash);
     }
 

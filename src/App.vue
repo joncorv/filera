@@ -472,7 +472,11 @@ async function user_rename_files() {
 
                 <hr class="border-bordercolor" />
 
-                <FileStatusTable :fileStatuses="fileStatusReturn" :numFileStatuses="numFileStatusItems" />
+                <FileStatusTable
+                    :fileStatuses="fileStatusReturn"
+                    :numFileStatuses="numFileStatusItems"
+                    @rowClick="user_filestatus_click"
+                />
 
                 <footer
                     id="footer_left_panel"

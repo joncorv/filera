@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, Ref } from "vue";
+// import { ref, Ref } from "vue";
 import type { FileStatus } from "../types";
 import type { PropType } from "vue";
 
@@ -14,34 +14,12 @@ const props = defineProps({
     },
 });
 
-const lastSelectedRow: Ref<number | null> = ref(null);
-const selectedRows: Ref<number[]> = ref<number[]>([]);
+const emit = defineEmits<{
+    rowClick: [index: number];
+    rowShiftClick: [index: number];
+}>();
 
-function rowClick(index: number) {
-    console.log("clicked on index: ", index);
-    lastSelectedRow.value = index;
-    selectedRows.value.push(index);
-}
-
-function rowShiftClick(index: number) {
-    console.log("shift-click function begin", "current index", index, "previous index", lastSelectedRow.value);
-
-    // if there wasn't a previous selection, just run the regular click function
-    if (lastSelectedRow.value == null) {
-        rowClick(index);
-    } else {
-        // iterate from smallest index until greatest index
-        let start: number = Math.min(lastSelectedRow.value, index);
-        let end: number = Math.max(lastSelectedRow.value, index);
-        console.log("shift-click", "start", start, "end", end);
-
-        // add
-        for (let i = start; i <= end; i++) {
-            selectedRows.value.push(i);
-            console.log("pushing index:", i);
-        }
-    }
-}
+//
 </script>
 
 <template>
@@ -69,8 +47,8 @@ function rowShiftClick(index: number) {
                     <tr
                         v-for="(item, index) in fileStatuses"
                         :key="index"
-                        @click.exact="rowClick(index)"
-                        @click.shift="rowShiftClick(index)"
+                        @click.exact="emit('rowClick', index)"
+                        @click.shift="emit('rowShiftClick', index)"
                     >
                         <!-- <template v-if="item.active"> -->
                         <!--     <td class="px-4 py-2 border-b border-bordercolor"> -->
