@@ -169,19 +169,22 @@ async function user_update_sort() {
     });
 }
 
-//  <-- === Update interface to show latest files === -->
+async function user_filestatus_click(index: number) {
+    fileStatusReturn.value = await invoke("user_filestatus_click", {
+        index: index,
+    });
+}
+
 async function user_update_search() {
     fileStatusReturn.value = await invoke("user_update_search", { search: search.value });
 }
 
-//  <-- === Update interface to show latest files === -->
 async function user_update_tasks() {
     fileStatusReturn.value = await invoke("user_update_tasks", {
         taskList: taskList.value.map((t) => t.task),
     });
 }
 
-//  <-- === All Task Functions === -->
 async function clearFiles() {
     fileStatusReturn.value = [];
     await invoke("user_clear_files");
@@ -469,7 +472,7 @@ async function user_rename_files() {
 
                 <hr class="border-bordercolor" />
 
-                <FileStatusTable :data="fileStatusReturn" :numItems="numFileStatusItems" />
+                <FileStatusTable :fileStatuses="fileStatusReturn" :numFileStatuses="numFileStatusItems" />
 
                 <footer
                     id="footer_left_panel"

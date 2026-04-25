@@ -32,6 +32,21 @@ pub struct FileStatus {
     selected: bool,
 }
 
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, Default)]
+pub struct AppState {
+    file_names: Vec<String>,
+    file_names_sorted: Vec<String>,
+    working_files: Vec<WorkingFile>,
+    tasks: Vec<Task>,
+    sort_choice: String,
+    sort_ascending: bool,
+    search: String,
+    output: Output,
+    file_statuses: Vec<FileStatus>,
+    selected_filestatuses: Option<HashSet<usize>>,
+    last_selected_filestatus: Option<usize>,
+}
+
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 enum Task {
     CustomText {
@@ -115,21 +130,6 @@ pub enum Output {
     Move {
         directory: String,
     },
-}
-
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, Default)]
-pub struct AppState {
-    file_names: Vec<String>,
-    file_names_sorted: Vec<String>,
-    working_files: Vec<WorkingFile>,
-    tasks: Vec<Task>,
-    sort_choice: String,
-    sort_ascending: bool,
-    search: String,
-    output: Output,
-    file_statuses: Option<Vec<FileStatus>>,
-    selected_filestatuses: Option<HashSet<usize>>,
-    last_selected_filestatus: Option<usize>,
 }
 
 // App Entry Point

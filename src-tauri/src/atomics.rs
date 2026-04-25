@@ -204,8 +204,8 @@ pub fn resolve_workingfile_duplicates(state: &State<'_, Mutex<AppState>>) {
         .collect();
 }
 
-pub fn convert_working_files_to_file_status(state: &State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
-    let state = state.lock().unwrap();
+pub fn convert_working_files_to_file_status(state: &State<'_, Mutex<AppState>>) {
+    let mut state = state.lock().unwrap();
     let search_is_empty = state.search.is_empty();
     let search_term = &state.search;
     let mut file_statuses: Vec<FileStatus> = Vec::with_capacity(state.working_files.len());
@@ -220,7 +220,7 @@ pub fn convert_working_files_to_file_status(state: &State<'_, Mutex<AppState>>) 
             };
             file_statuses.push(file_status);
         }
-        file_statuses
+        state.file_statuses = file_statuses;
     } else {
         for working_file in &state.working_files {
             let source = working_file.source.file_name().unwrap().to_string_lossy().contains(search_term);
@@ -236,6 +236,41 @@ pub fn convert_working_files_to_file_status(state: &State<'_, Mutex<AppState>>) 
                 file_statuses.push(file_status);
             }
         }
-        file_statuses
+        state.file_statuses = file_statuses;
+    }
+}
+
+pub fn apply_selections_to_filestatuses(state: &State<'_, Mutex<AppState>>) {
+    let mut state = state.lock().unwrap();
+    let selected = state.selected_filestatuses.clone();
+    let file_statuses = &mut state.file_statuses;
+
+    if let Some(selected) = selected {
+        selected.iter().for_each(|selected_index| {
+            if let Some(filestatus) = file_statuses.get_mut(*selected_index) {
+                filestatus.selected = true;
+            }
+        })
+    }
+}
+
+pub fn apply_search_to_filestatuses(state: &State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
+    let state = state.lock().unwrap();
+    let search_term = state.search.clone();
+    let search_is_empty = search_term.is_empty();
+
+    if search_is_empty {
+        return state.file_statuses.clone();
+    } else {
+        let file_statuses_filtered = state.file_statuses.clone();
+
+        let _ = file_statuses_filtered.iter().filter(|file_status| {
+            let old = file_status.old_file_name.contains(&search_term);
+            let new = file_status.new_file_name.contains(&search_term);
+
+            return old && new;
+        });
+
+        return file_statuses_filtered;
     }
 }

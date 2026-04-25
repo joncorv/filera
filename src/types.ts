@@ -3,6 +3,7 @@ export interface FileStatus {
     old_file_name: string;
     new_file_name: string;
     active: boolean;
+    selected: boolean;
 }
 
 //  <-- === Task Type. Contains all Sub Tasks within === -->

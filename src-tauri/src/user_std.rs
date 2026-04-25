@@ -2,8 +2,9 @@ use crate::process_tasks::process_tasks_on_working_files;
 use crate::{AppState, FileStatus, HashMap, Mutex, Path, PathBuf, State, Task, WorkingFile};
 
 use crate::atomics::{
-    convert_file_names_to_working_files, convert_working_files_to_file_status, resolve_workingfile_duplicates, solve_duplicates,
-    sort_file_names, state_update_search, state_update_sort, state_update_tasks,
+    apply_search_to_filestatuses, apply_selections_to_filestatuses, convert_file_names_to_working_files,
+    convert_working_files_to_file_status, resolve_workingfile_duplicates, solve_duplicates, sort_file_names, state_update_search,
+    state_update_sort, state_update_tasks,
 };
 
 use notify_rust::Notification;
@@ -22,7 +23,9 @@ pub fn user_open_files(file_names: Vec<String>, state: State<'_, Mutex<AppState>
     convert_file_names_to_working_files(&state);
     process_tasks_on_working_files(&state);
     resolve_workingfile_duplicates(&state);
-    convert_working_files_to_file_status(&state)
+    convert_working_files_to_file_status(&state);
+    apply_selections_to_filestatuses(&state);
+    apply_search_to_filestatuses(&state)
 }
 
 #[tauri::command]
@@ -40,7 +43,9 @@ pub fn user_open_folders(directories: Vec<String>, state: State<'_, Mutex<AppSta
     convert_file_names_to_working_files(&state);
     process_tasks_on_working_files(&state);
     resolve_workingfile_duplicates(&state);
-    convert_working_files_to_file_status(&state)
+    convert_working_files_to_file_status(&state);
+    apply_selections_to_filestatuses(&state);
+    apply_search_to_filestatuses(&state)
 }
 
 #[tauri::command]
@@ -64,7 +69,9 @@ pub fn user_dragdrop_files(files: Vec<String>, state: State<'_, Mutex<AppState>>
     convert_file_names_to_working_files(&state);
     process_tasks_on_working_files(&state);
     resolve_workingfile_duplicates(&state);
-    convert_working_files_to_file_status(&state)
+    convert_working_files_to_file_status(&state);
+    apply_selections_to_filestatuses(&state);
+    apply_search_to_filestatuses(&state)
 }
 
 #[tauri::command]
@@ -81,7 +88,9 @@ pub fn user_update_sort(sort_choice: String, sort_ascending: bool, state: State<
     convert_file_names_to_working_files(&state);
     process_tasks_on_working_files(&state);
     resolve_workingfile_duplicates(&state);
-    convert_working_files_to_file_status(&state)
+    convert_working_files_to_file_status(&state);
+    apply_selections_to_filestatuses(&state);
+    apply_search_to_filestatuses(&state)
 }
 
 #[tauri::command]
@@ -89,13 +98,17 @@ pub fn user_update_tasks(task_list: Vec<Task>, state: State<'_, Mutex<AppState>>
     state_update_tasks(task_list, &state);
     process_tasks_on_working_files(&state);
     resolve_workingfile_duplicates(&state);
-    convert_working_files_to_file_status(&state)
+    convert_working_files_to_file_status(&state);
+    apply_selections_to_filestatuses(&state);
+    apply_search_to_filestatuses(&state)
 }
 
 #[tauri::command]
 pub fn user_update_search(search: String, state: State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
     state_update_search(search, &state);
-    convert_working_files_to_file_status(&state)
+    convert_working_files_to_file_status(&state);
+    apply_selections_to_filestatuses(&state);
+    apply_search_to_filestatuses(&state)
 }
 
 #[tauri::command]
@@ -111,7 +124,13 @@ pub async fn user_rename_files(
 
     println!("output dropdown choice= {output_dropdown_choice}");
     println!("output directory= {output_directory}");
-    let existing_file_status = convert_working_files_to_file_status(&state);
+    // let existing_file_status = convert_working_files_to_file_status(&state);
+    let existing_file_status;
+    {
+        let state = state.lock().unwrap();
+        existing_file_status = state.file_statuses.clone();
+    }
+
     // Extract the needed data from the locked state without holding the lock across await points
     let (tasks_empty, files_empty) = {
         let state_guard = state.lock().unwrap();

@@ -4,11 +4,11 @@ import type { FileStatus } from "../types";
 import type { PropType } from "vue";
 
 const props = defineProps({
-    data: {
+    fileStatuses: {
         type: Array as PropType<FileStatus[]>,
         required: true,
     },
-    numItems: {
+    numFileStatuses: {
         type: Number,
         required: true,
     },
@@ -46,7 +46,7 @@ function rowShiftClick(index: number) {
 
 <template>
     <div
-        v-if="numItems < 1"
+        v-if="numFileStatuses < 1"
         class="flex flex-1 flex-col justify-center items-center w-full h-full whitespace-nowrap bg-panelbody"
     >
         <span class="text-center -mt-4 mb-1 text-textprimary">Your files live here</span>
@@ -67,16 +67,25 @@ function rowShiftClick(index: number) {
             <table class="w-full">
                 <tbody>
                     <tr
-                        v-for="(item, index) in data"
+                        v-for="(item, index) in fileStatuses"
                         :key="index"
                         @click.exact="rowClick(index)"
                         @click.shift="rowShiftClick(index)"
                     >
-                        <template v-if="item.active">
-                            <td class="px-4 py-2 border-b border-bordercolor">
+                        <!-- <template v-if="item.active"> -->
+                        <!--     <td class="px-4 py-2 border-b border-bordercolor"> -->
+                        <!--         {{ item.old_file_name }} -->
+                        <!--     </td> -->
+                        <!--     <td class="px-4 py-2 border-b border-bordercolor"> -->
+                        <!--         {{ item.new_file_name }} -->
+                        <!--     </td> -->
+                        <!-- </template> -->
+
+                        <template v-if="item.selected">
+                            <td class="px-4 py-2 border-b border-bordercolor text-red-500">
                                 {{ item.old_file_name }}
                             </td>
-                            <td class="px-4 py-2 border-b border-bordercolor">
+                            <td class="px-4 py-2 border-b border-bordercolor text-red-500">
                                 {{ item.new_file_name }}
                             </td>
                         </template>

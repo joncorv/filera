@@ -1,25 +1,19 @@
-use crate::{AppState, FileStatus, Mutex, State};
+use crate::{AppState, FileStatus, HashSet, Mutex, State};
 
-// #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, Default)]
-// pub struct AppState {
-//     file_names: Vec<String>,
-//     file_names_sorted: Vec<String>,
-//     working_files: Vec<WorkingFile>,
-//     tasks: Vec<Task>,
-//     sort_choice: String,
-//     sort_ascending: bool,
-//     search: String,
-//     output: Output,
-//     file_statuses: Option<Vec<FileStatus>>,
-//     selected_filestatuses: Option<Vec<usize>>,
-//     last_selected_filestatus: Option<usize>,
-// }
+use crate::atomics::{
+    apply_search_to_filestatuses, apply_selections_to_filestatuses, convert_file_names_to_working_files,
+    convert_working_files_to_file_status, resolve_workingfile_duplicates, solve_duplicates, sort_file_names, state_update_search,
+    state_update_sort, state_update_tasks,
+};
 
 #[tauri::command]
 pub fn user_filestatus_click(selected_filename_index: usize, state: State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
-    let mut state = state.lock().unwrap();
-
-    // state.selected_filestatuses = Some(vec![selected_filename_index]);
+    {
+        let mut state = state.lock().unwrap();
+        let mut new_hash: HashSet<usize> = HashSet::new();
+        new_hash.insert(selected_filename_index);
+        state.selected_filestatuses = Some(new_hash);
+    }
 
     // if let Some(selected_already) = state.selected_filestatuses.as_ref() {
     //     if selected_already.contains(&selected_filename_index) {
@@ -31,9 +25,8 @@ pub fn user_filestatus_click(selected_filename_index: usize, state: State<'_, Mu
     //         state.selected_filestatuses = Some(vec![selected_filename_index]);
     // }
 
-    // make the fucking compiler happy, JESUS
-    let blank: Vec<FileStatus> = Vec::new();
-    return blank;
+    apply_selections_to_filestatuses(&state);
+    apply_search_to_filestatuses(&state)
 }
 
 #[tauri::command]
@@ -48,14 +41,29 @@ pub fn user_filestatus_selection_clear() {}
 #[tauri::command]
 pub fn user_filestatus_delete() {}
 
-#[tauri::command]
-pub fn apply_selections_to_filestatuses(state: &State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
-    let state = state.lock().unwrap();
-    // let file_statuses = state.file_statuses;
+// #[tauri::command]
+// pub fn apply_selections_to_filestatuses(state: &State<'_, Mutex<AppState>>) {
+//     let mut state = state.lock().unwrap();
+//     let selected = state.selected_filestatuses.clone();
+//
+//     if let Some(selected) = selected {
+//         if let Some(file_statuses) = &mut state.file_statuses {
+//             selected.iter().for_each(|selected_index| {
+//                 if let Some(foo) = file_statuses.get_mut(*selected_index) {
+//                     foo.selected = true;
+//                 }
+//             })
+//         }
+//     }
+// }
 
-    // state.file_statuses.expect("something")
-
-    // make the fucking compiler happy, JESUS
-    let blank: Vec<FileStatus> = Vec::new();
-    return blank;
-}
+// pub fn user_open_files(file_names: Vec<String>, state: State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
+//     solve_duplicates(file_names, &state);
+//     sort_file_names(&state);
+//     convert_file_names_to_working_files(&state);
+//     process_tasks_on_working_files(&state);
+//     resolve_workingfile_duplicates(&state);
+//     convert_working_files_to_file_status(&state);
+//     apply_selections_to_filestatuses(&state);
+//     apply_search_to_filestatuses(&state)
+// }
