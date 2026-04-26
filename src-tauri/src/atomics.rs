@@ -120,6 +120,8 @@ pub fn state_update_sort(sort_choice: String, sort_ascending: bool, state: &Stat
     let mut state = state.lock().unwrap();
     state.sort_choice = sort_choice;
     state.sort_ascending = sort_ascending;
+    state.last_selected_filestatus = None;
+    state.selected_filestatuses = None;
 }
 
 #[tauri::command]
@@ -132,6 +134,12 @@ pub fn state_update_tasks(task_list: Vec<Task>, state: &State<'_, Mutex<AppState
 pub fn state_update_search(search: String, state: &State<'_, Mutex<AppState>>) {
     let mut state = state.lock().unwrap();
     state.search = search;
+}
+
+pub fn state_clear_selected_filestatusues(state: &State<'_, Mutex<AppState>>) {
+    let mut state = state.lock().unwrap();
+    state.selected_filestatuses = None;
+    state.last_selected_filestatus = None;
 }
 
 #[tauri::command]
@@ -148,14 +156,7 @@ pub fn convert_file_names_to_working_files(state: &State<'_, Mutex<AppState>>) {
         };
 
         let is_file = working_file.source.is_file();
-
-        let is_legal_file;
-
-        if file_path.contains(".DS_Store") {
-            is_legal_file = false;
-        } else {
-            is_legal_file = true;
-        }
+        let is_legal_file = !file_path.contains(".DS_Store");
 
         if is_file && is_legal_file {
             new_working_files.push(working_file);
@@ -206,38 +207,18 @@ pub fn resolve_workingfile_duplicates(state: &State<'_, Mutex<AppState>>) {
 
 pub fn convert_working_files_to_file_status(state: &State<'_, Mutex<AppState>>) {
     let mut state = state.lock().unwrap();
-    let search_is_empty = state.search.is_empty();
-    let search_term = &state.search;
     let mut file_statuses: Vec<FileStatus> = Vec::with_capacity(state.working_files.len());
-    // let selected_filestatuses = state.selected_filestatuses;
-    if search_is_empty {
-        for working_file in &state.working_files {
-            let file_status = FileStatus {
-                old_file_name: working_file.source.file_name().unwrap().to_string_lossy().into_owned(),
-                new_file_name: working_file.target.file_name().unwrap().to_string_lossy().into_owned(),
-                active: working_file.active,
-                selected: false,
-            };
-            file_statuses.push(file_status);
-        }
-        state.file_statuses = file_statuses;
-    } else {
-        for working_file in &state.working_files {
-            let source = working_file.source.file_name().unwrap().to_string_lossy().contains(search_term);
-            let target = working_file.target.file_name().unwrap().to_string_lossy().contains(search_term);
 
-            if source || target {
-                let file_status = FileStatus {
-                    old_file_name: working_file.source.file_name().unwrap().to_string_lossy().into_owned(),
-                    new_file_name: working_file.target.file_name().unwrap().to_string_lossy().into_owned(),
-                    active: working_file.active,
-                    selected: false,
-                };
-                file_statuses.push(file_status);
-            }
-        }
-        state.file_statuses = file_statuses;
+    for working_file in &state.working_files {
+        let file_status = FileStatus {
+            old_file_name: working_file.source.file_name().unwrap().to_string_lossy().into_owned(),
+            new_file_name: working_file.target.file_name().unwrap().to_string_lossy().into_owned(),
+            active: working_file.active,
+            selected: false,
+        };
+        file_statuses.push(file_status);
     }
+    state.file_statuses = file_statuses;
 }
 
 pub fn apply_selections_to_filestatuses(state: &State<'_, Mutex<AppState>>) {
@@ -246,12 +227,23 @@ pub fn apply_selections_to_filestatuses(state: &State<'_, Mutex<AppState>>) {
     let file_statuses = &mut state.file_statuses;
 
     if let Some(selected) = selected {
-        selected.iter().for_each(|selected_index| {
-            if let Some(filestatus) = file_statuses.get_mut(*selected_index) {
-                filestatus.selected = true;
-            }
-        })
+        file_statuses.iter_mut().enumerate().for_each(|(index, file_status)| {
+            file_status.selected = selected.contains(&index);
+        });
     }
+
+    // // NOTE: clears all file_status first, then applies. Maybe has better performance than
+    // above, for future reference
+    // if let Some(selected) = selected {
+    //     file_statuses.iter_mut().for_each(|file_status| {
+    //         file_status.selected = false;
+    //     });
+    //     selected.iter().for_each(|selected_index| {
+    //         if let Some(filestatus) = file_statuses.get_mut(*selected_index) {
+    //             filestatus.selected = true;
+    //         }
+    //     });
+    // }
 }
 
 pub fn apply_search_to_filestatuses(state: &State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
@@ -260,17 +252,18 @@ pub fn apply_search_to_filestatuses(state: &State<'_, Mutex<AppState>>) -> Vec<F
     let search_is_empty = search_term.is_empty();
 
     if search_is_empty {
-        return state.file_statuses.clone();
+        state.file_statuses.clone()
     } else {
-        let file_statuses_filtered = state.file_statuses.clone();
+        state
+            .file_statuses
+            .iter()
+            .filter(|file_status| {
+                let old = file_status.old_file_name.contains(&search_term);
+                let new = file_status.new_file_name.contains(&search_term);
 
-        let _ = file_statuses_filtered.iter().filter(|file_status| {
-            let old = file_status.old_file_name.contains(&search_term);
-            let new = file_status.new_file_name.contains(&search_term);
-
-            return old && new;
-        });
-
-        return file_statuses_filtered;
+                old || new
+            })
+            .cloned()
+            .collect()
     }
 }

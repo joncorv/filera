@@ -13,6 +13,7 @@ pub fn user_filestatus_click(index: usize, state: State<'_, Mutex<AppState>>) ->
         let mut new_hash: HashSet<usize> = HashSet::new();
         new_hash.insert(index);
         state.selected_filestatuses = Some(new_hash);
+        state.last_selected_filestatus = Some(index);
     }
 
     // if let Some(selected_already) = state.selected_filestatuses.as_ref() {

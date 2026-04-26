@@ -3,8 +3,8 @@ use crate::{AppState, FileStatus, HashMap, Mutex, Path, PathBuf, State, Task, Wo
 
 use crate::atomics::{
     apply_search_to_filestatuses, apply_selections_to_filestatuses, convert_file_names_to_working_files,
-    convert_working_files_to_file_status, resolve_workingfile_duplicates, solve_duplicates, sort_file_names, state_update_search,
-    state_update_sort, state_update_tasks,
+    convert_working_files_to_file_status, resolve_workingfile_duplicates, solve_duplicates, sort_file_names,
+    state_clear_selected_filestatusues, state_update_search, state_update_sort, state_update_tasks,
 };
 
 use notify_rust::Notification;
@@ -23,6 +23,7 @@ pub fn user_open_files(file_names: Vec<String>, state: State<'_, Mutex<AppState>
     convert_file_names_to_working_files(&state);
     process_tasks_on_working_files(&state);
     resolve_workingfile_duplicates(&state);
+    state_clear_selected_filestatusues(&state);
     convert_working_files_to_file_status(&state);
     apply_selections_to_filestatuses(&state);
     apply_search_to_filestatuses(&state)
@@ -43,6 +44,7 @@ pub fn user_open_folders(directories: Vec<String>, state: State<'_, Mutex<AppSta
     convert_file_names_to_working_files(&state);
     process_tasks_on_working_files(&state);
     resolve_workingfile_duplicates(&state);
+    state_clear_selected_filestatusues(&state);
     convert_working_files_to_file_status(&state);
     apply_selections_to_filestatuses(&state);
     apply_search_to_filestatuses(&state)
@@ -69,6 +71,7 @@ pub fn user_dragdrop_files(files: Vec<String>, state: State<'_, Mutex<AppState>>
     convert_file_names_to_working_files(&state);
     process_tasks_on_working_files(&state);
     resolve_workingfile_duplicates(&state);
+    state_clear_selected_filestatusues(&state);
     convert_working_files_to_file_status(&state);
     apply_selections_to_filestatuses(&state);
     apply_search_to_filestatuses(&state)
@@ -79,6 +82,8 @@ pub fn user_clear_files(state: State<'_, Mutex<AppState>>) {
     let mut state = state.lock().unwrap();
     state.file_names.clear();
     state.working_files.clear();
+    state.selected_filestatuses = None;
+    state.last_selected_filestatus = None;
 }
 
 #[tauri::command]
@@ -88,6 +93,7 @@ pub fn user_update_sort(sort_choice: String, sort_ascending: bool, state: State<
     convert_file_names_to_working_files(&state);
     process_tasks_on_working_files(&state);
     resolve_workingfile_duplicates(&state);
+    state_clear_selected_filestatusues(&state);
     convert_working_files_to_file_status(&state);
     apply_selections_to_filestatuses(&state);
     apply_search_to_filestatuses(&state)
