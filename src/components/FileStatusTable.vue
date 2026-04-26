@@ -49,33 +49,31 @@ const emit = defineEmits<{
                         :key="index"
                         @click.exact="emit('rowClick', index)"
                         @click.shift="emit('rowShiftClick', index)"
+                        class="cursor-pointer"
+                        :class="item.selected ? 'bg-primary/20' : ''"
                     >
-                        <!-- <template v-if="item.active"> -->
-                        <!--     <td class="px-4 py-2 border-b border-bordercolor"> -->
-                        <!--         {{ item.old_file_name }} -->
-                        <!--     </td> -->
-                        <!--     <td class="px-4 py-2 border-b border-bordercolor"> -->
-                        <!--         {{ item.new_file_name }} -->
-                        <!--     </td> -->
-                        <!-- </template> -->
-
-                        <template v-if="item.selected">
-                            <td class="px-4 py-2 border-b border-bordercolor text-red-500">
-                                {{ item.old_file_name }}
-                            </td>
-                            <td class="px-4 py-2 border-b border-bordercolor text-red-500">
-                                {{ item.new_file_name }}
-                            </td>
-                        </template>
-
-                        <template v-else>
-                            <td class="px-4 py-2 border-b border-bordercolor bg-panelfooter italic opacity-50">
-                                {{ item.old_file_name }}
-                            </td>
-                            <td class="px-4 py-2 border-b border-bordercolor bg-panelfooter italic opacity-50">
-                                {{ item.new_file_name }}
-                            </td>
-                        </template>
+                        <td
+                            class="px-4 py-2 border-b border-bordercolor"
+                            :class="{
+                                'text-primary font-medium': item.selected,
+                                'text-textprimary': !item.selected,
+                                'opacity-50': !item.selected && !item.active,
+                                'italic': !item.active,
+                            }"
+                        >
+                            {{ item.old_file_name }}
+                        </td>
+                        <td
+                            class="px-4 py-2 border-b border-bordercolor"
+                            :class="{
+                                'text-primary font-medium': item.selected,
+                                'text-textprimary': !item.selected,
+                                'opacity-50': !item.selected && !item.active,
+                                'italic': !item.active,
+                            }"
+                        >
+                            {{ item.new_file_name }}
+                        </td>
                     </tr>
                 </tbody>
             </table>
