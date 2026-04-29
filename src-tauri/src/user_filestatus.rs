@@ -69,27 +69,28 @@ pub fn user_filestatus_ctrl_click(index: usize, state: State<'_, Mutex<AppState>
                 eprintln!("errror: can't set filestatus.selected on index: {index:?}");
             }
         } else if let Some(sf) = selected_filestatuses {
-            sf.iter().for_each(|selection_index| {
-                if let Some(filestatus) = state.file_statuses.get_mut(*selection_index) {
-                    filestatus.selected = false;
-                } else {
-                    eprintln!("errror: can't set filestatus.selected on index: {selection_index:?}");
-                }
-            });
-
-            if !sf.contains(&index) {
+            if sf.contains(&index) {
                 if let Some(filestatus) = state.file_statuses.get_mut(index) {
-                    filestatus.selected = true;
+                    filestatus.selected = false;
+                    state.last_selected_filestatus = None;
+
+                    if let Some(ssf) = &mut state.selected_filestatuses {
+                        ssf.remove(&index);
+                    }
                 } else {
                     eprintln!("errror: can't set filestatus.selected on index: {index:?}");
                 }
-                let mut new_hash: HashSet<usize> = HashSet::new();
-                new_hash.insert(index);
-                state.selected_filestatuses = Some(new_hash);
-                state.last_selected_filestatus = Some(index);
             } else {
-                state.selected_filestatuses = None;
-                state.last_selected_filestatus = None;
+                if let Some(filestatus) = state.file_statuses.get_mut(index) {
+                    filestatus.selected = true;
+                    state.last_selected_filestatus = Some(index);
+
+                    if let Some(ssf) = &mut state.selected_filestatuses {
+                        ssf.insert(index);
+                    }
+                } else {
+                    eprintln!("errror: can't set filestatus.selected on index: {index:?}");
+                }
             }
         }
     }
