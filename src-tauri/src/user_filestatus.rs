@@ -17,46 +17,37 @@ pub fn user_filestatus_click(index: usize, state: State<'_, Mutex<AppState>>) ->
             new_hash.insert(index);
             state.selected_filestatuses = Some(new_hash);
             state.last_selected_filestatus = Some(index);
-        }
-        // if there are no selections, just set selections to index
-        else if let Some(sf) = selected_filestatuses {
-            // let num_sfs = sf.len();
-            if sf.contains(&index) {
+
+            if let Some(filestatus) = state.file_statuses.get_mut(index) {
+                filestatus.selected = true;
+            } else {
+                eprintln!("errror: can't set filestatus.selected on index: {index:?}");
+            }
+        } else if let Some(sf) = selected_filestatuses {
+            sf.iter().for_each(|selection_index| {
+                if let Some(filestatus) = state.file_statuses.get_mut(*selection_index) {
+                    filestatus.selected = false;
+                } else {
+                    eprintln!("errror: can't set filestatus.selected on index: {selection_index:?}");
+                }
+            });
+
+            if !sf.contains(&index) {
+                if let Some(filestatus) = state.file_statuses.get_mut(index) {
+                    filestatus.selected = true;
+                } else {
+                    eprintln!("errror: can't set filestatus.selected on index: {index:?}");
+                }
+                let mut new_hash: HashSet<usize> = HashSet::new();
+                new_hash.insert(index);
+                state.selected_filestatuses = Some(new_hash);
+                state.last_selected_filestatus = Some(index);
+            } else {
                 state.selected_filestatuses = None;
                 state.last_selected_filestatus = None;
-                if let Some(filestatus) = state.file_statuses.get_mut(index) {
-                    filestatus.selected = false;
-                }
             }
-
-            // // if there is one selected filestatus, and it is the index, return blank
-            // if num_sfs == 1 && sf.contains(&index) {
-            //     state.selected_filestatuses = None;
-            //     state.last_selected_filestatus = None;
-            // } else {
-            //     let mut new_hash: HashSet<usize> = HashSet::new();
-            //     new_hash.insert(index);
-            //     state.selected_filestatuses = Some(new_hash);
-            //     state.last_selected_filestatus = Some(index);
-            // }
         }
     }
-
-    // selected_filestatuses.len() > 0 -> just set to index
-    // selected_filestatuses is None -> just set to index
-    // if selected_filestatuses.len() == 1 && sel
-
-    // if let Some(selected_already) = state.selected_filestatuses.as_ref() {
-    //     if selected_already.contains(&selected_filename_index) {
-    //         state.selected_filestatuses = None;
-    //     } else {
-    //         state.selected_filestatuses = Some(vec![selected_filename_index]);
-    //     }
-    // } else {
-    //         state.selected_filestatuses = Some(vec![selected_filename_index]);
-    // }
-
-    apply_selections_to_filestatuses(&state);
     apply_search_to_filestatuses(&state)
 }
 
