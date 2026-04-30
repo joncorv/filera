@@ -98,13 +98,56 @@ pub fn user_filestatus_ctrl_click(index: usize, state: State<'_, Mutex<AppState>
 }
 
 #[tauri::command]
-pub fn user_filestatus_shift_click() {}
+pub fn user_filestatus_shift_click(index: usize, state: State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
+    {
+        let mut state = state.lock().unwrap();
+        let selected_filestatuses = state.selected_filestatuses.clone();
+
+        if selected_filestatuses.is_none() {
+            let mut new_hash: HashSet<usize> = HashSet::new();
+            new_hash.insert(index);
+            state.selected_filestatuses = Some(new_hash);
+            state.last_selected_filestatus = Some(index);
+
+            if let Some(filestatus) = state.file_statuses.get_mut(index) {
+                filestatus.selected = true;
+            } else {
+                eprintln!("errror: can't set filestatus.selected on index: {index:?}");
+            }
+        } else if let Some(sf) = selected_filestatuses {
+            if sf.contains(&index) {
+                if let Some(filestatus) = state.file_statuses.get_mut(index) {
+                    filestatus.selected = false;
+                    state.last_selected_filestatus = None;
+
+                    if let Some(ssf) = &mut state.selected_filestatuses {
+                        ssf.remove(&index);
+                    }
+                } else {
+                    eprintln!("errror: can't set filestatus.selected on index: {index:?}");
+                }
+            } else {
+                if let Some(filestatus) = state.file_statuses.get_mut(index) {
+                    filestatus.selected = true;
+                    state.last_selected_filestatus = Some(index);
+
+                    if let Some(ssf) = &mut state.selected_filestatuses {
+                        ssf.insert(index);
+                    }
+                } else {
+                    eprintln!("errror: can't set filestatus.selected on index: {index:?}");
+                }
+            }
+        }
+    }
+    apply_search_to_filestatuses(&state)
+}
 
 #[tauri::command]
 pub fn user_filestatus_selection_clear() {}
 
 #[tauri::command]
-pub fn user_filestatus_delete() {}
+pub fn user_filestatus_selection_delete() {}
 
 // #[tauri::command]
 // pub fn apply_selections_to_filestatuses(state: &State<'_, Mutex<AppState>>) {
