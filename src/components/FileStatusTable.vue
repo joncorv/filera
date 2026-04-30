@@ -15,8 +15,11 @@ const props = defineProps({
 });
 
 const emit = defineEmits<{
-    rowClick: [index: number];
-    rowShiftClick: [index: number];
+    userFilestatusClick: [index: number];
+    userFilestatusCtrlClick: [index: number];
+    userFilestatusShiftClick: [index: number];
+    userFilestatusSelectionClear: [];
+    userFilestatusSelectionDelete: [];
 }>();
 
 //
@@ -47,8 +50,10 @@ const emit = defineEmits<{
                     <tr
                         v-for="(item, index) in fileStatuses"
                         :key="index"
-                        @click.exact="emit('rowClick', index)"
-                        @click.shift="emit('rowShiftClick', index)"
+                        @click.exact="emit('userFilestatusClick', index)"
+                        @click.ctrl="emit('userFilestatusCtrlClick', index)"
+                        @click.meta="emit('userFilestatusCtrlClick', index)"
+                        @click.shift="emit('userFilestatusShiftClick', index)"
                         class="cursor-pointer"
                         :class="item.selected ? 'bg-primary/20' : ''"
                     >

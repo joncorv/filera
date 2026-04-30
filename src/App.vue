@@ -15,8 +15,6 @@ import Select from "primevue/select";
 import Menu from "primevue/menu";
 import IconField from "primevue/iconfield";
 import InputIcon from "primevue/inputicon";
-import DataTable from "primevue/datatable";
-import Column from "primevue/column";
 import FindAndReplaceTask from "./components/tasks/FindAndReplaceTask.vue";
 import ClearAllTask from "./components/tasks/ClearAllTask.vue";
 import ChangeCaseTask from "./components/tasks/ChangeCaseTask.vue";
@@ -173,6 +171,24 @@ async function user_filestatus_click(index: number) {
     fileStatusReturn.value = await invoke("user_filestatus_click", {
         index: index,
     });
+}
+async function user_filestatus_ctrl_click(index: number) {
+    fileStatusReturn.value = await invoke("user_filestatus_ctrl_click", {
+        index: index,
+    });
+}
+async function user_filestatus_shift_click(index: number) {
+    fileStatusReturn.value = await invoke("user_filestatus_shift_click", {
+        index: index,
+    });
+}
+
+async function user_filestatus_selection_clear() {
+    fileStatusReturn.value = await invoke("user_filestatus_selection_clear");
+}
+
+async function user_filestatus_selection_delete() {
+    fileStatusReturn.value = await invoke("user_filestatus_selection_delete");
 }
 
 async function user_update_search() {
@@ -475,7 +491,11 @@ async function user_rename_files() {
                 <FileStatusTable
                     :fileStatuses="fileStatusReturn"
                     :numFileStatuses="numFileStatusItems"
-                    @rowClick="user_filestatus_click"
+                    @userFilestatusClick="user_filestatus_click"
+                    @userFilestatusCtrlClick="user_filestatus_ctrl_click"
+                    @userFilestatusShiftClick="user_filestatus_shift_click"
+                    @userFilestatusSelectionClear="user_filestatus_selection_clear"
+                    @userFilestatusDelete="user_filestatus_selection_delete"
                 />
 
                 <footer

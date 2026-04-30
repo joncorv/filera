@@ -9,7 +9,8 @@ use user_std::{
 };
 
 use user_filestatus::{
-    user_filestatus_click, user_filestatus_ctrl_click, user_filestatus_delete, user_filestatus_selection_clear, user_filestatus_shift_click,
+    user_filestatus_click, user_filestatus_ctrl_click, user_filestatus_selection_clear, user_filestatus_selection_delete,
+    user_filestatus_shift_click,
 };
 
 use std::collections::{HashMap, HashSet};
@@ -159,7 +160,7 @@ pub fn run() {
             user_filestatus_ctrl_click,
             user_filestatus_shift_click,
             user_filestatus_selection_clear,
-            user_filestatus_delete,
+            user_filestatus_selection_delete,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
