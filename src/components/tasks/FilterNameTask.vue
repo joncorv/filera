@@ -28,7 +28,7 @@ const emit = defineEmits<{
         <!-- === Title and Description === -->
         <div class="flex flex-row items-center justify-between mb-1">
             <div class="flex flex-row items-center gap-2">
-                <span class="pi pi-clock text-textprimary"></span>
+                <span class="pi pi-search text-textprimary"></span>
                 <h4 class="text-sm font-semibold text-textprimary m-0">Name Filter</h4>
                 <p class="text-xs text-textprimary m-0">Filter out files by name matching</p>
             </div>

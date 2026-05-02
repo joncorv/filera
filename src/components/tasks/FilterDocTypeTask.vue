@@ -30,7 +30,7 @@ const emit = defineEmits<{
         <!-- === Title and Description === -->
         <div class="flex flex-row items-center justify-between mb-1">
             <div class="flex flex-row items-center gap-2">
-                <span class="pi pi-clock text-textprimary"></span>
+                <span class="pi pi-file text-textprimary"></span>
                 <h4 class="text-sm font-semibold text-textprimary m-0">File Type Filter</h4>
                 <p class="text-xs text-textprimary m-0">Filter out files by Document Type</p>
             </div>
@@ -63,7 +63,7 @@ const emit = defineEmits<{
                             emit('update');
                         }
                     }" />
-                <Button label="Add" size="small" @click="() => {
+                <Button label="Add" size="small" severity="secondary" @click="() => {
                     if (task.FilterDocType.newDocTypeInput?.trim()) {
                         task.FilterDocType.doc_types.push(task.FilterDocType.newDocTypeInput.trim());
                         task.FilterDocType.newDocTypeInput = '';
