@@ -433,13 +433,14 @@ async function user_rename_files() {
                 <!-- === Left SplitterPanel Menubar === -->
                 <div id="file_buttons" class="flex flex-row items-center gap-2 justify-start m-2">
                     <!-- <div class="bg-test2"> test test </div> -->
-                    <Button size="small" icon="pi pi-file" label="Open Files" @click="open_files" class="min-w-max" />
+                    <Button size="small" icon="pi pi-file" label="Open Files" @click="open_files" class="min-w-max" severity="secondary" />
                     <Button
                         size="small"
                         icon="pi pi-folder-open"
                         label="Open Folders"
                         @click="open_folders"
                         class="min-w-max"
+                        severity="secondary"
                     />
                     <!-- === Search Field === -->
                     <IconField class="flex-3/4 w-full">
@@ -465,14 +466,14 @@ async function user_rename_files() {
                         @change="user_update_sort"
                     >
                         <template #value="{ value: selectedSort }">
-                            <span v-if="selectedSort">
+                            <span v-if="selectedSort" class="text-olive-50">
                                 <i
                                     :class="sortAscending ? 'pi pi-sort-amount-down' : 'pi pi-sort-amount-up'"
                                     class="inline-block text-xs mr-1 -mt-0.5 align-middle"
                                 ></i>
                                 {{ metadata.find((m) => m.code === selectedSort)?.name }}
                             </span>
-                            <span v-else>Sort By</span>
+                            <span v-else class="text-olive-50">Sort By</span>
                         </template>
                     </Select>
 
@@ -527,6 +528,7 @@ async function user_rename_files() {
                         size="small"
                         icon="pi pi-plus"
                         class="min-w-max"
+                        severity="secondary"
                         @click="taskMenuToggleFunction"
                         aria-haspopup="true"
                         aria-controls="custom_text_menu"
@@ -539,6 +541,7 @@ async function user_rename_files() {
                         size="small"
                         icon="pi pi-plus"
                         class="min-w-max"
+                        severity="secondary"
                         @click="taskFilterToggleFunction"
                         aria-haspopup="true"
                         aria-controls="custom_text_menu"
@@ -923,7 +926,7 @@ html {
     font-weight: 600;
     font-size: var(--text-med);
     line-height: var(--tw-leading, var(--text-sm--line-height));
-    background-color: color-mix(in oklab, var(--color-green-400) 80%, transparent);
+    background-color: color-mix(in oklab, var(--color-chartreuse-400) 80%, transparent);
     box-shadow:
         black 0px 0px 0px 0px,
         rgba(0, 0, 0, 0.05) 0px 4px 6px -1px,
@@ -932,7 +935,7 @@ html {
     backdrop-filter: blur(10px);
 
     &:hover {
-        background-color: color-mix(in oklab, var(--color-green-500) 60%, transparent);
+        background-color: color-mix(in oklab, var(--color-chartreuse-500) 60%, transparent);
         cursor: pointer;
     }
 }

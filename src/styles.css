@@ -6,11 +6,6 @@
 
 
 @theme {
-  --color-test: var(--p-test);
-  --color-test2: var(--p-test2);
-  --color-foo: var(--p-foo-foo);
-
-
   --color-panelheader: var(--p-panelheader);
   --color-panelbody: var(--p-panelbody);
   --color-panelfooter: var(--p-panelfooter);
@@ -18,4 +13,28 @@
   --color-textsecondary: var(--p-textsecondary);
   --color-bordercolor: var(--p-bordercolor);
   --color-taskbg: var(--p-taskbg);
+
+  --color-chartreuse-50: var(--p-chartreuse-50);
+  --color-chartreuse-100: var(--p-chartreuse-100);
+  --color-chartreuse-200: var(--p-chartreuse-200);
+  --color-chartreuse-300: var(--p-chartreuse-300);
+  --color-chartreuse-400: var(--p-chartreuse-400);
+  --color-chartreuse-500: var(--p-chartreuse-500);
+  --color-chartreuse-600: var(--p-chartreuse-600);
+  --color-chartreuse-700: var(--p-chartreuse-700);
+  --color-chartreuse-800: var(--p-chartreuse-800);
+  --color-chartreuse-900: var(--p-chartreuse-900);
+  --color-chartreuse-950: var(--p-chartreuse-950);
+
+  --color-olive-50: var(--p-olive-50);
+  --color-olive-100: var(--p-olive-100);
+  --color-olive-200: var(--p-olive-200);
+  --color-olive-300: var(--p-olive-300);
+  --color-olive-400: var(--p-olive-400);
+  --color-olive-500: var(--p-olive-500);
+  --color-olive-600: var(--p-olive-600);
+  --color-olive-700: var(--p-olive-700);
+  --color-olive-800: var(--p-olive-800);
+  --color-olive-900: var(--p-olive-900);
+  --color-olive-950: var(--p-olive-950);
 }
