@@ -1,4 +1,4 @@
-use crate::{AppState, FileStatus, HashMap, Mutex, Path, PathBuf, State, Task, WorkingFile};
+use crate::{AppState, FileStatus, FileStatusResponse, FileStatusStats, HashMap, Mutex, Path, PathBuf, State, Task, WorkingFile};
 use std::time::SystemTime;
 // use notify_rust::Notification;
 // use rfd::{AsyncMessageDialog, MessageDialogResult};
@@ -208,8 +208,12 @@ pub fn resolve_workingfile_duplicates(state: &State<'_, Mutex<AppState>>) {
 pub fn convert_working_files_to_file_status(state: &State<'_, Mutex<AppState>>) {
     let mut state = state.lock().unwrap();
     let mut file_statuses: Vec<FileStatus> = Vec::with_capacity(state.working_files.len());
+    let mut filtered_count: usize = 0;
 
     for working_file in &state.working_files {
+        if !working_file.active {
+            filtered_count += 1;
+        }
         let file_status = FileStatus {
             old_file_name: working_file.source.file_name().unwrap().to_string_lossy().into_owned(),
             new_file_name: working_file.target.file_name().unwrap().to_string_lossy().into_owned(),
@@ -219,6 +223,7 @@ pub fn convert_working_files_to_file_status(state: &State<'_, Mutex<AppState>>) 
         file_statuses.push(file_status);
     }
     state.file_statuses = file_statuses;
+    state.filtered_count = filtered_count;
 }
 
 pub fn apply_selections_to_filestatuses(state: &State<'_, Mutex<AppState>>) {
@@ -246,24 +251,29 @@ pub fn apply_selections_to_filestatuses(state: &State<'_, Mutex<AppState>>) {
     // }
 }
 
-pub fn apply_search_to_filestatuses(state: &State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
+pub fn apply_search_and_build_response(state: &State<'_, Mutex<AppState>>) -> FileStatusResponse {
     let state = state.lock().unwrap();
-    let search_term = state.search.clone();
-    let search_is_empty = search_term.is_empty();
-
-    if search_is_empty {
+    let statuses = if state.search.is_empty() {
         state.file_statuses.clone()
     } else {
         state
             .file_statuses
             .iter()
             .filter(|file_status| {
-                let old = file_status.old_file_name.contains(&search_term);
-                let new = file_status.new_file_name.contains(&search_term);
-
+                let old = file_status.old_file_name.contains(&state.search);
+                let new = file_status.new_file_name.contains(&state.search);
                 old || new
             })
             .cloned()
             .collect()
+    };
+    FileStatusResponse {
+        statuses,
+        stats: FileStatusStats {
+            total: state.file_statuses.len(),
+            selected: state.selected_filestatuses.as_ref().map_or(0, |s| s.len()),
+            filtered: state.filtered_count,
+            ready: state.file_statuses.len() - state.filtered_count,
+        },
     }
 }

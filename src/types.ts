@@ -6,6 +6,18 @@ export interface FileStatus {
     selected: boolean;
 }
 
+export interface FileStatusStats {
+    total: number;
+    selected: number;
+    filtered: number;
+    ready: number;
+}
+
+export interface FileStatusResponse {
+    statuses: FileStatus[];
+    stats: FileStatusStats;
+}
+
 //  <-- === Task Type. Contains all Sub Tasks within === -->
 export type Task =
     | { CustomText: { text: string; at_start: boolean; active: boolean } }

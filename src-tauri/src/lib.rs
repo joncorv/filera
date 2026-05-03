@@ -34,6 +34,20 @@ pub struct FileStatus {
 }
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, Default)]
+pub struct FileStatusStats {
+    pub total: usize,
+    pub selected: usize,
+    pub filtered: usize,
+    pub ready: usize,
+}
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct FileStatusResponse {
+    pub statuses: Vec<FileStatus>,
+    pub stats: FileStatusStats,
+}
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, Default)]
 pub struct AppState {
     file_names: Vec<String>,
     file_names_sorted: Vec<String>,
@@ -46,6 +60,7 @@ pub struct AppState {
     file_statuses: Vec<FileStatus>,
     selected_filestatuses: Option<HashSet<usize>>,
     last_selected_filestatus: Option<usize>,
+    filtered_count: usize,
 }
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]

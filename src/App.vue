@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, Ref, computed } from "vue";
+import { ref, computed, shallowRef } from "vue";
 import { onMounted, onUnmounted } from "vue";
 
 import "./styles.css"; // Tailwind Stuff
@@ -29,7 +29,7 @@ import FilterTimeTask from "./components/tasks/FilterTimeTask.vue";
 import FilterSizeTask from "./components/tasks/FilterSizeTask.vue";
 import FileStatusTable from "./components/FileStatusTable.vue";
 import "primeicons/primeicons.css";
-import type { FileStatus, TaskWithId } from "./types";
+import type { FileStatusResponse, TaskWithId } from "./types";
 import {
     isCustomText,
     isFindAndReplace,
@@ -95,8 +95,10 @@ const metadata = [
     { name: "Type", code: "type" },
 ];
 
-const fileStatusReturn: Ref<FileStatus[]> = ref([]);
-const numFileStatusItems = computed(() => fileStatusReturn.value.length);
+const fileStatusResponse = shallowRef<FileStatusResponse>({
+    statuses: [],
+    stats: { total: 0, selected: 0, filtered: 0, ready: 0 },
+});
 const numTaskListItems = computed(() => taskList.value.length);
 
 //  <-- === Opens Files System Dialog === -->
@@ -107,7 +109,7 @@ async function open_files() {
     });
 
     if (selectedFiles) {
-        fileStatusReturn.value = await invoke("user_open_files", {
+        fileStatusResponse.value = await invoke("user_open_files", {
             fileNames: selectedFiles,
         });
     } else {
@@ -124,7 +126,7 @@ async function open_folders() {
     });
 
     if (selectedFolders) {
-        fileStatusReturn.value = await invoke("user_open_folders", {
+        fileStatusResponse.value = await invoke("user_open_folders", {
             directories: selectedFolders,
         });
     } else {
@@ -134,7 +136,7 @@ async function open_folders() {
 
 async function user_dragdrop_files(paths: string[]) {
     if (paths) {
-        fileStatusReturn.value = await invoke("user_dragdrop_files", {
+        fileStatusResponse.value = await invoke("user_dragdrop_files", {
             files: paths,
         });
     }
@@ -161,48 +163,48 @@ async function user_update_sort() {
         sortAscending.value = true;
         previousSortChoice.value = sortChoice.value;
     }
-    fileStatusReturn.value = await invoke("user_update_sort", {
+    fileStatusResponse.value = await invoke("user_update_sort", {
         sortChoice: sortChoice.value,
         sortAscending: sortAscending.value,
     });
 }
 
 async function user_filestatus_click(index: number) {
-    fileStatusReturn.value = await invoke("user_filestatus_click", {
+    fileStatusResponse.value = await invoke("user_filestatus_click", {
         index: index,
     });
 }
 async function user_filestatus_ctrl_click(index: number) {
-    fileStatusReturn.value = await invoke("user_filestatus_ctrl_click", {
+    fileStatusResponse.value = await invoke("user_filestatus_ctrl_click", {
         index: index,
     });
 }
 async function user_filestatus_shift_click(index: number) {
-    fileStatusReturn.value = await invoke("user_filestatus_shift_click", {
+    fileStatusResponse.value = await invoke("user_filestatus_shift_click", {
         index: index,
     });
 }
 
 async function user_filestatus_selection_clear() {
-    fileStatusReturn.value = await invoke("user_filestatus_selection_clear");
+    fileStatusResponse.value = await invoke("user_filestatus_selection_clear");
 }
 
 async function user_filestatus_selection_delete() {
-    fileStatusReturn.value = await invoke("user_filestatus_selection_delete");
+    fileStatusResponse.value = await invoke("user_filestatus_selection_delete");
 }
 
 async function user_update_search() {
-    fileStatusReturn.value = await invoke("user_update_search", { search: search.value });
+    fileStatusResponse.value = await invoke("user_update_search", { search: search.value });
 }
 
 async function user_update_tasks() {
-    fileStatusReturn.value = await invoke("user_update_tasks", {
+    fileStatusResponse.value = await invoke("user_update_tasks", {
         taskList: taskList.value.map((t) => t.task),
     });
 }
 
 async function clearFiles() {
-    fileStatusReturn.value = [];
+    fileStatusResponse.value = { statuses: [], stats: { total: 0, selected: 0, filtered: 0, ready: 0 } };
     await invoke("user_clear_files");
 }
 
@@ -415,7 +417,7 @@ async function user_rename_files() {
         outputDirectory.value = "";
     }
 
-    fileStatusReturn.value = await invoke("user_rename_files", {
+    fileStatusResponse.value = await invoke("user_rename_files", {
         outputDropdownChoice: outputDropdownChoice.value,
         outputDirectory: outputDirectory.value,
     });
@@ -490,26 +492,22 @@ async function user_rename_files() {
                 <hr class="border-bordercolor" />
 
                 <FileStatusTable
-                    :fileStatuses="fileStatusReturn"
-                    :numFileStatuses="numFileStatusItems"
+                    :fileStatusResponse="fileStatusResponse"
                     @userFilestatusClick="user_filestatus_click"
                     @userFilestatusCtrlClick="user_filestatus_ctrl_click"
                     @userFilestatusShiftClick="user_filestatus_shift_click"
                     @userFilestatusSelectionClear="user_filestatus_selection_clear"
-                    @userFilestatusDelete="user_filestatus_selection_delete"
+                    @userFilestatusSelectionDelete="user_filestatus_selection_delete"
                 />
 
                 <footer
+                    v-if="fileStatusResponse.stats.total > 0"
                     id="footer_left_panel"
-                    class="flex flex-row py-2 px-2 bg-panelfooter border-t rounded-b-lg border-bordercolor text-sm text-textprimary"
+                    class="flex flex-row py-2 px-2 gap-3 bg-panelfooter border-t rounded-b-lg border-bordercolor text-sm text-textprimary"
                 >
-                    <div id="total-files-selected">
-                        <span class="">Total Files Selected: </span>
-                        <Transition mode="out-in">
-                            <span>{{ numFileStatusItems }}</span>
-                        </Transition>
-                    </div>
-
+                    <span v-if="fileStatusResponse.stats.selected > 0">Selected: {{ fileStatusResponse.stats.selected }}</span>
+                    <span v-if="fileStatusResponse.stats.filtered > 0" class="text-textsecondary">Filtered: {{ fileStatusResponse.stats.filtered }}</span>
+                    <span v-if="fileStatusResponse.stats.total > 0">Ready: {{ fileStatusResponse.stats.ready }} of {{ fileStatusResponse.stats.total }}</span>
                     <div id="separator" class="flex-1"></div>
                 </footer>
             </SplitterPanel>

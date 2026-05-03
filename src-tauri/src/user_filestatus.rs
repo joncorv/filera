@@ -1,13 +1,9 @@
-use crate::{AppState, FileStatus, HashSet, Mutex, State};
+use crate::{AppState, FileStatusResponse, HashSet, Mutex, State};
 
-use crate::atomics::{
-    apply_search_to_filestatuses, apply_selections_to_filestatuses, convert_file_names_to_working_files,
-    convert_working_files_to_file_status, resolve_workingfile_duplicates, solve_duplicates, sort_file_names, state_update_search,
-    state_update_sort, state_update_tasks,
-};
+use crate::atomics::{apply_search_and_build_response, apply_selections_to_filestatuses, convert_working_files_to_file_status};
 
 #[tauri::command]
-pub fn user_filestatus_click(index: usize, state: State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
+pub fn user_filestatus_click(index: usize, state: State<'_, Mutex<AppState>>) -> FileStatusResponse {
     {
         let mut state = state.lock().unwrap();
         let selected_filestatuses = state.selected_filestatuses.clone();
@@ -48,11 +44,11 @@ pub fn user_filestatus_click(index: usize, state: State<'_, Mutex<AppState>>) ->
             }
         }
     }
-    apply_search_to_filestatuses(&state)
+    apply_search_and_build_response(&state)
 }
 
 #[tauri::command]
-pub fn user_filestatus_ctrl_click(index: usize, state: State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
+pub fn user_filestatus_ctrl_click(index: usize, state: State<'_, Mutex<AppState>>) -> FileStatusResponse {
     {
         let mut state = state.lock().unwrap();
         let selected_filestatuses = state.selected_filestatuses.clone();
@@ -94,11 +90,11 @@ pub fn user_filestatus_ctrl_click(index: usize, state: State<'_, Mutex<AppState>
             }
         }
     }
-    apply_search_to_filestatuses(&state)
+    apply_search_and_build_response(&state)
 }
 
 #[tauri::command]
-pub fn user_filestatus_shift_click(index: usize, state: State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
+pub fn user_filestatus_shift_click(index: usize, state: State<'_, Mutex<AppState>>) -> FileStatusResponse {
     {
         let mut state = state.lock().unwrap();
         let selected_filestatuses = state.selected_filestatuses.clone();
@@ -133,11 +129,40 @@ pub fn user_filestatus_shift_click(index: usize, state: State<'_, Mutex<AppState
             }
         }
     }
-    apply_search_to_filestatuses(&state)
+    apply_search_and_build_response(&state)
 }
 
 #[tauri::command]
-pub fn user_filestatus_selection_clear() {}
+pub fn user_filestatus_selection_clear(state: State<'_, Mutex<AppState>>) -> FileStatusResponse {
+    {
+        let mut state = state.lock().unwrap();
+        if let Some(selected) = state.selected_filestatuses.take() {
+            selected.iter().for_each(|i| {
+                if let Some(fs) = state.file_statuses.get_mut(*i) {
+                    fs.selected = false;
+                }
+            });
+        }
+        state.last_selected_filestatus = None;
+    }
+    apply_search_and_build_response(&state)
+}
 
 #[tauri::command]
-pub fn user_filestatus_selection_delete() {}
+pub fn user_filestatus_selection_delete(state: State<'_, Mutex<AppState>>) -> FileStatusResponse {
+    {
+        let mut state = state.lock().unwrap();
+        if let Some(selected) = state.selected_filestatuses.take() {
+            let mut indices: Vec<usize> = selected.into_iter().collect();
+            indices.sort_unstable();
+            indices.into_iter().rev().for_each(|i| {
+                let src = state.working_files[i].source.to_string_lossy().to_string();
+                state.working_files.remove(i);
+                state.file_names.retain(|path| path != &src);
+            });
+        }
+        state.last_selected_filestatus = None;
+    }
+    convert_working_files_to_file_status(&state);
+    apply_search_and_build_response(&state)
+}

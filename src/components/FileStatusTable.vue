@@ -1,18 +1,10 @@
 <script setup lang="ts">
-// import { ref, Ref } from "vue";
-import type { FileStatus } from "../types";
-import type { PropType } from "vue";
+import type { FileStatusResponse } from "../types";
+import Button from "primevue/button";
 
-const props = defineProps({
-    fileStatuses: {
-        type: Array as PropType<FileStatus[]>,
-        required: true,
-    },
-    numFileStatuses: {
-        type: Number,
-        required: true,
-    },
-});
+const props = defineProps<{
+    fileStatusResponse: FileStatusResponse;
+}>();
 
 const emit = defineEmits<{
     userFilestatusClick: [index: number];
@@ -27,7 +19,7 @@ const emit = defineEmits<{
 
 <template>
     <div
-        v-if="numFileStatuses < 1"
+        v-if="fileStatusResponse.statuses.length < 1"
         class="flex flex-1 flex-col justify-center items-center w-full h-full whitespace-nowrap bg-panelbody"
     >
         <span class="text-center -mt-4 mb-1 text-textprimary">Your files live here</span>
@@ -56,7 +48,7 @@ const emit = defineEmits<{
                 </colgroup>
                 <tbody>
                     <tr
-                        v-for="(item, index) in fileStatuses"
+                        v-for="(item, index) in fileStatusResponse.statuses"
                         :key="index"
                         @click.exact="emit('userFilestatusClick', index)"
                         @click.ctrl="emit('userFilestatusCtrlClick', index)"
@@ -71,7 +63,7 @@ const emit = defineEmits<{
                                 'text-primary font-medium': item.selected,
                                 'text-textprimary': !item.selected,
                                 'opacity-50': !item.selected && !item.active,
-                                'italic': !item.active,
+                                italic: !item.active,
                             }"
                         >
                             {{ item.old_file_name }}
@@ -82,7 +74,7 @@ const emit = defineEmits<{
                                 'text-primary font-medium': item.selected,
                                 'text-textprimary': !item.selected,
                                 'opacity-50': !item.selected && !item.active,
-                                'italic': !item.active,
+                                italic: !item.active,
                             }"
                         >
                             {{ item.new_file_name }}
@@ -91,5 +83,26 @@ const emit = defineEmits<{
                 </tbody>
             </table>
         </div>
+
+    </div>
+
+    <div
+        v-if="fileStatusResponse.stats.selected > 0"
+        class="flex justify-center gap-2 p-2 bg-panelheader border-t border-bordercolor"
+    >
+        <Button
+            size="small"
+            severity="secondary"
+            icon="pi pi-undo"
+            label="Undo Selection"
+            @click="emit('userFilestatusSelectionClear')"
+        />
+        <Button
+            size="small"
+            severity="danger"
+            icon="pi pi-trash"
+            label="Remove Files"
+            @click="emit('userFilestatusSelectionDelete')"
+        />
     </div>
 </template>

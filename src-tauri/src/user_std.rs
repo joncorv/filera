@@ -1,8 +1,8 @@
 use crate::process_tasks::process_tasks_on_working_files;
-use crate::{AppState, FileStatus, HashMap, Mutex, Path, PathBuf, State, Task, WorkingFile};
+use crate::{AppState, FileStatusResponse, FileStatusStats, HashMap, Mutex, Path, PathBuf, State, Task, WorkingFile};
 
 use crate::atomics::{
-    apply_search_to_filestatuses, apply_selections_to_filestatuses, convert_file_names_to_working_files,
+    apply_search_and_build_response, apply_selections_to_filestatuses, convert_file_names_to_working_files,
     convert_working_files_to_file_status, resolve_workingfile_duplicates, solve_duplicates, sort_file_names,
     state_clear_selected_filestatusues, state_update_search, state_update_sort, state_update_tasks,
 };
@@ -17,7 +17,7 @@ use tauri_plugin_notification::NotificationExt;
 use walkdir::WalkDir;
 
 #[tauri::command]
-pub fn user_open_files(file_names: Vec<String>, state: State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
+pub fn user_open_files(file_names: Vec<String>, state: State<'_, Mutex<AppState>>) -> FileStatusResponse {
     solve_duplicates(file_names, &state);
     sort_file_names(&state);
     convert_file_names_to_working_files(&state);
@@ -26,11 +26,11 @@ pub fn user_open_files(file_names: Vec<String>, state: State<'_, Mutex<AppState>
     state_clear_selected_filestatusues(&state);
     convert_working_files_to_file_status(&state);
     apply_selections_to_filestatuses(&state);
-    apply_search_to_filestatuses(&state)
+    apply_search_and_build_response(&state)
 }
 
 #[tauri::command]
-pub fn user_open_folders(directories: Vec<String>, state: State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
+pub fn user_open_folders(directories: Vec<String>, state: State<'_, Mutex<AppState>>) -> FileStatusResponse {
     let mut file_names: Vec<String> = Vec::new();
 
     for dir in directories {
@@ -47,11 +47,11 @@ pub fn user_open_folders(directories: Vec<String>, state: State<'_, Mutex<AppSta
     state_clear_selected_filestatusues(&state);
     convert_working_files_to_file_status(&state);
     apply_selections_to_filestatuses(&state);
-    apply_search_to_filestatuses(&state)
+    apply_search_and_build_response(&state)
 }
 
 #[tauri::command]
-pub fn user_dragdrop_files(files: Vec<String>, state: State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
+pub fn user_dragdrop_files(files: Vec<String>, state: State<'_, Mutex<AppState>>) -> FileStatusResponse {
     let mut file_names: Vec<String> = Vec::new();
 
     for file in files {
@@ -74,7 +74,7 @@ pub fn user_dragdrop_files(files: Vec<String>, state: State<'_, Mutex<AppState>>
     state_clear_selected_filestatusues(&state);
     convert_working_files_to_file_status(&state);
     apply_selections_to_filestatuses(&state);
-    apply_search_to_filestatuses(&state)
+    apply_search_and_build_response(&state)
 }
 
 #[tauri::command]
@@ -87,7 +87,7 @@ pub fn user_clear_files(state: State<'_, Mutex<AppState>>) {
 }
 
 #[tauri::command]
-pub fn user_update_sort(sort_choice: String, sort_ascending: bool, state: State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
+pub fn user_update_sort(sort_choice: String, sort_ascending: bool, state: State<'_, Mutex<AppState>>) -> FileStatusResponse {
     state_update_sort(sort_choice, sort_ascending, &state);
     sort_file_names(&state);
     convert_file_names_to_working_files(&state);
@@ -96,25 +96,25 @@ pub fn user_update_sort(sort_choice: String, sort_ascending: bool, state: State<
     state_clear_selected_filestatusues(&state);
     convert_working_files_to_file_status(&state);
     apply_selections_to_filestatuses(&state);
-    apply_search_to_filestatuses(&state)
+    apply_search_and_build_response(&state)
 }
 
 #[tauri::command]
-pub fn user_update_tasks(task_list: Vec<Task>, state: State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
+pub fn user_update_tasks(task_list: Vec<Task>, state: State<'_, Mutex<AppState>>) -> FileStatusResponse {
     state_update_tasks(task_list, &state);
     process_tasks_on_working_files(&state);
     resolve_workingfile_duplicates(&state);
     convert_working_files_to_file_status(&state);
     apply_selections_to_filestatuses(&state);
-    apply_search_to_filestatuses(&state)
+    apply_search_and_build_response(&state)
 }
 
 #[tauri::command]
-pub fn user_update_search(search: String, state: State<'_, Mutex<AppState>>) -> Vec<FileStatus> {
+pub fn user_update_search(search: String, state: State<'_, Mutex<AppState>>) -> FileStatusResponse {
     state_update_search(search, &state);
     convert_working_files_to_file_status(&state);
     apply_selections_to_filestatuses(&state);
-    apply_search_to_filestatuses(&state)
+    apply_search_and_build_response(&state)
 }
 
 #[tauri::command]
@@ -123,18 +123,26 @@ pub async fn user_rename_files(
     output_directory: &str,
     state: State<'_, Mutex<AppState>>,
     app: tauri::AppHandle,
-) -> Result<Vec<FileStatus>, Vec<FileStatus>> {
+) -> Result<FileStatusResponse, FileStatusResponse> {
     // const REPLACE: &str = "replace";
     const COPY: &str = "copy";
     const MOVE: &str = "move";
 
     println!("output dropdown choice= {output_dropdown_choice}");
     println!("output directory= {output_directory}");
-    // let existing_file_status = convert_working_files_to_file_status(&state);
-    let existing_file_status;
+
+    let existing_response;
     {
         let state = state.lock().unwrap();
-        existing_file_status = state.file_statuses.clone();
+        existing_response = FileStatusResponse {
+            statuses: state.file_statuses.clone(),
+            stats: FileStatusStats {
+                total: state.file_statuses.len(),
+                selected: state.selected_filestatuses.as_ref().map_or(0, |s| s.len()),
+                filtered: state.filtered_count,
+                ready: state.file_statuses.len() - state.filtered_count,
+            },
+        };
     }
 
     // Extract the needed data from the locked state without holding the lock across await points
@@ -152,8 +160,8 @@ pub async fn user_rename_files(
             .show()
             .await
         {
-            MessageDialogResult::Ok => Ok(existing_file_status),
-            _ => Err(existing_file_status),
+            MessageDialogResult::Ok => Ok(existing_response),
+            _ => Err(existing_response),
         }
     }
     // if there aren't tasks but there are files
@@ -165,8 +173,8 @@ pub async fn user_rename_files(
             .show()
             .await
         {
-            MessageDialogResult::Ok => Ok(existing_file_status),
-            _ => Err(existing_file_status),
+            MessageDialogResult::Ok => Ok(existing_response),
+            _ => Err(existing_response),
         }
     }
     // if there aren't tasks or files
@@ -178,8 +186,8 @@ pub async fn user_rename_files(
             .show()
             .await
         {
-            MessageDialogResult::Ok => Ok(existing_file_status),
-            _ => Err(existing_file_status),
+            MessageDialogResult::Ok => Ok(existing_response),
+            _ => Err(existing_response),
         }
     }
     // if there are tasks and files
@@ -216,7 +224,7 @@ pub async fn user_rename_files(
                         }
                         state.file_names.clear();
                         state.working_files.clear();
-                        let blank_file_status: Vec<FileStatus> = vec![];
+                        let blank = FileStatusResponse { statuses: vec![], stats: FileStatusStats::default() };
 
                         app.notification()
                             .builder()
@@ -225,7 +233,7 @@ pub async fn user_rename_files(
                             .show()
                             .unwrap();
 
-                        Ok(blank_file_status)
+                        Ok(blank)
                     }
                     MOVE => {
                         // here is our move commands
@@ -248,7 +256,7 @@ pub async fn user_rename_files(
                         }
                         state.file_names.clear();
                         state.working_files.clear();
-                        let blank_file_status: Vec<FileStatus> = vec![];
+                        let blank = FileStatusResponse { statuses: vec![], stats: FileStatusStats::default() };
 
                         app.notification()
                             .builder()
@@ -257,7 +265,7 @@ pub async fn user_rename_files(
                             .show()
                             .unwrap();
 
-                        Ok(blank_file_status)
+                        Ok(blank)
                     }
                     _ => {
                         // here is our replace commands
@@ -273,7 +281,7 @@ pub async fn user_rename_files(
                         }
                         state.file_names.clear();
                         state.working_files.clear();
-                        let blank_file_status: Vec<FileStatus> = vec![];
+                        let blank = FileStatusResponse { statuses: vec![], stats: FileStatusStats::default() };
 
                         app.notification()
                             .builder()
@@ -282,12 +290,12 @@ pub async fn user_rename_files(
                             .show()
                             .unwrap();
 
-                        Ok(blank_file_status)
+                        Ok(blank)
                     }
                 }
             }
-            MessageDialogResult::Cancel => Err(existing_file_status),
-            _ => Err(existing_file_status),
+            MessageDialogResult::Cancel => Err(existing_response),
+            _ => Err(existing_response),
         }
     }
 }
