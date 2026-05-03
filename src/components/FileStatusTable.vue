@@ -2,7 +2,7 @@
 import type { FileStatusResponse } from "../types";
 import Button from "primevue/button";
 
-const props = defineProps<{
+defineProps<{
     fileStatusResponse: FileStatusResponse;
 }>();
 
