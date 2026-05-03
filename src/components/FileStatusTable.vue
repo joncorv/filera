@@ -20,7 +20,7 @@ const emit = defineEmits<{
 <template>
     <div
         v-if="fileStatusResponse.statuses.length < 1"
-        class="flex flex-1 flex-col justify-center items-center w-full h-full whitespace-nowrap bg-panelbody"
+        class="flex flex-1 flex-col justify-center items-center w-full h-full whitespace-nowrap bg-panelbody select-none"
     >
         <span class="text-center -mt-4 mb-1 text-textprimary">Your files live here</span>
         <span class="text-center text-sm text-textsecondary">Please use the open buttons above</span>
@@ -55,12 +55,12 @@ const emit = defineEmits<{
                         @click.meta="emit('userFilestatusCtrlClick', index)"
                         @click.shift="emit('userFilestatusShiftClick', index)"
                         class="cursor-pointer"
-                        :class="item.selected ? 'bg-primary/20' : ''"
+                        :class="item.selected ? 'bg-accenthover' : ''"
                     >
                         <td
                             class="px-4 py-2 border-b border-bordercolor break-words"
                             :class="{
-                                'text-primary font-medium': item.selected,
+                                'font-medium text-highlighttext': item.selected,
                                 'text-textprimary': !item.selected,
                                 'opacity-50': !item.selected && !item.active,
                                 italic: !item.active,
@@ -71,7 +71,7 @@ const emit = defineEmits<{
                         <td
                             class="px-4 py-2 border-b border-bordercolor break-words"
                             :class="{
-                                'text-primary font-medium': item.selected,
+                                'font-medium text-highlighttext': item.selected,
                                 'text-textprimary': !item.selected,
                                 'opacity-50': !item.selected && !item.active,
                                 italic: !item.active,
@@ -88,13 +88,13 @@ const emit = defineEmits<{
 
     <div
         v-if="fileStatusResponse.stats.selected > 0"
-        class="flex justify-center gap-2 p-2 bg-panelheader border-t border-bordercolor"
+        class="flex justify-center gap-2 p-2 bg-panelheader/50 border-t border-bordercolor"
     >
         <Button
             size="small"
             severity="secondary"
-            icon="pi pi-undo"
-            label="Undo Selection"
+            icon="pi pi-eraser"
+            label="Clear Selection"
             @click="emit('userFilestatusSelectionClear')"
         />
         <Button

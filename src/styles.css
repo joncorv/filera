@@ -13,6 +13,8 @@
   --color-textsecondary: var(--p-textsecondary);
   --color-bordercolor: var(--p-bordercolor);
   --color-taskbg: var(--p-taskbg);
+  --color-highlighttext: var(--p-highlighttext);
+  --color-accenthover: var(--p-accenthover);
 
   --color-chartreuse-50: var(--p-chartreuse-50);
   --color-chartreuse-100: var(--p-chartreuse-100);
@@ -26,15 +28,15 @@
   --color-chartreuse-900: var(--p-chartreuse-900);
   --color-chartreuse-950: var(--p-chartreuse-950);
 
-  --color-olive-50: var(--p-olive-50);
-  --color-olive-100: var(--p-olive-100);
-  --color-olive-200: var(--p-olive-200);
-  --color-olive-300: var(--p-olive-300);
-  --color-olive-400: var(--p-olive-400);
-  --color-olive-500: var(--p-olive-500);
-  --color-olive-600: var(--p-olive-600);
-  --color-olive-700: var(--p-olive-700);
-  --color-olive-800: var(--p-olive-800);
-  --color-olive-900: var(--p-olive-900);
-  --color-olive-950: var(--p-olive-950);
+  --color-surface-50: var(--p-surface-50);
+  --color-surface-100: var(--p-surface-100);
+  --color-surface-200: var(--p-surface-200);
+  --color-surface-300: var(--p-surface-300);
+  --color-surface-400: var(--p-surface-400);
+  --color-surface-500: var(--p-surface-500);
+  --color-surface-600: var(--p-surface-600);
+  --color-surface-700: var(--p-surface-700);
+  --color-surface-800: var(--p-surface-800);
+  --color-surface-900: var(--p-surface-900);
+  --color-surface-950: var(--p-surface-950);
 }

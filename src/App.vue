@@ -468,14 +468,14 @@ async function user_rename_files() {
                         @change="user_update_sort"
                     >
                         <template #value="{ value: selectedSort }">
-                            <span v-if="selectedSort" class="text-olive-50">
+                            <span v-if="selectedSort" class="text-textprimary">
                                 <i
                                     :class="sortAscending ? 'pi pi-sort-amount-down' : 'pi pi-sort-amount-up'"
                                     class="inline-block text-xs mr-1 -mt-0.5 align-middle"
                                 ></i>
                                 {{ metadata.find((m) => m.code === selectedSort)?.name }}
                             </span>
-                            <span v-else class="text-olive-50">Sort By</span>
+                            <span v-else class="text-textprimary">Sort By</span>
                         </template>
                     </Select>
 
@@ -503,7 +503,7 @@ async function user_rename_files() {
                 <footer
                     v-if="fileStatusResponse.stats.total > 0"
                     id="footer_left_panel"
-                    class="flex flex-row py-2 px-2 gap-3 bg-panelfooter border-t rounded-b-lg border-bordercolor text-sm text-textprimary"
+                    class="flex flex-row py-2 px-2 gap-3 bg-panelfooter border-t rounded-b-lg border-bordercolor text-sm text-textprimary select-none"
                 >
                     <span v-if="fileStatusResponse.stats.selected > 0">Selected: {{ fileStatusResponse.stats.selected }}</span>
                     <span v-if="fileStatusResponse.stats.filtered > 0" class="text-textsecondary">Filtered: {{ fileStatusResponse.stats.filtered }}</span>
@@ -517,14 +517,14 @@ async function user_rename_files() {
                 class="flex flex-col flex-1/3 ml-0.25 mb-1 mt-1 mr-1 bg-panelheader rounded-lg border border-bordercolor"
             >
                 <!-- === Right SplitterPanel Menubar === -->
-                <div id="file_buttons" class="flex flex-row m-2 gap-2 items-center justify-start bg-panelheader">
+                <div id="file_buttons" class="flex flex-row m-2 gap-2 items-center justify-start bg-panelheader select-none">
                     <!-- <Menu id="customTextOverlayMenu" :model="customTextMenuItems" popup="true" /> -->
 
                     <Button
                         type="button"
                         label="File Tasks & Effects"
                         size="small"
-                        icon="pi pi-plus"
+                        icon="pi pi-sparkles"
                         class="min-w-max"
                         severity="secondary"
                         @click="taskMenuToggleFunction"
@@ -537,7 +537,7 @@ async function user_rename_files() {
                         type="button"
                         label="Filters"
                         size="small"
-                        icon="pi pi-plus"
+                        icon="pi pi-filter"
                         class="min-w-max"
                         severity="secondary"
                         @click="taskFilterToggleFunction"
@@ -581,7 +581,7 @@ async function user_rename_files() {
                     <!-- === No Files Selected === -->
                     <div
                         v-if="!numTaskListItems"
-                        class="flex flex-1 flex-col justify-center items-center w-full h-full whitespace-nowrap"
+                        class="flex flex-1 flex-col justify-center items-center w-full h-full whitespace-nowrap select-none"
                     >
                         <span class="text-center mb-1 text-textprimary">File tasks & effects go here</span>
                         <span class="text-center text-sm text-textsecondary">Please use the add buttons above</span>
@@ -763,7 +763,7 @@ async function user_rename_files() {
 
                 <footer
                     id="footer_right_panel"
-                    class="flex flex-row py-2 px-2 gap-2 bg-panelfooter border-t rounded-b-lg border-bordercolor text-sm text-textprimary"
+                    class="flex flex-row py-2 px-2 gap-2 bg-panelfooter border-t rounded-b-lg border-bordercolor text-sm text-textprimary select-none"
                 >
                     <Select
                         v-model="outputDropdownChoice"
@@ -945,6 +945,14 @@ html {
     --p-floatlabel-in-input-padding-bottom: 6rem;
 }
 
+.p-button,
+.p-select {
+    box-shadow: 2px 3px 3px rgba(0, 0, 0, 0.08);
+    &:hover {
+        box-shadow: 2px 3px 3px rgba(0, 0, 0, 0.15);
+    }
+}
+
 .task-container {
     display: flex;
     flex-direction: column;
@@ -954,5 +962,13 @@ html {
     border-radius: 0.5rem;
     padding: 0.75rem;
     overflow: hidden;
+    box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.08);
+}
+
+@media (prefers-color-scheme: dark) {
+    .task-container {
+        border-color: transparent;
+        box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.25);
+    }
 }
 </style>
