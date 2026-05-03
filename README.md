@@ -1,25 +1,64 @@
 # Filera
-A powerful, cross-platform batch file renaming tool written in Rust.
+A cross-platform desktop application for batch file renaming, built with Tauri (Rust + Vue 3).
 
 ![filera app ui](src/assets/app_ui.png?raw=true "Filera App UI")
 
 ## Features
 
-- Batch rename files with pattern-based rules
-- Preview changes before applying
-- Recursive folder support
-- Light/dark mode
+### File Input
+- Open individual files or folders (recursive)
+- Drag & drop files onto the window
+- Search / filter files by name
+- Sort by name, date created, date modified, size, or type
+
+### File Selection
+- Click, Ctrl/Cmd+Click, or Shift+Click to select files
+- Remove selected files from the list
+- Clear all loaded files
+
+### Transformation Tasks
+Chain multiple tasks that apply in order with a live preview:
+
+| Task | Description |
+|------|-------------|
+| **Find & Replace** | Replace text in filenames |
+| **Number Sequence** | Append/prepend a numbered sequence with configurable padding and separator |
+| **Custom Text** | Insert text at the start or end of filenames |
+| **Change Case** | Convert filenames to lowercase or UPPERCASE |
+| **Date** | Insert file modification date (configurable format and position) |
+| **Time** | Insert file modification time (configurable separator and position) |
+| **Clear All** | Strip all text from filenames, keeping only the extension |
+
+### Filters
+Narrow down which files are renamed:
+
+| Filter | Description |
+|--------|-------------|
+| **Name Filter** | Include or exclude files matching a string |
+| **File Type Filter** | Include or exclude files by extension |
+| **Time Period Filter** | Filter by modification date range |
+| **Time Filter** | Filter files older or newer than a date |
+| **Size Filter** | Filter by file size (bytes through terabytes) |
+
+### Output Options
+- **Replace in place** — rename files at their current location
+- **Copy to directory** — copy files with new names to a chosen output directory
+- **Move to directory** — move and rename files to a chosen output directory
+
+### Other
+- Light / dark mode
 - Cross-platform (Windows, macOS, Linux)
 
 ## Installation
-Download from [Releases](https://github.com/joncorv/filera/releases) 
+Download from [Releases](https://github.com/joncorv/filera/releases)
 
-### Building from Source
+## Building from Source
+
+Requirements:
 - [Rust](https://rustup.rs/) (latest stable)
 - [Node.js](https://nodejs.org/) (v16 or higher)
-- [Tauri Dependencies](https://v2.tauri.app/start/prerequisites/)
+- [Tauri Prerequisites](https://v2.tauri.app/start/prerequisites/)
 
-### Getting Started
 ```bash
 git clone https://github.com/joncorv/filera.git
 cd filera
@@ -30,33 +69,19 @@ npm install
 # Start development server
 npm run tauri dev
 
-# ... or build the app
+# Build the app
 npm run tauri build
-
 ```
-## Nixos Dev
-If you're using nixos, run nix develop at the repo root and all dependencies will be met in a development shell.
 
-## Planned
-- Template Support
-- Undo functionality
-- Regex support
-- Batch folder renaming
+### NixOS
+Run `nix develop` at the repo root to drop into a development shell with all dependencies available.
 
-## 📋 Roadmap
-- [x] Fix blank file handling
-- [x] Implement light mode
-- [x] Add output directory options
-- [x] Impliment Open Folders with recursion
-- [ ] Template Support
+## Roadmap
+- [ ] Template support (save and reuse rename configurations)
 - [ ] Undo functionality
-- [ ] Regex support
+- [ ] Regex support in Find & Replace
 - [ ] Batch folder renaming
 - [ ] Plugin system
 
-## 📄 License
-This project is licensed under an open-souce MIT License.
-
----
-
-**Made with ❤️ for the community**
+## License
+MIT
