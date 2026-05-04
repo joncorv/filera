@@ -2,6 +2,8 @@ use crate::{AppState, Mutex, State, Task};
 use time::format_description::well_known::Iso8601;
 use time::OffsetDateTime;
 
+const BLANK_NAME: &str = "<BLANK>";
+
 #[tauri::command]
 pub fn process_tasks_on_working_files(state: &State<'_, Mutex<AppState>>) {
     let mut state = state.lock().unwrap();
@@ -28,7 +30,9 @@ pub fn process_tasks_on_working_files(state: &State<'_, Mutex<AppState>>) {
                         let has_period: bool = file_name.contains(".");
 
                         // NOTE: if the first char is a period, the file stem will be entire file name
-                        if let Some(t) = file.target.file_stem() {
+                        if file_name == BLANK_NAME {
+                            file_stem = "".to_string();
+                        } else if let Some(t) = file.target.file_stem() {
                             file_stem = t.to_string_lossy().to_string();
                         } else {
                             file_stem = "".to_string();
@@ -66,33 +70,26 @@ pub fn process_tasks_on_working_files(state: &State<'_, Mutex<AppState>>) {
 
                         let target_file_name = file.target.file_name();
 
-                        // if the file name exists
                         if let Some(t) = target_file_name {
-                            // store the file name into temp_val string
                             let temp_val = t.to_string_lossy().to_string();
 
-                            // if the file name is <BLANK>
-                            if temp_val == "<BLANK>".to_string() {
-                                // because the string is blank, we don't operate.
-                                new_file_name = "<BLANK>".to_string();
+                            if temp_val == BLANK_NAME {
+                                new_file_name = BLANK_NAME.to_string();
                             } else {
-                                // because it's not blank, we can operate on it
                                 new_file_name = temp_val.replace(find_text, replace_text);
                             }
                         } else {
-                            new_file_name = "".to_string();
+                            new_file_name = BLANK_NAME.to_string();
                         }
 
-                        // return the <BLANK> token if new_file_name is empty
                         if new_file_name.is_empty() {
-                            new_file_name = "<BLANK>".to_string();
+                            new_file_name = BLANK_NAME.to_string();
                         }
 
                         file.target.set_file_name(new_file_name);
                     }
                 }
 
-                // TODO: if filename starts w/ or does not contain ".", we return a special "<BLANK>" token that needs to be accounted for as an edge case in the rest of the tasks
                 Task::ClearAll { active } => {
                     if *active {
                         let file_extension: String;
@@ -101,13 +98,12 @@ pub fn process_tasks_on_working_files(state: &State<'_, Mutex<AppState>>) {
                             file_extension = t.to_string_lossy().to_string();
                             file.target.set_file_name(format!(".{file_extension}"));
                         } else {
-                            file.target.set_file_name("<BLANK>");
+                            file.target.set_file_name(BLANK_NAME);
                         }
                     }
                 }
 
                 // TODO: Need to build in cases for TitleCase.
-                // TODO: account for <BLANK> edge case
                 Task::ChangeCase { case_choice, active } => {
                     if *active {
                         let new_file_name: String;
@@ -118,23 +114,19 @@ pub fn process_tasks_on_working_files(state: &State<'_, Mutex<AppState>>) {
                             new_file_name = "".to_string();
                         }
 
-                        match *case_choice {
-                            0_u8 => {
-                                // lowercase
-                                file.target.set_file_name(new_file_name.to_lowercase());
-                            }
-                            1_u8 => {
-                                // UPPERCASE
-                                file.target.set_file_name(new_file_name.to_uppercase());
-                            }
-                            2_u8..=u8::MAX => {
-                                // figure out other case options later
-                                // file.target.set_file_name(new_file_name);
+                        if new_file_name != BLANK_NAME {
+                            match *case_choice {
+                                0 => {
+                                    file.target.set_file_name(new_file_name.to_lowercase());
+                                }
+                                1 => {
+                                    file.target.set_file_name(new_file_name.to_uppercase());
+                                }
+                                _ => {}
                             }
                         }
                     }
                 }
-                // TODO: account for <BLANK> edge case
                 Task::NumSequence {
                     start_num,
                     num_padding,
@@ -147,8 +139,11 @@ pub fn process_tasks_on_working_files(state: &State<'_, Mutex<AppState>>) {
                         let file_extension: String;
                         let index_u64 = u64::try_from(index).unwrap();
                         let num_padding_usize: usize = usize::try_from(*num_padding).unwrap();
+                        let file_name = file.target.file_name().unwrap().to_string_lossy();
 
-                        if let Some(t) = file.target.file_stem() {
+                        if file_name == BLANK_NAME {
+                            file_stem = "".to_string();
+                        } else if let Some(t) = file.target.file_stem() {
                             file_stem = t.to_string_lossy().to_string();
                         } else {
                             file_stem = "".to_string();
@@ -157,33 +152,28 @@ pub fn process_tasks_on_working_files(state: &State<'_, Mutex<AppState>>) {
                         let raw_sequence_num = index_u64 + start_num;
                         let sequence_num = format!("{raw_sequence_num:0num_padding_usize$}");
 
-                        if let Some(t) = file.target.extension() {
+                        if file_stem.is_empty() {
+                            file.target.set_file_name(&sequence_num);
+                        } else if let Some(t) = file.target.extension() {
                             file_extension = t.to_string_lossy().to_string();
 
-                            // build the file name with extension, and number at start
                             if *at_start {
                                 file.target
                                     .set_file_name(format!("{sequence_num}{separator}{file_stem}.{file_extension}"));
-                            } else
-                            // build the file name with extension, and number at the end
-                            {
+                            } else {
                                 file.target
                                     .set_file_name(format!("{file_stem}{separator}{sequence_num}.{file_extension}"));
                             }
                         } else {
-                            // build the file name without extension, and number at start
                             if *at_start {
                                 file.target.set_file_name(format!("{sequence_num}{separator}{file_stem}"));
-                            } else
-                            // build the file name without an extension, and number at the end
-                            {
-                                file.target.set_file_name(format!("{file_stem}{separator}{sequence_num}",));
+                            } else {
+                                file.target.set_file_name(format!("{file_stem}{separator}{sequence_num}"));
                             }
                         }
                     }
                 }
 
-                // TODO: account for <BLANK> edge case
                 Task::Date {
                     year,
                     month,
@@ -196,15 +186,12 @@ pub fn process_tasks_on_working_files(state: &State<'_, Mutex<AppState>>) {
                         let file_metadata = file.source.metadata();
 
                         if let Ok(t) = file_metadata {
-                            // create SystemTime Instance from metadata
                             let systime = t.modified();
 
                             if let Ok(j) = systime {
-                                // able to access metadata and file modified info
                                 let datetime = OffsetDateTime::from(j);
                                 let mut dates_combined_vector: Vec<String> = vec![];
 
-                                // calculate year by user input
                                 let year_val = datetime.year().to_string();
                                 match *year {
                                     0 => {
@@ -213,10 +200,9 @@ pub fn process_tasks_on_working_files(state: &State<'_, Mutex<AppState>>) {
                                     1 => {
                                         dates_combined_vector.push(year_val.chars().take(year_val.len().saturating_sub(2)).collect());
                                     }
-                                    2_u8..=std::u8::MAX => {}
+                                    _ => {}
                                 };
 
-                                // calculate month & day by user input
                                 if *month {
                                     let month_val = datetime.month() as u8;
                                     dates_combined_vector.push(format!("{month_val:02}"));
@@ -227,24 +213,21 @@ pub fn process_tasks_on_working_files(state: &State<'_, Mutex<AppState>>) {
                                 }
                                 let dates_formatted_string: String = dates_combined_vector.join(separator);
 
-                                //TODO: Edge Case: Leading "."
-                                //TODO: Edge Case: Contains no "."
-                                //TODO: Contains the <<SPECIAL_CLEAR_a432LKJ>> value
-                                //OK let's write the logic here:
-                                // if *at_start -> dates + file_stem + "." + file_extension
                                 let file_stem: String;
                                 let file_extension: String;
-                                // let has_extension: bool;
-                                // let has_stem: bool;
+                                let file_name = file.target.file_name().unwrap().to_string_lossy();
 
-                                // if there is a file stem, use it, or make it blank
-                                if let Some(t) = file.target.file_stem() {
+                                if file_name == BLANK_NAME {
+                                    file_stem = "".to_string();
+                                } else if let Some(t) = file.target.file_stem() {
                                     file_stem = t.to_string_lossy().to_string();
                                 } else {
                                     file_stem = "".to_string();
                                 }
 
-                                if *at_start {
+                                if file_stem.is_empty() {
+                                    file.target.set_file_name(&dates_formatted_string);
+                                } else if *at_start {
                                     if let Some(t) = file.target.extension() {
                                         file_extension = t.to_string_lossy().to_string();
                                         file.target
@@ -275,7 +258,6 @@ pub fn process_tasks_on_working_files(state: &State<'_, Mutex<AppState>>) {
                 }
 
                 // TODO: Update to use a 24 hour clock, and include am and pm automatically
-                // TODO: account for <BLANK> edge case
                 Task::Time {
                     at_start,
                     separator,
@@ -285,36 +267,35 @@ pub fn process_tasks_on_working_files(state: &State<'_, Mutex<AppState>>) {
                         let file_metadata = file.source.metadata();
 
                         if let Ok(t) = file_metadata {
-                            // create SystemTime Instance from metadata
                             let systime = t.modified();
 
                             if let Ok(j) = systime {
-                                // able to access metadata and file modified info
                                 let datetime = OffsetDateTime::from(j);
                                 let datetime_hour = format!("{:02}", datetime.hour());
                                 let datetime_minute = format!("{:02}", datetime.minute());
                                 let datetime_second = format!("{:02}", datetime.second());
 
-                                // now that we have system time, let's build the file
-                                // get file_stem and file_extension
                                 let file_stem: String;
                                 let file_extension: String;
+                                let file_name = file.target.file_name().unwrap().to_string_lossy();
 
-                                // if there is a file stem, use it, or make it blank
-                                if let Some(t) = file.target.file_stem() {
+                                if file_name == BLANK_NAME {
+                                    file_stem = "".to_string();
+                                } else if let Some(t) = file.target.file_stem() {
                                     file_stem = t.to_string_lossy().to_string();
                                 } else {
                                     file_stem = "".to_string();
                                 }
 
-                                // if there isn't an extension, we do need to change how we approach building here
-
-                                if *at_start {
+                                if file_stem.is_empty() {
+                                    file.target
+                                        .set_file_name(format!("{datetime_hour}{separator}{datetime_minute}{separator}{datetime_second}"));
+                                } else if *at_start {
                                     if let Some(t) = file.target.extension() {
                                         file_extension = t.to_string_lossy().to_string();
                                         file.target.set_file_name(format!(
-                                        "{datetime_hour}{separator}{datetime_minute}{separator}{datetime_second}{separator}{file_stem}.{file_extension}"
-                                    ));
+                                            "{datetime_hour}{separator}{datetime_minute}{separator}{datetime_second}{separator}{file_stem}.{file_extension}"
+                                        ));
                                     } else {
                                         file.target.set_file_name(format!(
                                             "{datetime_hour}{separator}{datetime_minute}{separator}{datetime_second}{separator}{file_stem}"
@@ -324,8 +305,8 @@ pub fn process_tasks_on_working_files(state: &State<'_, Mutex<AppState>>) {
                                     if let Some(t) = file.target.extension() {
                                         file_extension = t.to_string_lossy().to_string();
                                         file.target.set_file_name(format!(
-                                        "{file_stem}{separator}{datetime_hour}{separator}{datetime_minute}{separator}{datetime_second}.{file_extension}"
-                                    ));
+                                            "{file_stem}{separator}{datetime_hour}{separator}{datetime_minute}{separator}{datetime_second}.{file_extension}"
+                                        ));
                                     } else {
                                         file.target.set_file_name(format!(
                                             "{file_stem}{separator}{datetime_hour}{separator}{datetime_minute}{separator}{datetime_second}"
@@ -333,7 +314,6 @@ pub fn process_tasks_on_working_files(state: &State<'_, Mutex<AppState>>) {
                                     }
                                 }
                             } else {
-
                                 // able to access metadata but not file modified info
                                 // i guess we just skip this step altogether for now
                                 // should probably bubble up an error to the user
@@ -346,8 +326,6 @@ pub fn process_tasks_on_working_files(state: &State<'_, Mutex<AppState>>) {
                     }
                 }
                 Task::FilterName { inclusive, name } => {
-                    // println!("filter processing now status on {}: {}", file.source.to_string_lossy(), file.active);
-
                     if !name.is_empty() {
                         if let Some(file_name) = file.target.file_name() {
                             let file_name_string = file_name.to_string_lossy();
