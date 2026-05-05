@@ -6,20 +6,16 @@ const BLANK_NAME: &str = "<BLANK>";
 
 #[tauri::command]
 pub fn process_tasks_on_working_files(state: &State<'_, Mutex<AppState>>) {
+    // INFO: Extremely important step to deref the MutexGuard to access AppState directly
     let mut state = state.lock().unwrap();
-    let tasks = &state.tasks.clone();
-
-    // reset status to true on each change
-    for file in &mut state.working_files.iter_mut() {
-        file.active = true;
-    }
+    let state = &mut *state;
 
     for (index, file) in &mut state.working_files.iter_mut().enumerate() {
-        // for each WorkingFile in the array, copy from source => target
         file.target = file.source.clone();
+        file.active = true;
 
         // iterate over all tasks in task_list
-        for task in tasks {
+        for task in &state.tasks {
             match task {
                 Task::CustomText { text, at_start, active } => {
                     if *active {
