@@ -23,7 +23,7 @@ const emit = defineEmits<{
         class="flex flex-1 flex-col justify-center items-center w-full h-full whitespace-nowrap bg-panelbody select-none"
     >
         <span class="text-center -mt-4 mb-1 text-textprimary">Your files live here</span>
-        <span class="text-center text-sm text-textsecondary">Please use the open buttons above</span>
+        <span class="text-center text-sm text-textsecondary">Drag and drop here, or use the buttons above</span>
     </div>
 
     <div v-else id="table-container" class="flex-1/2 flex flex-col mb-0 min-h-0 text-sm bg-panelbody select-none">
@@ -83,7 +83,6 @@ const emit = defineEmits<{
                 </tbody>
             </table>
         </div>
-
     </div>
 
     <div
