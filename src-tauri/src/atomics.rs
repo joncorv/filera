@@ -48,7 +48,7 @@ pub fn sort_file_names(state: &State<'_, Mutex<AppState>>) {
                 })
                 .collect();
 
-            valid_files.sort_by_key(|(_, key)| key.clone());
+            valid_files.sort_by_key(|(_, key)| *key);
             state.file_names_sorted = valid_files.into_iter().map(|(path, _)| path).collect();
         }
         "created" => {
@@ -61,7 +61,7 @@ pub fn sort_file_names(state: &State<'_, Mutex<AppState>>) {
                 })
                 .collect();
 
-            valid_files.sort_by_key(|(_, key)| key.clone());
+            valid_files.sort_by_key(|(_, key)| *key);
             state.file_names_sorted = valid_files.into_iter().map(|(path, _)| path).collect();
         }
         "size" => {
@@ -74,7 +74,7 @@ pub fn sort_file_names(state: &State<'_, Mutex<AppState>>) {
                 })
                 .collect();
 
-            valid_files.sort_by_key(|(_, key)| std::cmp::Reverse(key.clone()));
+            valid_files.sort_by_key(|(_, key)| std::cmp::Reverse(*key));
             state.file_names_sorted = valid_files.into_iter().map(|(path, _)| path).collect();
         }
         "type" => {
