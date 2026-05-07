@@ -1,6 +1,6 @@
 use crate::{AppState, FileStatusResponse, HashSet, Mutex, State};
 
-use crate::atomics::{apply_search_and_build_response, convert_working_files_to_file_status};
+use crate::atomics::{apply_search, build_response, convert_working_files_to_file_status};
 
 #[tauri::command]
 pub fn user_filestatus_click(index: usize, state: State<'_, Mutex<AppState>>) -> FileStatusResponse {
@@ -45,7 +45,8 @@ pub fn user_filestatus_click(index: usize, state: State<'_, Mutex<AppState>>) ->
             }
         }
     }
-    apply_search_and_build_response(&state)
+    apply_search(&state);
+    build_response(&state)
 }
 
 #[tauri::command]
@@ -92,7 +93,8 @@ pub fn user_filestatus_ctrl_click(index: usize, state: State<'_, Mutex<AppState>
             }
         }
     }
-    apply_search_and_build_response(&state)
+    apply_search(&state);
+    build_response(&state)
 }
 
 #[tauri::command]
@@ -132,7 +134,8 @@ pub fn user_filestatus_shift_click(index: usize, state: State<'_, Mutex<AppState
             }
         }
     }
-    apply_search_and_build_response(&state)
+    apply_search(&state);
+    build_response(&state)
 }
 
 #[tauri::command]
@@ -148,7 +151,8 @@ pub fn user_filestatus_selection_clear(state: State<'_, Mutex<AppState>>) -> Fil
         }
         state.last_selected_filestatus = None;
     }
-    apply_search_and_build_response(&state)
+    apply_search(&state);
+    build_response(&state)
 }
 
 #[tauri::command]
@@ -167,5 +171,6 @@ pub fn user_filestatus_selection_delete(state: State<'_, Mutex<AppState>>) -> Fi
         state.last_selected_filestatus = None;
     }
     convert_working_files_to_file_status(&state);
-    apply_search_and_build_response(&state)
+    apply_search(&state);
+    build_response(&state)
 }

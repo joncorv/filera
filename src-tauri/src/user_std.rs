@@ -2,7 +2,7 @@ use crate::process_tasks::process_tasks_on_working_files;
 use crate::{AppState, FileStatusResponse, FileStatusStats, Mutex, PathBuf, State, Task};
 
 use crate::atomics::{
-    apply_search_and_build_response, apply_selections_to_filestatuses, convert_file_names_to_working_files,
+    apply_search, apply_selections_to_filestatuses, build_response, convert_file_names_to_working_files,
     convert_working_files_to_file_status, resolve_workingfile_duplicates, solve_duplicates, sort_file_names,
     state_clear_selected_filestatusues, state_update_search, state_update_sort, state_update_tasks,
 };
@@ -26,7 +26,8 @@ pub fn user_open_files(file_names: Vec<String>, state: State<'_, Mutex<AppState>
     state_clear_selected_filestatusues(&state);
     convert_working_files_to_file_status(&state);
     apply_selections_to_filestatuses(&state);
-    apply_search_and_build_response(&state)
+    apply_search(&state);
+    build_response(&state)
 }
 
 #[tauri::command]
@@ -46,8 +47,8 @@ pub fn user_open_folders(directories: Vec<String>, state: State<'_, Mutex<AppSta
     resolve_workingfile_duplicates(&state);
     state_clear_selected_filestatusues(&state);
     convert_working_files_to_file_status(&state);
-    apply_selections_to_filestatuses(&state);
-    apply_search_and_build_response(&state)
+    apply_search(&state);
+    build_response(&state)
 }
 
 #[tauri::command]
@@ -73,8 +74,8 @@ pub fn user_dragdrop_files(files: Vec<String>, state: State<'_, Mutex<AppState>>
     resolve_workingfile_duplicates(&state);
     state_clear_selected_filestatusues(&state);
     convert_working_files_to_file_status(&state);
-    apply_selections_to_filestatuses(&state);
-    apply_search_and_build_response(&state)
+    apply_search(&state);
+    build_response(&state)
 }
 
 #[tauri::command]
@@ -95,8 +96,8 @@ pub fn user_update_sort(sort_choice: String, sort_ascending: bool, state: State<
     resolve_workingfile_duplicates(&state);
     state_clear_selected_filestatusues(&state);
     convert_working_files_to_file_status(&state);
-    apply_selections_to_filestatuses(&state);
-    apply_search_and_build_response(&state)
+    apply_search(&state);
+    build_response(&state)
 }
 
 #[tauri::command]
@@ -105,16 +106,16 @@ pub fn user_update_tasks(task_list: Vec<Task>, state: State<'_, Mutex<AppState>>
     process_tasks_on_working_files(&state);
     resolve_workingfile_duplicates(&state);
     convert_working_files_to_file_status(&state);
-    apply_selections_to_filestatuses(&state);
-    apply_search_and_build_response(&state)
+    apply_search(&state);
+    build_response(&state)
 }
 
 #[tauri::command]
 pub fn user_update_search(search: String, state: State<'_, Mutex<AppState>>) -> FileStatusResponse {
     state_update_search(search, &state);
     convert_working_files_to_file_status(&state);
-    apply_selections_to_filestatuses(&state);
-    apply_search_and_build_response(&state)
+    apply_search(&state);
+    build_response(&state)
 }
 
 #[tauri::command]

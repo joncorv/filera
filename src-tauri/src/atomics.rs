@@ -1,12 +1,5 @@
 use crate::{AppState, FileStatus, FileStatusResponse, FileStatusStats, HashMap, Mutex, Path, PathBuf, State, Task, WorkingFile};
 use std::time::SystemTime;
-// use notify_rust::Notification;
-// use rfd::{AsyncMessageDialog, MessageDialogResult};
-// use std::{fs::copy, fs::rename};
-// use tauri_plugin_notification::NotificationExt;
-// use time::format_description::well_known::Iso8601;
-// use time::OffsetDateTime;
-// use walkdir::WalkDir;
 
 #[tauri::command]
 pub fn solve_duplicates(file_names: Vec<String>, state: &State<'_, Mutex<AppState>>) {
@@ -236,37 +229,41 @@ pub fn apply_selections_to_filestatuses(state: &State<'_, Mutex<AppState>>) {
             file_status.selected = selected.contains(&index);
         });
     }
-
-    // // NOTE: clears all file_status first, then applies. Maybe has better performance than
-    // above, for future reference
-    // if let Some(selected) = selected {
-    //     file_statuses.iter_mut().for_each(|file_status| {
-    //         file_status.selected = false;
-    //     });
-    //     selected.iter().for_each(|selected_index| {
-    //         if let Some(filestatus) = file_statuses.get_mut(*selected_index) {
-    //             filestatus.selected = true;
-    //         }
-    //     });
-    // }
 }
 
-pub fn apply_search_and_build_response(state: &State<'_, Mutex<AppState>>) -> FileStatusResponse {
-    let state = state.lock().unwrap();
-    let statuses = if state.search.is_empty() {
-        state.file_statuses.clone()
+pub fn apply_search(state: &State<'_, Mutex<AppState>>) {
+    let mut state = state.lock().unwrap();
+    let state = &mut *state;
+
+    if state.search.is_empty() {
+        state.filtered_file_statuses = None;
     } else {
-        state
-            .file_statuses
-            .iter()
-            .filter(|file_status| {
-                let old = file_status.old_file_name.contains(&state.search);
-                let new = file_status.new_file_name.contains(&state.search);
-                old || new
-            })
-            .cloned()
-            .collect()
+        state.filtered_file_statuses = Some(
+            state
+                .file_statuses
+                .iter()
+                .filter(|file_status| {
+                    let old = file_status.old_file_name.contains(&state.search);
+                    let new = file_status.new_file_name.contains(&state.search);
+                    old || new
+                })
+                .cloned()
+                .collect(),
+        )
     };
+}
+
+pub fn build_response(state: &State<'_, Mutex<AppState>>) -> FileStatusResponse {
+    let mut state = state.lock().unwrap();
+    let state = &mut *state;
+
+    let statuses;
+    if let Some(ffs) = &state.filtered_file_statuses {
+        statuses = ffs.clone();
+    } else {
+        statuses = state.file_statuses.clone();
+    }
+
     FileStatusResponse {
         statuses,
         stats: FileStatusStats {
