@@ -23,6 +23,7 @@ pub struct WorkingFile {
     source: PathBuf,
     target: PathBuf,
     active: bool,
+    stable_id: usize,
 }
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
@@ -31,6 +32,7 @@ pub struct FileStatus {
     new_file_name: String,
     active: bool,
     selected: bool,
+    stable_id: usize,
 }
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, Default)]

@@ -4,6 +4,7 @@ export interface FileStatus {
     new_file_name: string;
     active: boolean;
     selected: boolean;
+    stable_id: number;
 }
 
 export interface FileStatusStats {

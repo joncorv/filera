@@ -141,11 +141,12 @@ pub fn convert_file_names_to_working_files(state: &State<'_, Mutex<AppState>>) {
     let mut new_working_files: Vec<WorkingFile> = Vec::with_capacity(state.file_names.len());
     let file_paths = &state.file_names_sorted;
 
-    for file_path in file_paths {
+    for (index, file_path) in file_paths.iter().enumerate() {
         let working_file = WorkingFile {
             source: PathBuf::from(file_path.clone()),
             target: PathBuf::new(),
             active: true,
+            stable_id: index,
         };
 
         let is_file = working_file.source.is_file();
@@ -193,6 +194,7 @@ pub fn resolve_workingfile_duplicates(state: &State<'_, Mutex<AppState>>) {
                 source: working_file.source,
                 target: new_target,
                 active: working_file.active,
+                stable_id: working_file.stable_id,
             })
         })
         .collect();
@@ -200,10 +202,11 @@ pub fn resolve_workingfile_duplicates(state: &State<'_, Mutex<AppState>>) {
 
 pub fn convert_working_files_to_file_status(state: &State<'_, Mutex<AppState>>) {
     let mut state = state.lock().unwrap();
+    let state = &mut *state;
     let mut file_statuses: Vec<FileStatus> = Vec::with_capacity(state.working_files.len());
     let mut filtered_count: usize = 0;
 
-    for working_file in &state.working_files {
+    for (index, working_file) in state.working_files.iter().enumerate() {
         if !working_file.active {
             filtered_count += 1;
         }
@@ -212,6 +215,7 @@ pub fn convert_working_files_to_file_status(state: &State<'_, Mutex<AppState>>) 
             new_file_name: working_file.target.file_name().unwrap().to_string_lossy().into_owned(),
             active: working_file.active,
             selected: false,
+            stable_id: index,
         };
         file_statuses.push(file_status);
     }

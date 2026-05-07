@@ -50,10 +50,10 @@ const emit = defineEmits<{
                     <tr
                         v-for="(item, index) in fileStatusResponse.statuses"
                         :key="index"
-                        @click.exact="emit('userFilestatusClick', index)"
-                        @click.ctrl="emit('userFilestatusCtrlClick', index)"
-                        @click.meta="emit('userFilestatusCtrlClick', index)"
-                        @click.shift="emit('userFilestatusShiftClick', index)"
+                        @click.exact="emit('userFilestatusClick', item.stable_id)"
+                        @click.ctrl="emit('userFilestatusCtrlClick', item.stable_id)"
+                        @click.meta="emit('userFilestatusCtrlClick', item.stable_id)"
+                        @click.shift="emit('userFilestatusShiftClick', item.stable_id)"
                         class="cursor-pointer"
                         :class="item.selected ? 'bg-accenthover' : ''"
                     >
