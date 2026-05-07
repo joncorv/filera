@@ -47,6 +47,7 @@ pub fn user_open_folders(directories: Vec<String>, state: State<'_, Mutex<AppSta
     resolve_workingfile_duplicates(&state);
     state_clear_selected_filestatusues(&state);
     convert_working_files_to_file_status(&state);
+    apply_selections_to_filestatuses(&state);
     apply_search(&state);
     build_response(&state)
 }
@@ -74,6 +75,7 @@ pub fn user_dragdrop_files(files: Vec<String>, state: State<'_, Mutex<AppState>>
     resolve_workingfile_duplicates(&state);
     state_clear_selected_filestatusues(&state);
     convert_working_files_to_file_status(&state);
+    apply_selections_to_filestatuses(&state);
     apply_search(&state);
     build_response(&state)
 }
@@ -96,6 +98,7 @@ pub fn user_update_sort(sort_choice: String, sort_ascending: bool, state: State<
     resolve_workingfile_duplicates(&state);
     state_clear_selected_filestatusues(&state);
     convert_working_files_to_file_status(&state);
+    apply_selections_to_filestatuses(&state);
     apply_search(&state);
     build_response(&state)
 }
@@ -106,6 +109,7 @@ pub fn user_update_tasks(task_list: Vec<Task>, state: State<'_, Mutex<AppState>>
     process_tasks_on_working_files(&state);
     resolve_workingfile_duplicates(&state);
     convert_working_files_to_file_status(&state);
+    apply_selections_to_filestatuses(&state);
     apply_search(&state);
     build_response(&state)
 }
@@ -114,6 +118,7 @@ pub fn user_update_tasks(task_list: Vec<Task>, state: State<'_, Mutex<AppState>>
 pub fn user_update_search(search: String, state: State<'_, Mutex<AppState>>) -> FileStatusResponse {
     state_update_search(search, &state);
     convert_working_files_to_file_status(&state);
+    apply_selections_to_filestatuses(&state);
     apply_search(&state);
     build_response(&state)
 }
