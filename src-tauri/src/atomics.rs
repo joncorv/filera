@@ -129,7 +129,7 @@ pub fn state_update_search(search: String, state: &State<'_, Mutex<AppState>>) {
     state.search = search;
 }
 
-pub fn state_clear_selected_filestatusues(state: &State<'_, Mutex<AppState>>) {
+pub fn state_clear_selected_filestatuses(state: &State<'_, Mutex<AppState>>) {
     let mut state = state.lock().unwrap();
     state.selected_filestatuses = None;
     state.last_selected_filestatus = None;

@@ -4,7 +4,7 @@ use crate::{AppState, FileStatusResponse, FileStatusStats, Mutex, PathBuf, State
 use crate::atomics::{
     apply_search, apply_selections_to_filestatuses, build_response, convert_file_names_to_working_files,
     convert_working_files_to_file_status, resolve_workingfile_duplicates, solve_duplicates, sort_file_names,
-    state_clear_selected_filestatusues, state_update_search, state_update_sort, state_update_tasks,
+    state_clear_selected_filestatuses, state_update_search, state_update_sort, state_update_tasks,
 };
 
 use notify_rust::Notification;
@@ -23,7 +23,7 @@ pub fn user_open_files(file_names: Vec<String>, state: State<'_, Mutex<AppState>
     convert_file_names_to_working_files(&state);
     process_tasks_on_working_files(&state);
     resolve_workingfile_duplicates(&state);
-    state_clear_selected_filestatusues(&state);
+    state_clear_selected_filestatuses(&state);
     convert_working_files_to_file_status(&state);
     apply_selections_to_filestatuses(&state);
     apply_search(&state);
@@ -45,7 +45,7 @@ pub fn user_open_folders(directories: Vec<String>, state: State<'_, Mutex<AppSta
     convert_file_names_to_working_files(&state);
     process_tasks_on_working_files(&state);
     resolve_workingfile_duplicates(&state);
-    state_clear_selected_filestatusues(&state);
+    state_clear_selected_filestatuses(&state);
     convert_working_files_to_file_status(&state);
     apply_selections_to_filestatuses(&state);
     apply_search(&state);
@@ -73,7 +73,7 @@ pub fn user_dragdrop_files(files: Vec<String>, state: State<'_, Mutex<AppState>>
     convert_file_names_to_working_files(&state);
     process_tasks_on_working_files(&state);
     resolve_workingfile_duplicates(&state);
-    state_clear_selected_filestatusues(&state);
+    state_clear_selected_filestatuses(&state);
     convert_working_files_to_file_status(&state);
     apply_selections_to_filestatuses(&state);
     apply_search(&state);
@@ -96,7 +96,7 @@ pub fn user_update_sort(sort_choice: String, sort_ascending: bool, state: State<
     convert_file_names_to_working_files(&state);
     process_tasks_on_working_files(&state);
     resolve_workingfile_duplicates(&state);
-    state_clear_selected_filestatusues(&state);
+    state_clear_selected_filestatuses(&state);
     convert_working_files_to_file_status(&state);
     apply_selections_to_filestatuses(&state);
     apply_search(&state);
