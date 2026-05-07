@@ -1,5 +1,5 @@
 use crate::process_tasks::process_tasks_on_working_files;
-use crate::{AppState, FileStatusResponse, FileStatusStats, HashMap, Mutex, Path, PathBuf, State, Task, WorkingFile};
+use crate::{AppState, FileStatusResponse, FileStatusStats, Mutex, PathBuf, State, Task};
 
 use crate::atomics::{
     apply_search_and_build_response, apply_selections_to_filestatuses, convert_file_names_to_working_files,
@@ -155,7 +155,7 @@ pub async fn user_rename_files(
     if !tasks_empty && files_empty {
         match AsyncMessageDialog::new()
             .set_title("Warning")
-            .set_description(format!("Please add files first"))
+            .set_description("Please add files first".to_string())
             .set_buttons(rfd::MessageButtons::Ok)
             .show()
             .await
@@ -168,7 +168,7 @@ pub async fn user_rename_files(
     else if tasks_empty && !files_empty {
         match AsyncMessageDialog::new()
             .set_title("Warning")
-            .set_description(format!("Please add file tasks first"))
+            .set_description("Please add file tasks first".to_string())
             .set_buttons(rfd::MessageButtons::Ok)
             .show()
             .await
@@ -181,7 +181,7 @@ pub async fn user_rename_files(
     else if tasks_empty && files_empty {
         match AsyncMessageDialog::new()
             .set_title("Warning")
-            .set_description(format!("Please add files and tasks first"))
+            .set_description("Please add files and tasks first".to_string())
             .set_buttons(rfd::MessageButtons::Ok)
             .show()
             .await
@@ -195,7 +195,7 @@ pub async fn user_rename_files(
     else {
         match AsyncMessageDialog::new()
             .set_title("Title")
-            .set_description(format!("Are you sure you want to rename these files?"))
+            .set_description("Are you sure you want to rename these files?".to_string())
             .set_buttons(rfd::MessageButtons::OkCancel)
             .show()
             .await
@@ -224,7 +224,10 @@ pub async fn user_rename_files(
                         }
                         state.file_names.clear();
                         state.working_files.clear();
-                        let blank = FileStatusResponse { statuses: vec![], stats: FileStatusStats::default() };
+                        let blank = FileStatusResponse {
+                            statuses: vec![],
+                            stats: FileStatusStats::default(),
+                        };
 
                         app.notification()
                             .builder()
@@ -256,7 +259,10 @@ pub async fn user_rename_files(
                         }
                         state.file_names.clear();
                         state.working_files.clear();
-                        let blank = FileStatusResponse { statuses: vec![], stats: FileStatusStats::default() };
+                        let blank = FileStatusResponse {
+                            statuses: vec![],
+                            stats: FileStatusStats::default(),
+                        };
 
                         app.notification()
                             .builder()
@@ -281,7 +287,10 @@ pub async fn user_rename_files(
                         }
                         state.file_names.clear();
                         state.working_files.clear();
-                        let blank = FileStatusResponse { statuses: vec![], stats: FileStatusStats::default() };
+                        let blank = FileStatusResponse {
+                            statuses: vec![],
+                            stats: FileStatusStats::default(),
+                        };
 
                         app.notification()
                             .builder()
@@ -317,7 +326,7 @@ pub fn user_notification(_app: tauri::AppHandle) -> String {
 
     // return my_line;
 
-    return "test return string".to_string();
+    "test return string".to_string()
 }
 
 #[tauri::command]
@@ -326,7 +335,7 @@ pub async fn user_dialog() -> Result<String, String> {
 
     match AsyncMessageDialog::new()
         .set_title("Dialog")
-        .set_description(format!("This is a test dialog."))
+        .set_description("This is a test dialog.".to_string())
         .set_buttons(rfd::MessageButtons::OkCancel)
         .show()
         .await
