@@ -58,7 +58,7 @@ pub struct AppState {
     search: String,
     output: Output,
     file_statuses: Vec<FileStatus>,
-    filtered_file_statuses: Option<Vec<FileStatus>>,
+    filtered_filestatuses: Option<Vec<FileStatus>>,
     filtered_count: usize,
     selected_filestatuses: Option<HashSet<usize>>,
     last_selected_filestatus: Option<usize>,

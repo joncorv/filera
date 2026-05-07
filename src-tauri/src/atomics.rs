@@ -236,9 +236,9 @@ pub fn apply_search(state: &State<'_, Mutex<AppState>>) {
     let state = &mut *state;
 
     if state.search.is_empty() {
-        state.filtered_file_statuses = None;
+        state.filtered_filestatuses = None;
     } else {
-        state.filtered_file_statuses = Some(
+        state.filtered_filestatuses = Some(
             state
                 .file_statuses
                 .iter()
@@ -258,7 +258,7 @@ pub fn build_response(state: &State<'_, Mutex<AppState>>) -> FileStatusResponse 
     let state = &mut *state;
 
     let statuses;
-    if let Some(ffs) = &state.filtered_file_statuses {
+    if let Some(ffs) = &state.filtered_filestatuses {
         statuses = ffs.clone();
     } else {
         statuses = state.file_statuses.clone();

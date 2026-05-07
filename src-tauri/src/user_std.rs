@@ -321,17 +321,6 @@ pub async fn user_rename_files(
 #[tauri::command]
 pub fn user_notification(_app: tauri::AppHandle) -> String {
     Notification::new().summary("xxx").body("xxx").icon("firefox").show().unwrap();
-
-    // this is the standard tauri notification that isn't working on macos
-    // app.notification()
-    //     .builder()
-    //     .title("Notification")
-    //     .body("This is a test notification")
-    //     .show()
-    //     .unwrap();
-
-    // return my_line;
-
     "test return string".to_string()
 }
 

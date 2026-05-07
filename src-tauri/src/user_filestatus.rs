@@ -4,10 +4,14 @@ use crate::atomics::{apply_search, build_response, convert_working_files_to_file
 
 #[tauri::command]
 pub fn user_filestatus_click(index: usize, state: State<'_, Mutex<AppState>>) -> FileStatusResponse {
+    // INFO: What is the rationale here for operating when the user sees filtered file_statuses?
+    // Well certainly below works if there are no filtered files.
+    // Should I duplilcate ALL the code and do an if-statement? I think that is the way.
     {
         let mut state = state.lock().unwrap();
         let state = &mut *state;
         let selected_filestatuses = &state.selected_filestatuses;
+        let filtered_filestatuses = &state.filtered_filestatuses;
 
         if selected_filestatuses.is_none() {
             let mut new_hash: HashSet<usize> = HashSet::new();
