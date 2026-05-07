@@ -1,12 +1,13 @@
 use crate::{AppState, FileStatusResponse, HashSet, Mutex, State};
 
-use crate::atomics::{apply_search_and_build_response, apply_selections_to_filestatuses, convert_working_files_to_file_status};
+use crate::atomics::{apply_search_and_build_response, convert_working_files_to_file_status};
 
 #[tauri::command]
 pub fn user_filestatus_click(index: usize, state: State<'_, Mutex<AppState>>) -> FileStatusResponse {
     {
         let mut state = state.lock().unwrap();
-        let selected_filestatuses = state.selected_filestatuses.clone();
+        let state = &mut *state;
+        let selected_filestatuses = &state.selected_filestatuses;
 
         if selected_filestatuses.is_none() {
             let mut new_hash: HashSet<usize> = HashSet::new();
@@ -51,7 +52,8 @@ pub fn user_filestatus_click(index: usize, state: State<'_, Mutex<AppState>>) ->
 pub fn user_filestatus_ctrl_click(index: usize, state: State<'_, Mutex<AppState>>) -> FileStatusResponse {
     {
         let mut state = state.lock().unwrap();
-        let selected_filestatuses = state.selected_filestatuses.clone();
+        let state = &mut *state;
+        let selected_filestatuses = &state.selected_filestatuses;
 
         if selected_filestatuses.is_none() {
             let mut new_hash: HashSet<usize> = HashSet::new();
@@ -97,8 +99,9 @@ pub fn user_filestatus_ctrl_click(index: usize, state: State<'_, Mutex<AppState>
 pub fn user_filestatus_shift_click(index: usize, state: State<'_, Mutex<AppState>>) -> FileStatusResponse {
     {
         let mut state = state.lock().unwrap();
-        let selected_filestatuses = state.selected_filestatuses.clone();
-        let last_selected_filestatus = state.last_selected_filestatus.clone();
+        let state = &mut *state;
+        let selected_filestatuses = &state.selected_filestatuses;
+        let last_selected_filestatus = &state.last_selected_filestatus;
 
         if selected_filestatuses.is_none() {
             let mut new_hash: HashSet<usize> = HashSet::new();
@@ -111,11 +114,11 @@ pub fn user_filestatus_shift_click(index: usize, state: State<'_, Mutex<AppState
             } else {
                 eprintln!("errror: can't set filestatus.selected on index: {index:?}");
             }
-        } else if let Some(sf) = selected_filestatuses {
+        } else if let Some(_sf) = selected_filestatuses {
             if let Some(ls) = last_selected_filestatus {
-                let start = std::cmp::min(ls, index);
-                let end = std::cmp::max(ls, index);
-                (start..=end).for_each(|i| {
+                let start = std::cmp::min(ls, &index);
+                let end = std::cmp::max(ls, &index);
+                (*start..=*end).for_each(|i| {
                     if let Some(ssf) = &mut state.selected_filestatuses {
                         ssf.insert(i);
                     }
