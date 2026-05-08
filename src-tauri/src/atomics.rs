@@ -113,7 +113,7 @@ pub fn state_update_sort(sort_choice: String, sort_ascending: bool, state: &Stat
     let mut state = state.lock().unwrap();
     state.sort_choice = sort_choice;
     state.sort_ascending = sort_ascending;
-    state.last_selected_filestatus = None;
+    state.selected_filestatus_anchor = None;
     state.selected_filestatuses = None;
 }
 
@@ -127,12 +127,13 @@ pub fn state_update_tasks(task_list: Vec<Task>, state: &State<'_, Mutex<AppState
 pub fn state_update_search(search: String, state: &State<'_, Mutex<AppState>>) {
     let mut state = state.lock().unwrap();
     state.search = search;
+    state.selected_filestatus_anchor = None;
 }
 
 pub fn state_clear_selected_filestatuses(state: &State<'_, Mutex<AppState>>) {
     let mut state = state.lock().unwrap();
     state.selected_filestatuses = None;
-    state.last_selected_filestatus = None;
+    state.selected_filestatus_anchor = None;
 }
 
 #[tauri::command]
@@ -240,33 +241,41 @@ pub fn apply_search(state: &State<'_, Mutex<AppState>>) {
     let state = &mut *state;
 
     if state.search.is_empty() {
-        state.filtered_filestatuses = None;
+        state.filtered_filestatus_indices = None;
     } else {
-        state.filtered_filestatuses = Some(
+        let search = state.search.clone();
+        state.filtered_filestatus_indices = Some(
             state
                 .file_statuses
                 .iter()
-                .filter(|file_status| {
-                    let old = file_status.old_file_name.contains(&state.search);
-                    let new = file_status.new_file_name.contains(&state.search);
-                    old || new
+                .enumerate()
+                .filter_map(|(index, file_status)| {
+                    let old = file_status.old_file_name.contains(&search);
+                    let new = file_status.new_file_name.contains(&search);
+                    (old || new).then_some(index)
                 })
-                .cloned()
                 .collect(),
-        )
+        );
     };
 }
 
 pub fn build_response(state: &State<'_, Mutex<AppState>>) -> FileStatusResponse {
-    let mut state = state.lock().unwrap();
-    let state = &mut *state;
+    let state = state.lock().unwrap();
 
-    let statuses;
-    if let Some(ffs) = &state.filtered_filestatuses {
-        statuses = ffs.clone();
+    let statuses = if let Some(indices) = &state.filtered_filestatus_indices {
+        indices
+            .iter()
+            .map(|index| {
+                state
+                    .file_statuses
+                    .get(*index)
+                    .cloned()
+                    .expect("filtered filestatus index should point to an existing file_status")
+            })
+            .collect()
     } else {
-        statuses = state.file_statuses.clone();
-    }
+        state.file_statuses.clone()
+    };
 
     FileStatusResponse {
         statuses,

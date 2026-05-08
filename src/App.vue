@@ -169,19 +169,22 @@ async function user_update_sort() {
     });
 }
 
-async function user_filestatus_click(index: number) {
+async function user_filestatus_click(visibleIndex: number, stableId: number) {
     fileStatusResponse.value = await invoke("user_filestatus_click", {
-        index: index,
+        visibleIndex,
+        stableId,
     });
 }
-async function user_filestatus_ctrl_click(index: number) {
+async function user_filestatus_ctrl_click(visibleIndex: number, stableId: number) {
     fileStatusResponse.value = await invoke("user_filestatus_ctrl_click", {
-        index: index,
+        visibleIndex,
+        stableId,
     });
 }
-async function user_filestatus_shift_click(index: number) {
+async function user_filestatus_shift_click(visibleIndex: number, stableId: number) {
     fileStatusResponse.value = await invoke("user_filestatus_shift_click", {
-        index: index,
+        visibleIndex,
+        stableId,
     });
 }
 

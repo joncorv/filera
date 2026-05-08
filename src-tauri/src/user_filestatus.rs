@@ -1,53 +1,109 @@
-use crate::{AppState, FileStatusResponse, HashSet, Mutex, State};
+use crate::{AppState, FileStatusResponse, HashSet, Mutex, SelectedFileStatusAnchor, State};
 
 use crate::atomics::{apply_search, build_response, convert_working_files_to_file_status};
 
+fn set_file_status_selected(state: &mut AppState, stable_id: usize, selected: bool) {
+    if let Some(filestatus) = state.file_statuses.get_mut(stable_id) {
+        filestatus.selected = selected;
+    } else {
+        eprintln!("error: can't set filestatus.selected on stable_id: {stable_id:?}");
+    }
+}
+
+fn clear_selected_file_statuses(state: &mut AppState) {
+    if let Some(selected) = state.selected_filestatuses.take() {
+        for stable_id in selected {
+            set_file_status_selected(state, stable_id, false);
+        }
+    }
+}
+
+fn set_single_selection(state: &mut AppState, visible_index: usize, stable_id: usize) {
+    clear_selected_file_statuses(state);
+
+    let mut selected = HashSet::new();
+    selected.insert(stable_id);
+
+    state.selected_filestatuses = Some(selected);
+    state.selected_filestatus_anchor = Some(SelectedFileStatusAnchor {
+        stable_id,
+        visible_index,
+    });
+    set_file_status_selected(state, stable_id, true);
+}
+
+fn visible_range_stable_ids(state: &AppState, start: usize, end: usize) -> Option<Vec<usize>> {
+    if let Some(indices) = &state.filtered_filestatus_indices {
+        indices.get(start..=end).map(|range| range.to_vec())
+    } else if end < state.file_statuses.len() {
+        Some((start..=end).collect())
+    } else {
+        None
+    }
+}
+
 #[tauri::command]
-pub fn user_filestatus_click(index: usize, state: State<'_, Mutex<AppState>>) -> FileStatusResponse {
+pub fn user_filestatus_click(
+    visible_index: usize,
+    stable_id: usize,
+    state: State<'_, Mutex<AppState>>,
+) -> FileStatusResponse {
     {
         let mut state = state.lock().unwrap();
-        let state = &mut *state;
-        let selected_filestatuses = &state.selected_filestatuses;
-        // let filtered_filestatuses = &state.filtered_filestatuses;
+        set_single_selection(&mut state, visible_index, stable_id);
+    }
+    apply_search(&state);
+    build_response(&state)
+}
 
-        if selected_filestatuses.is_none() {
-            let mut new_hash: HashSet<usize> = HashSet::new();
-            new_hash.insert(index);
-            state.selected_filestatuses = Some(new_hash);
-            state.last_selected_filestatus = Some(index);
+#[tauri::command]
+pub fn user_filestatus_ctrl_click(
+    visible_index: usize,
+    stable_id: usize,
+    state: State<'_, Mutex<AppState>>,
+) -> FileStatusResponse {
+    {
+        let mut state = state.lock().unwrap();
+        let already_selected = state
+            .selected_filestatuses
+            .as_ref()
+            .map_or(false, |selected| selected.contains(&stable_id));
 
-            // NOTE: this is where we edit the file_statuses.
-            // if there are NOT filtered filestatuses, we will get a regular index from frontend
-            // if there ARE filtered_filestatuses we will a stable_index
+        if already_selected {
+            set_file_status_selected(&mut state, stable_id, false);
 
-            if let Some(filestatus) = state.file_statuses.get_mut(index) {
-                filestatus.selected = true;
+            let selection_is_empty = if let Some(selected) = &mut state.selected_filestatuses {
+                selected.remove(&stable_id);
+                selected.is_empty()
             } else {
-                eprintln!("errror: can't set filestatus.selected on index: {index:?}");
-            }
-        } else if let Some(sf) = selected_filestatuses {
-            sf.iter().for_each(|selection_index| {
-                if let Some(filestatus) = state.file_statuses.get_mut(*selection_index) {
-                    filestatus.selected = false;
-                } else {
-                    eprintln!("errror: can't set filestatus.selected on index: {selection_index:?}");
-                }
-            });
+                false
+            };
 
-            if !sf.contains(&index) {
-                if let Some(filestatus) = state.file_statuses.get_mut(index) {
-                    filestatus.selected = true;
-                } else {
-                    eprintln!("errror: can't set filestatus.selected on index: {index:?}");
-                }
-                let mut new_hash: HashSet<usize> = HashSet::new();
-                new_hash.insert(index);
-                state.selected_filestatuses = Some(new_hash);
-                state.last_selected_filestatus = Some(index);
-            } else {
+            if selection_is_empty {
                 state.selected_filestatuses = None;
-                state.last_selected_filestatus = None;
             }
+
+            if state
+                .selected_filestatus_anchor
+                .as_ref()
+                .map_or(false, |anchor| anchor.stable_id == stable_id)
+            {
+                state.selected_filestatus_anchor = None;
+            }
+        } else {
+            if state.selected_filestatuses.is_none() {
+                state.selected_filestatuses = Some(HashSet::new());
+            }
+
+            if let Some(selected) = &mut state.selected_filestatuses {
+                selected.insert(stable_id);
+            }
+
+            state.selected_filestatus_anchor = Some(SelectedFileStatusAnchor {
+                stable_id,
+                visible_index,
+            });
+            set_file_status_selected(&mut state, stable_id, true);
         }
     }
     apply_search(&state);
@@ -55,89 +111,34 @@ pub fn user_filestatus_click(index: usize, state: State<'_, Mutex<AppState>>) ->
 }
 
 #[tauri::command]
-pub fn user_filestatus_ctrl_click(index: usize, state: State<'_, Mutex<AppState>>) -> FileStatusResponse {
+pub fn user_filestatus_shift_click(
+    visible_index: usize,
+    stable_id: usize,
+    state: State<'_, Mutex<AppState>>,
+) -> FileStatusResponse {
     {
         let mut state = state.lock().unwrap();
-        let state = &mut *state;
-        let selected_filestatuses = &state.selected_filestatuses;
 
-        if selected_filestatuses.is_none() {
-            let mut new_hash: HashSet<usize> = HashSet::new();
-            new_hash.insert(index);
-            state.selected_filestatuses = Some(new_hash);
-            state.last_selected_filestatus = Some(index);
+        if state.selected_filestatuses.is_none() || state.selected_filestatus_anchor.is_none() {
+            set_single_selection(&mut state, visible_index, stable_id);
+        } else if let Some(anchor) = state.selected_filestatus_anchor.clone() {
+            let start = anchor.visible_index.min(visible_index);
+            let end = anchor.visible_index.max(visible_index);
 
-            if let Some(filestatus) = state.file_statuses.get_mut(index) {
-                filestatus.selected = true;
-            } else {
-                eprintln!("errror: can't set filestatus.selected on index: {index:?}");
-            }
-        } else if let Some(sf) = selected_filestatuses {
-            if sf.contains(&index) {
-                if let Some(filestatus) = state.file_statuses.get_mut(index) {
-                    filestatus.selected = false;
-                    if state.last_selected_filestatus == Some(index) {
-                        state.last_selected_filestatus = None;
+            if let Some(stable_ids) = visible_range_stable_ids(&state, start, end) {
+                if state.selected_filestatuses.is_none() {
+                    state.selected_filestatuses = Some(HashSet::new());
+                }
+
+                for stable_id in stable_ids {
+                    if let Some(selected) = &mut state.selected_filestatuses {
+                        selected.insert(stable_id);
                     }
 
-                    if let Some(ssf) = &mut state.selected_filestatuses {
-                        ssf.remove(&index);
-                    }
-                } else {
-                    eprintln!("errror: can't set filestatus.selected on index: {index:?}");
+                    set_file_status_selected(&mut state, stable_id, true);
                 }
             } else {
-                if let Some(filestatus) = state.file_statuses.get_mut(index) {
-                    filestatus.selected = true;
-                    state.last_selected_filestatus = Some(index);
-
-                    if let Some(ssf) = &mut state.selected_filestatuses {
-                        ssf.insert(index);
-                    }
-                } else {
-                    eprintln!("errror: can't set filestatus.selected on index: {index:?}");
-                }
-            }
-        }
-    }
-    apply_search(&state);
-    build_response(&state)
-}
-
-#[tauri::command]
-pub fn user_filestatus_shift_click(index: usize, state: State<'_, Mutex<AppState>>) -> FileStatusResponse {
-    {
-        let mut state = state.lock().unwrap();
-        let state = &mut *state;
-        let selected_filestatuses = &state.selected_filestatuses;
-        let last_selected_filestatus = &state.last_selected_filestatus;
-
-        if selected_filestatuses.is_none() {
-            let mut new_hash: HashSet<usize> = HashSet::new();
-            new_hash.insert(index);
-            state.selected_filestatuses = Some(new_hash);
-            state.last_selected_filestatus = Some(index);
-
-            if let Some(filestatus) = state.file_statuses.get_mut(index) {
-                filestatus.selected = true;
-            } else {
-                eprintln!("errror: can't set filestatus.selected on index: {index:?}");
-            }
-        } else if let Some(_sf) = selected_filestatuses {
-            if let Some(ls) = last_selected_filestatus {
-                let start = std::cmp::min(ls, &index);
-                let end = std::cmp::max(ls, &index);
-                (*start..=*end).for_each(|i| {
-                    if let Some(ssf) = &mut state.selected_filestatuses {
-                        ssf.insert(i);
-                    }
-
-                    if let Some(filestatus) = state.file_statuses.get_mut(i) {
-                        filestatus.selected = true;
-                    } else {
-                        eprintln!("errror: can't set filestatus.selected on index: {i:?}");
-                    }
-                });
+                eprintln!("error: visible filestatus range is out of bounds: {start:?}..={end:?}");
             }
         }
     }
@@ -149,14 +150,8 @@ pub fn user_filestatus_shift_click(index: usize, state: State<'_, Mutex<AppState
 pub fn user_filestatus_selection_clear(state: State<'_, Mutex<AppState>>) -> FileStatusResponse {
     {
         let mut state = state.lock().unwrap();
-        if let Some(selected) = state.selected_filestatuses.take() {
-            selected.iter().for_each(|i| {
-                if let Some(fs) = state.file_statuses.get_mut(*i) {
-                    fs.selected = false;
-                }
-            });
-        }
-        state.last_selected_filestatus = None;
+        clear_selected_file_statuses(&mut state);
+        state.selected_filestatus_anchor = None;
     }
     apply_search(&state);
     build_response(&state)
@@ -175,7 +170,7 @@ pub fn user_filestatus_selection_delete(state: State<'_, Mutex<AppState>>) -> Fi
                 state.file_names.retain(|path| path != &src);
             });
         }
-        state.last_selected_filestatus = None;
+        state.selected_filestatus_anchor = None;
     }
     convert_working_files_to_file_status(&state);
     apply_search(&state);

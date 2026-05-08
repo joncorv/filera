@@ -7,9 +7,9 @@ defineProps<{
 }>();
 
 const emit = defineEmits<{
-    userFilestatusClick: [index: number];
-    userFilestatusCtrlClick: [index: number];
-    userFilestatusShiftClick: [index: number];
+    userFilestatusClick: [visibleIndex: number, stableId: number];
+    userFilestatusCtrlClick: [visibleIndex: number, stableId: number];
+    userFilestatusShiftClick: [visibleIndex: number, stableId: number];
     userFilestatusSelectionClear: [];
     userFilestatusSelectionDelete: [];
 }>();
@@ -49,11 +49,11 @@ const emit = defineEmits<{
                 <tbody>
                     <tr
                         v-for="(item, index) in fileStatusResponse.statuses"
-                        :key="index"
-                        @click.exact="emit('userFilestatusClick', item.stable_id)"
-                        @click.ctrl="emit('userFilestatusCtrlClick', item.stable_id)"
-                        @click.meta="emit('userFilestatusCtrlClick', item.stable_id)"
-                        @click.shift="emit('userFilestatusShiftClick', item.stable_id)"
+                        :key="item.stable_id"
+                        @click.exact="emit('userFilestatusClick', index, item.stable_id)"
+                        @click.ctrl.exact="emit('userFilestatusCtrlClick', index, item.stable_id)"
+                        @click.meta.exact="emit('userFilestatusCtrlClick', index, item.stable_id)"
+                        @click.shift.exact="emit('userFilestatusShiftClick', index, item.stable_id)"
                         class="cursor-pointer"
                         :class="item.selected ? 'bg-accenthover' : ''"
                     >

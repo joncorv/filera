@@ -86,7 +86,7 @@ pub fn user_clear_files(state: State<'_, Mutex<AppState>>) {
     state.file_names.clear();
     state.working_files.clear();
     state.selected_filestatuses = None;
-    state.last_selected_filestatus = None;
+    state.selected_filestatus_anchor = None;
 }
 
 #[tauri::command]
