@@ -1,2 +1,2 @@
 max_width = 140
-# or whatever width you prefer
+use_small_heuristics = "Max"
