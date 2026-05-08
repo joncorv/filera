@@ -134,14 +134,18 @@ const fileraTheme = definePreset(Aura, {
                     root: {
                         secondary: {
                             background: "{surface.700}",
-                            borderColor: "{surface.700}",
+                            borderColor: "color-mix(in srgb, {surface.400} 50%, transparent)",
                             color: "{surface.200}",
                             hoverBackground: "{surface.600}",
-                            hoverBorderColor: "{surface.600}",
+                            hoverBorderColor: "color-mix(in srgb, {surface.300} 50%, transparent)",
                             hoverColor: "{surface.50}",
                             activeBackground: "{surface.500}",
                             activeBorderColor: "{surface.500}",
                             activeColor: "{surface.50}",
+                        },
+                        primary: {
+                            borderColor: "color-mix(in srgb, {chartreuse.300} 50%, white)",
+                            hoverBorderColor: "color-mix(in srgb, {chartreuse.200} 50%, white)",
                         },
                     },
                 },
@@ -176,9 +180,9 @@ const fileraTheme = definePreset(Aura, {
                 dark: {
                     root: {
                         background: "{surface.700}",
-                        borderColor: "{surface.700}",
+                        borderColor: "color-mix(in srgb, {surface.400} 50%, transparent)",
                         color: "{surface.50}",
-                        hoverBorderColor: "{surface.600}",
+                        hoverBorderColor: "color-mix(in srgb, {surface.300} 50%, transparent)",
                     },
                     option: {
                         focusBackground: "{accenthover}",
