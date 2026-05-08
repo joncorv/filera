@@ -1,6 +1,6 @@
 [package]
 name = "filera"
-version = "0.4.30"
+version = "0.4.31"
 description = "Batch rename your files with ease"
 authors = ["joncorv"]
 edition = "2021"
