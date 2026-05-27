@@ -805,6 +805,10 @@ async function user_rename_files() {
 
 <style>
 :root {
+    --filera-linux-font-family:
+        Inter, ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+        "Segoe UI Symbol", "Noto Color Emoji";
+
     /* background-image: url("src/assets/v960-ning-30.jpg"); */
     /* background-image: black; */
     background-size: cover;
@@ -817,6 +821,11 @@ async function user_rename_files() {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     -webkit-text-size-adjust: 50%;
+}
+
+:root.platform-linux {
+    --font-sans: var(--filera-linux-font-family);
+    --default-font-family: var(--filera-linux-font-family);
 }
 
 .body {

@@ -52,6 +52,7 @@
             webkitgtk_4_1
             openssl.dev
             fontconfig
+            inter
             gsettings-desktop-schemas
             xdg-utils
           ];

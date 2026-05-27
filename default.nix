@@ -4,7 +4,9 @@
   rustPlatform,
   fetchNpmDeps,
   cargo-tauri,
+  fontconfig,
   glib-networking,
+  inter,
   nodejs,
   npmHooks,
   openssl,
@@ -15,7 +17,7 @@
 
 rustPlatform.buildRustPackage rec {
   pname = "filera";
-  version = "0.4.33";
+  version = "0.4.34";
 
   src = ./.;
 
@@ -36,7 +38,9 @@ rustPlatform.buildRustPackage rec {
   ++ lib.optionals stdenv.hostPlatform.isLinux [ wrapGAppsHook4 ];
 
   buildInputs = lib.optionals stdenv.hostPlatform.isLinux [
+    fontconfig
     glib-networking
+    inter
     openssl
     webkitgtk_4_1
   ];

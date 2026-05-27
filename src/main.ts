@@ -5,6 +5,15 @@ import PrimeVue from "primevue/config";
 import Aura from "@primeuix/themes/aura";
 import colors from "tailwindcss/colors";
 
+const userAgentData = (
+    navigator as Navigator & { userAgentData?: { platform?: string } }
+).userAgentData;
+const platform = userAgentData?.platform ?? navigator.platform ?? navigator.userAgent;
+
+if (/linux/i.test(platform) && !/android/i.test(navigator.userAgent)) {
+    document.documentElement.classList.add("platform-linux");
+}
+
 const surface = { 0: "#ffffff", ...colors.stone };
 
 const fileraTheme = definePreset(Aura, {
