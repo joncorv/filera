@@ -150,6 +150,15 @@ onMounted(async () => {
             user_dragdrop_files(event.payload.paths);
         }
     });
+
+    document.querySelector('.p-splitter-gutter')?.addEventListener('mousedown', () => {
+        document.body.style.userSelect = 'none';
+        (document.body.style as any).webkitUserSelect = 'none';
+        document.addEventListener('mouseup', () => {
+            document.body.style.userSelect = '';
+            (document.body.style as any).webkitUserSelect = '';
+        }, { once: true });
+    });
 });
 
 onUnmounted(() => {
@@ -887,6 +896,7 @@ html {
     --p-splitter-gutter-background: transparent;
 }
 
+
 .p-datatable {
     --p-datatable-row-background: transparent;
     --p-datatable-header-cell-background: transparent;
@@ -979,9 +989,8 @@ html {
 
 @media (prefers-color-scheme: dark) {
     .task-container {
-        border-color: transparent;
+        border-color: color-mix(in srgb, var(--p-bordercolor) 75%, transparent);
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4), 0 1px 0px rgba(0, 0, 0, 0.5);
-        background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.05));
     }
 
     .p-button,
