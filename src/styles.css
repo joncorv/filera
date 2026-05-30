@@ -16,17 +16,17 @@
   --color-highlighttext: var(--p-highlighttext);
   --color-accenthover: var(--p-accenthover);
 
-  --color-chartreuse-50: var(--p-chartreuse-50);
-  --color-chartreuse-100: var(--p-chartreuse-100);
-  --color-chartreuse-200: var(--p-chartreuse-200);
-  --color-chartreuse-300: var(--p-chartreuse-300);
-  --color-chartreuse-400: var(--p-chartreuse-400);
-  --color-chartreuse-500: var(--p-chartreuse-500);
-  --color-chartreuse-600: var(--p-chartreuse-600);
-  --color-chartreuse-700: var(--p-chartreuse-700);
-  --color-chartreuse-800: var(--p-chartreuse-800);
-  --color-chartreuse-900: var(--p-chartreuse-900);
-  --color-chartreuse-950: var(--p-chartreuse-950);
+  --color-accent-50: var(--p-accent-50);
+  --color-accent-100: var(--p-accent-100);
+  --color-accent-200: var(--p-accent-200);
+  --color-accent-300: var(--p-accent-300);
+  --color-accent-400: var(--p-accent-400);
+  --color-accent-500: var(--p-accent-500);
+  --color-accent-600: var(--p-accent-600);
+  --color-accent-700: var(--p-accent-700);
+  --color-accent-800: var(--p-accent-800);
+  --color-accent-900: var(--p-accent-900);
+  --color-accent-950: var(--p-accent-950);
 
   --color-surface-50: var(--p-surface-50);
   --color-surface-100: var(--p-surface-100);

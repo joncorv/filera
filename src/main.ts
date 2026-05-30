@@ -3,8 +3,6 @@ import { definePreset } from "@primeuix/themes";
 import App from "./App.vue";
 import PrimeVue from "primevue/config";
 import Aura from "@primeuix/themes/aura";
-import colors from "tailwindcss/colors";
-
 const userAgentData = (
     navigator as Navigator & { userAgentData?: { platform?: string } }
 ).userAgentData;
@@ -14,38 +12,55 @@ if (/linux/i.test(platform) && !/android/i.test(navigator.userAgent)) {
     document.documentElement.classList.add("platform-linux");
 }
 
-const surface = { 0: "#ffffff", ...colors.stone };
+const surface = {
+    0:   "#ffffff",
+    50:  "#faf8ff",
+    100: "#f0effe",
+    200: "#e0def4",
+    300: "#908caa",
+    400: "#6e6a86",
+    500: "#56526e",
+    600: "#44415a",
+    700: "#393552",
+    800: "#2a273f",
+    900: "#232136",
+    950: "#1a1826",
+};
 
 const fileraTheme = definePreset(Aura, {
     primitive: {
-        chartreuse: {
-            50: "#f2fee8",
-            100: "#e1fcc8",
-            200: "#c3f99a",
-            300: "#96f260",
-            400: "#67dd2e",
-            500: "#40b51b",
-            600: "#319114",
-            700: "#267312",
-            800: "#215b13",
-            900: "#1e4d13",
-            950: "#0b2a05",
+        deep: "#1f1d2e",
+        iris: "#c4a7e7",
+        love: "#eb6f92",
+        rose: "#ea9a97",
+        accent: {
+            50:  "#fff0ef",
+            100: "#ffe4e2",
+            200: "#ffccc9",
+            300: "#f5b0ad",
+            400: "#ea9a97",
+            500: "#d97f7c",
+            600: "#bf6361",
+            700: "#a04949",
+            800: "#833435",
+            900: "#672224",
+            950: "#471516",
         },
     },
 
     semantic: {
         primary: {
-            50: "{chartreuse.50}",
-            100: "{chartreuse.100}",
-            200: "{chartreuse.200}",
-            300: "{chartreuse.300}",
-            400: "{chartreuse.400}",
-            500: "{chartreuse.500}",
-            600: "{chartreuse.600}",
-            700: "{chartreuse.700}",
-            800: "{chartreuse.800}",
-            900: "{chartreuse.900}",
-            950: "{chartreuse.950}",
+            50: "{accent.50}",
+            100: "{accent.100}",
+            200: "{accent.200}",
+            300: "{accent.300}",
+            400: "{accent.400}",
+            500: "{accent.500}",
+            600: "{accent.600}",
+            700: "{accent.700}",
+            800: "{accent.800}",
+            900: "{accent.900}",
+            950: "{accent.950}",
         },
         colorScheme: {
             light: {
@@ -80,8 +95,8 @@ const fileraTheme = definePreset(Aura, {
                 textsecondary: "{surface.600}",
                 bordercolor: "{surface.300}",
                 taskbg: "{surface.100}",
-                highlighttext: "{chartreuse.800}",
-                accenthover: "{chartreuse.100}",
+                highlighttext: "{accent.700}",
+                accenthover: "{accent.100}",
             },
             dark: {
                 surface,
@@ -109,14 +124,14 @@ const fileraTheme = definePreset(Aura, {
                     "top-panel": "#FF0000",
                 },
                 panelheader: "{surface.900}",
-                panelbody: "{surface.800}",
+                panelbody: "{surface.900}",
                 panelfooter: "{surface.900}",
                 textprimary: "{surface.200}",
-                textsecondary: "{surface.400}",
-                bordercolor: "{surface.700}",
-                taskbg: "{surface.900}",
-                highlighttext: "color-mix(in srgb, {chartreuse.500} 50%, white)",
-                accenthover: "color-mix(in srgb, {chartreuse.900} 50%, transparent)",
+                textsecondary: "{surface.300}",
+                bordercolor: "{surface.500}",
+                taskbg: "{surface.700}",
+                highlighttext: "{accent.400}",
+                accenthover: "color-mix(in srgb, {accent.400} 15%, transparent)",
             },
         },
     },
@@ -153,8 +168,8 @@ const fileraTheme = definePreset(Aura, {
                             activeColor: "{surface.50}",
                         },
                         primary: {
-                            borderColor: "color-mix(in srgb, {chartreuse.300} 50%, white)",
-                            hoverBorderColor: "color-mix(in srgb, {chartreuse.200} 50%, white)",
+                            borderColor: "color-mix(in srgb, {accent.300} 85%, white)",
+                            hoverBorderColor: "color-mix(in srgb, {accent.200} 85%, white)",
                         },
                     },
                 },
@@ -164,10 +179,10 @@ const fileraTheme = definePreset(Aura, {
             colorScheme: {
                 dark: {
                     root: {
-                        background: "{reactive.button-background}",
-                        borderColor: "{reactive.button-borderColor}",
-                        color: "{reactive.text-color}",
-                        hoverBorderColor: "{reactive.button-borderColor}",
+                        background: "{surface.800}",
+                        borderColor: "{surface.600}",
+                        color: "{surface.200}",
+                        hoverBorderColor: "{surface.600}",
                     },
                 },
             },
@@ -204,12 +219,12 @@ const fileraTheme = definePreset(Aura, {
             colorScheme: {
                 dark: {
                     root: {
-                        background: "{reactive.button-background}",
-                        borderColor: "{reactive.button-borderColor}",
-                        color: "{reactive.text-color}",
-                        checkedBackground: "{reactive.button-background}",
-                        checkedBorderColor: "{reactive.button-borderColor}",
-                        checkedColor: "{reactive.text-color}",
+                        background: "{surface.800}",
+                        borderColor: "{surface.600}",
+                        color: "{surface.200}",
+                        checkedBackground: "{surface.800}",
+                        checkedBorderColor: "{surface.600}",
+                        checkedColor: "{surface.200}",
                     },
                 },
             },
@@ -229,7 +244,7 @@ const fileraTheme = definePreset(Aura, {
             colorScheme: {
                 dark: {
                     button: {
-                        background: "{reactive.button-background}",
+                        background: "{surface.800}",
                     },
                 },
                 light: {

@@ -51,21 +51,21 @@ const emit = defineEmits<{
         <div class="flex flex-row gap-3 items-center">
             <!-- === Find Text Field === -->
             <div class="w-full min-w-36">
-                <FloatLabel variant="on" class="font-thin">
+                <FloatLabel variant="on" class="">
                     <InputText :id="`find-text-${index}`" fluid placeholder="" size="small"
                         v-model="task.FindAndReplace.find_text" @input="emit('update')"
                         class="flex-1" />
-                    <label class="font-thin" for="`find-text-${index}`">Find</label>
+                    <label class="" for="`find-text-${index}`">Find</label>
                 </FloatLabel>
             </div>
 
             <!-- === Replace Text Field === -->
             <div class="w-full min-w-36">
-                <FloatLabel variant="on" class="font-thin">
+                <FloatLabel variant="on" class="">
                     <InputText :id="`replace-text-${index}`" fluid placeholder="" size="small"
                         v-model="task.FindAndReplace.replace_text"
                         @input="emit('update')" class="flex-1" />
-                    <label class="font-thin" for="`replace-text-${index}`">Replace</label>
+                    <label class="" for="`replace-text-${index}`">Replace</label>
                 </FloatLabel>
             </div>
         </div>

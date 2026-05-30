@@ -52,11 +52,11 @@ const emit = defineEmits<{
         <div class="flex flex-row gap-3 items-center">
             <!-- === Prefix Text === -->
             <div class="w-full min-w-36">
-                <FloatLabel variant="on" class="font-thin">
+                <FloatLabel variant="on" class="">
                     <InputText fluid size="small" placeholder="" :id="`input-text-${index}`"
                         v-model="task.CustomText.text" @input="emit('update')"
                         class="" />
-                    <label class="font-thin" for="`input-text-${index}`">Value</label>
+                    <label class="" for="`input-text-${index}`">Value</label>
                 </FloatLabel>
             </div>
 

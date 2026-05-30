@@ -930,13 +930,13 @@ html {
     padding: calc(var(--spacing) * 4);
     margin-right: calc(var(--spacing) * 4);
     height: 3.5rem;
-    border: 2px solid rgba(255, 255, 255, 0.4);
+    /* border: 2px solid rgba(255, 255, 255, 0.4); */
     border-radius: 15px;
     color: color-mix(in oklab, var(--color-black) 60%, transparent);
     font-weight: 600;
     font-size: var(--text-med);
     line-height: var(--tw-leading, var(--text-sm--line-height));
-    background-color: color-mix(in oklab, var(--color-chartreuse-400) 80%, transparent);
+    background-color: color-mix(in oklab, var(--color-accent-400) 80%, transparent);
     box-shadow:
         black 0px 0px 0px 0px,
         rgba(0, 0, 0, 0.05) 0px 4px 6px -1px,
@@ -945,7 +945,7 @@ html {
     backdrop-filter: blur(10px);
 
     &:hover {
-        background-color: color-mix(in oklab, var(--color-chartreuse-500) 60%, transparent);
+        background-color: color-mix(in oklab, var(--color-accent-500) 60%, transparent);
         cursor: pointer;
     }
 }
@@ -980,7 +980,8 @@ html {
 @media (prefers-color-scheme: dark) {
     .task-container {
         border-color: transparent;
-        box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.25);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4), 0 1px 0px rgba(0, 0, 0, 0.5);
+        background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.05));
     }
 
     .p-button,

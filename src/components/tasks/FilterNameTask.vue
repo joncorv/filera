@@ -53,7 +53,7 @@ const emit = defineEmits<{
 
             <!-- === Filter Name Field === -->
             <div class="w-full">
-                <FloatLabel variant="on" class="font-thin">
+                <FloatLabel variant="on" class="">
                     <InputText class="w-full" v-model="task.FilterName.name" fluid
                         placeholder="" :id="`separator-${index}`" size="small"
                         @input="emit('update')" />
