@@ -15,6 +15,8 @@
   --color-taskbg: var(--p-taskbg);
   --color-highlighttext: var(--p-highlighttext);
   --color-accenthover: var(--p-accenthover);
+  --color-rowselectbg: var(--p-rowselectbg);
+  --color-rowselecttext: var(--p-rowselecttext);
 
   --color-accent-50: var(--p-accent-50);
   --color-accent-100: var(--p-accent-100);

@@ -28,6 +28,7 @@ import FilterTimePeriodTask from "./components/tasks/FilterTimePeriodTask.vue";
 import FilterTimeTask from "./components/tasks/FilterTimeTask.vue";
 import FilterSizeTask from "./components/tasks/FilterSizeTask.vue";
 import FileStatusTable from "./components/FileStatusTable.vue";
+import ThemeSwitcher from "./components/ThemeSwitcher.vue";
 import "primeicons/primeicons.css";
 import type { FileStatusResponse, TaskWithId } from "./types";
 import {
@@ -302,6 +303,8 @@ const taskFilterMenuItems = ref([
     },
 ]);
 
+// TODO: Templates feature parked for later -- keep this in the code.
+/*
 const templateMenuItems = ref([
     {
         label: "Photo Rename",
@@ -325,6 +328,7 @@ const templateMenuItems = ref([
         command: () => createTemplate(),
     },
 ]);
+*/
 
 const taskMenuToggle = ref();
 const taskMenuToggleFunction = (event: any) => {
@@ -336,6 +340,8 @@ const taskFilterToggleFunction = (event: any) => {
     taskFilterMenuToggle.value.toggle(event);
 };
 
+// TODO: Templates feature parked for later -- keep this in the code.
+/*
 const templateMenuToggle = ref();
 const templateMenuToggleFunction = (event: any) => {
     templateMenuToggle.value.toggle(event);
@@ -355,6 +361,7 @@ const applyTemplate = (templateType: string) => {
 const createTemplate = () => {
     console.log("Create custom template");
 };
+*/
 
 // TODO: Implement help functionality
 // const showHelp = () => {
@@ -563,6 +570,7 @@ async function user_rename_files() {
                     <!-- === Separator === -->
                     <div class="flex-1"></div>
 
+                    <!-- TODO: Templates feature parked for later -- keep this in the code.
                     <Button
                         type="button"
                         label="Templates"
@@ -576,6 +584,9 @@ async function user_rename_files() {
                         aria-controls="custom_text_menu"
                     />
                     <Menu ref="templateMenuToggle" id="template_menu" :model="templateMenuItems" :popup="true" />
+                    -->
+
+                    <ThemeSwitcher />
 
                     <!-- === Hamburger Select === -->
                     <Button

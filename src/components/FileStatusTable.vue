@@ -55,12 +55,12 @@ const emit = defineEmits<{
                         @click.meta.exact="emit('userFilestatusCtrlClick', index, item.stable_id)"
                         @click.shift.exact="emit('userFilestatusShiftClick', index, item.stable_id)"
                         class="cursor-pointer"
-                        :class="item.selected ? 'bg-accenthover' : ''"
+                        :class="item.selected ? 'bg-rowselectbg' : ''"
                     >
                         <td
                             class="px-4 py-2 border-b border-bordercolor break-words"
                             :class="{
-                                'font-medium text-highlighttext': item.selected,
+                                'font-medium text-rowselecttext': item.selected,
                                 'text-textprimary': !item.selected,
                                 'opacity-50': !item.selected && !item.active,
                                 italic: !item.active,
@@ -71,7 +71,7 @@ const emit = defineEmits<{
                         <td
                             class="px-4 py-2 border-b border-bordercolor break-words"
                             :class="{
-                                'font-medium text-highlighttext': item.selected,
+                                'font-medium text-rowselecttext': item.selected,
                                 'text-textprimary': !item.selected,
                                 'opacity-50': !item.selected && !item.active,
                                 italic: !item.active,
