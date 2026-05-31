@@ -13,22 +13,22 @@ const toggleThemeMenu = (event: Event) => {
 const themeMenuItems = ref([
     {
         label: "Filera",
-        emoji: "🌿",
+        icon: "pi pi-bolt",
         command: () => usePreset(fileraTheme),
     },
     {
         label: "Rose Pine",
-        emoji: "🌹",
+        icon: "pi pi-heart",
         command: () => usePreset(rosePineTheme),
     },
     {
         label: "Catppuccin",
-        emoji: "🐱",
+        icon: "pi pi-star-fill",
         command: () => usePreset(catppuccinTheme),
     },
     {
         label: "Tokyo Night",
-        emoji: "🌃",
+        icon: "pi pi-moon",
         command: () => usePreset(tokyoNightTheme),
     },
 ]);
@@ -46,12 +46,5 @@ const themeMenuItems = ref([
         aria-haspopup="true"
         aria-controls="theme_menu"
     />
-    <Menu ref="themeMenuToggle" id="theme_menu" :model="themeMenuItems" :popup="true">
-        <template #item="{ item, props }">
-            <a class="p-menu-item-link" v-bind="props.action">
-                <span class="p-menu-item-icon">{{ item.emoji }}</span>
-                <span class="p-menu-item-label">{{ item.label }}</span>
-            </a>
-        </template>
-    </Menu>
+    <Menu ref="themeMenuToggle" id="theme_menu" :model="themeMenuItems" :popup="true" />
 </template>

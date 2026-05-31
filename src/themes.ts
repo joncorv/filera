@@ -109,7 +109,7 @@ export const fileraTheme = definePreset(Aura, {
                 textprimary: "{surface.200}",
                 textsecondary: "{surface.300}",
                 bordercolor: "{surface.700}",
-                taskbg: "{surface.700}",
+                taskbg: "color-mix(in srgb, {surface.700} 32%, {surface.800})",
                 highlighttext: "color-mix(in srgb, {accent.500} 50%, white)",
                 accenthover: "color-mix(in srgb, {accent.900} 50%, transparent)",
                 rowselectbg: "{accenthover}",
