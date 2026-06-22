@@ -1,7 +1,7 @@
 {
     "$schema": "https://schema.tauri.app/config/2",
     "productName": "filera",
-    "version": "0.4.35",
+    "version": "0.4.36",
     "identifier": "com.joncorv.filera",
     "build": {
         "beforeDevCommand": "npm run dev",
@@ -35,7 +35,13 @@
         "category": "Utility",
         "active": true,
         "targets": "all",
-        "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.icns", "icons/icon.ico"],
+        "icon": [
+            "icons/32x32.png",
+            "icons/128x128.png",
+            "icons/128x128@2x.png",
+            "icons/icon.icns",
+            "icons/icon.ico"
+        ],
         "macOS": {
             "entitlements": "./Entitlements.plist"
         }
