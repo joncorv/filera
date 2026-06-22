@@ -86,7 +86,7 @@ const addFilterSize = () => addTask(createFilterSizeTask);
 const search = ref("");
 // where data is stored
 const sortChoice = ref();
-const sortAscending = ref(true);
+const sortDescending = ref(true);
 const previousSortChoice = ref("");
 const metadata = [
     { name: "Name", code: "name" },
@@ -152,13 +152,17 @@ onMounted(async () => {
         }
     });
 
-    document.querySelector('.p-splitter-gutter')?.addEventListener('mousedown', () => {
-        document.body.style.userSelect = 'none';
-        (document.body.style as any).webkitUserSelect = 'none';
-        document.addEventListener('mouseup', () => {
-            document.body.style.userSelect = '';
-            (document.body.style as any).webkitUserSelect = '';
-        }, { once: true });
+    document.querySelector(".p-splitter-gutter")?.addEventListener("mousedown", () => {
+        document.body.style.userSelect = "none";
+        (document.body.style as any).webkitUserSelect = "none";
+        document.addEventListener(
+            "mouseup",
+            () => {
+                document.body.style.userSelect = "";
+                (document.body.style as any).webkitUserSelect = "";
+            },
+            { once: true },
+        );
     });
 });
 
@@ -168,14 +172,14 @@ onUnmounted(() => {
 
 async function user_update_sort() {
     if (sortChoice.value === previousSortChoice.value) {
-        sortAscending.value = !sortAscending.value;
+        sortDescending.value = !sortDescending.value;
     } else {
-        sortAscending.value = true;
+        sortDescending.value = true;
         previousSortChoice.value = sortChoice.value;
     }
     fileStatusResponse.value = await invoke("user_update_sort", {
         sortChoice: sortChoice.value,
-        sortAscending: sortAscending.value,
+        sortDescending: sortDescending.value,
     });
 }
 
@@ -454,7 +458,14 @@ async function user_rename_files() {
                 <!-- === Left SplitterPanel Menubar === -->
                 <div id="file_buttons" class="flex flex-row items-center gap-2 justify-start m-2">
                     <!-- <div class="bg-test2"> test test </div> -->
-                    <Button size="small" icon="pi pi-file" label="Open Files" @click="open_files" class="min-w-max" severity="secondary" />
+                    <Button
+                        size="small"
+                        icon="pi pi-file"
+                        label="Open Files"
+                        @click="open_files"
+                        class="min-w-max"
+                        severity="secondary"
+                    />
                     <Button
                         size="small"
                         icon="pi pi-folder-open"
@@ -489,7 +500,7 @@ async function user_rename_files() {
                         <template #value="{ value: selectedSort }">
                             <span v-if="selectedSort" class="text-textprimary">
                                 <i
-                                    :class="sortAscending ? 'pi pi-sort-amount-down' : 'pi pi-sort-amount-up'"
+                                    :class="sortDescending ? 'pi pi-sort-amount-up' : 'pi pi-sort-amount-down'"
                                     class="inline-block text-xs mr-1 -mt-0.5 align-middle"
                                 ></i>
                                 {{ metadata.find((m) => m.code === selectedSort)?.name }}
@@ -524,9 +535,15 @@ async function user_rename_files() {
                     id="footer_left_panel"
                     class="flex flex-row py-2 px-2 gap-3 bg-panelfooter border-t rounded-b-lg border-bordercolor text-sm text-textprimary select-none"
                 >
-                    <span v-if="fileStatusResponse.stats.selected > 0">Selected: {{ fileStatusResponse.stats.selected }}</span>
-                    <span v-if="fileStatusResponse.stats.filtered > 0" class="text-textsecondary">Filtered: {{ fileStatusResponse.stats.filtered }}</span>
-                    <span v-if="fileStatusResponse.stats.total > 0">Ready: {{ fileStatusResponse.stats.ready }} of {{ fileStatusResponse.stats.total }}</span>
+                    <span v-if="fileStatusResponse.stats.selected > 0"
+                        >Selected: {{ fileStatusResponse.stats.selected }}</span
+                    >
+                    <span v-if="fileStatusResponse.stats.filtered > 0" class="text-textsecondary"
+                        >Filtered: {{ fileStatusResponse.stats.filtered }}</span
+                    >
+                    <span v-if="fileStatusResponse.stats.total > 0"
+                        >Ready: {{ fileStatusResponse.stats.ready }} of {{ fileStatusResponse.stats.total }}</span
+                    >
                     <div id="separator" class="flex-1"></div>
                 </footer>
             </SplitterPanel>
@@ -536,7 +553,10 @@ async function user_rename_files() {
                 class="flex flex-col flex-1/3 ml-0.25 mb-1 mt-1 mr-1 bg-panelheader rounded-lg border border-bordercolor"
             >
                 <!-- === Right SplitterPanel Menubar === -->
-                <div id="file_buttons" class="flex flex-row m-2 gap-2 items-center justify-start bg-panelheader select-none">
+                <div
+                    id="file_buttons"
+                    class="flex flex-row m-2 gap-2 items-center justify-start bg-panelheader select-none"
+                >
                     <!-- <Menu id="customTextOverlayMenu" :model="customTextMenuItems" popup="true" /> -->
 
                     <Button
@@ -826,8 +846,8 @@ async function user_rename_files() {
 <style>
 :root {
     --filera-linux-font-family:
-        Inter, ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
-        "Segoe UI Symbol", "Noto Color Emoji";
+        Inter, ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+        "Noto Color Emoji";
 
     /* background-image: url("src/assets/v960-ning-30.jpg"); */
     /* background-image: black; */
@@ -906,7 +926,6 @@ html {
     --p-splitter-border-color: transparent;
     --p-splitter-gutter-background: transparent;
 }
-
 
 .p-datatable {
     --p-datatable-row-background: transparent;
@@ -995,19 +1014,25 @@ html {
     border-radius: 0.5rem;
     padding: 0.75rem;
     overflow: hidden;
-    box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.08);
+    box-shadow:
+        0 4px 12px 0 rgba(0, 0, 0, 0.12),
+        0 2px 4px -1px rgba(0, 0, 0, 0.08);
 }
 
 @media (prefers-color-scheme: dark) {
     .task-container {
         border-color: color-mix(in srgb, var(--p-bordercolor) 75%, transparent);
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4), 0 1px 0px rgba(0, 0, 0, 0.5);
+        box-shadow:
+            0 2px 4px rgba(0, 0, 0, 0.4),
+            0 1px 0px rgba(0, 0, 0, 0.5);
     }
 
     .p-button,
     .p-select {
         background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.05));
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4), 0 1px 0px rgba(0, 0, 0, 0.5);
+        box-shadow:
+            0 2px 4px rgba(0, 0, 0, 0.4),
+            0 1px 0px rgba(0, 0, 0, 0.5);
     }
 }
 </style>

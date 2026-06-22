@@ -62,7 +62,7 @@ pub struct AppState {
     working_files: Vec<WorkingFile>,
     tasks: Vec<Task>,
     sort_choice: String,
-    sort_ascending: bool,
+    sort_descending: bool,
     search: String,
     output: Output,
     file_statuses: Vec<FileStatus>,

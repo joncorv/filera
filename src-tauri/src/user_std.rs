@@ -90,8 +90,8 @@ pub fn user_clear_files(state: State<'_, Mutex<AppState>>) {
 }
 
 #[tauri::command]
-pub fn user_update_sort(sort_choice: String, sort_ascending: bool, state: State<'_, Mutex<AppState>>) -> FileStatusResponse {
-    state_update_sort(sort_choice, sort_ascending, &state);
+pub fn user_update_sort(sort_choice: String, sort_descending: bool, state: State<'_, Mutex<AppState>>) -> FileStatusResponse {
+    state_update_sort(sort_choice, sort_descending, &state);
     sort_file_names(&state);
     convert_file_names_to_working_files(&state);
     process_tasks_on_working_files(&state);

@@ -104,15 +104,15 @@ pub fn sort_file_names(state: &State<'_, Mutex<AppState>>) {
         }
     }
 
-    if !state.sort_ascending {
+    if state.sort_descending {
         state.file_names_sorted.reverse();
     }
 }
 
-pub fn state_update_sort(sort_choice: String, sort_ascending: bool, state: &State<'_, Mutex<AppState>>) {
+pub fn state_update_sort(sort_choice: String, sort_descending: bool, state: &State<'_, Mutex<AppState>>) {
     let mut state = state.lock().unwrap();
     state.sort_choice = sort_choice;
-    state.sort_ascending = sort_ascending;
+    state.sort_descending = sort_descending;
     state.selected_filestatus_anchor = None;
     state.selected_filestatuses = None;
 }
