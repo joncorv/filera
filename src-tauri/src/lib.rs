@@ -74,7 +74,7 @@ pub struct AppState {
 }
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-enum Task {
+pub enum Task {
     CustomText {
         text: String,
         at_start: bool,

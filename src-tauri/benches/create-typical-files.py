@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Generate 100 typical, well-behaved files for happy path testing of file renaming applications.
+Generate 10,000 typical, well-behaved files for happy path testing of file renaming applications.
 These are the kinds of files users commonly have in their directories.
 """
 
@@ -8,9 +8,16 @@ import os
 import random
 from pathlib import Path
 
-def create_typical_files(output_dir="typical_files"):
-    """Create 100 normal, well-behaved files for happy path testing."""
-    
+def numbered(filename, index):
+    """Insert a numeric suffix before the extension: 'notes.txt' -> 'notes_0001.txt'."""
+    stem, ext = os.path.splitext(filename)
+    if stem.endswith('.tar'):
+        stem, ext = stem[:-4], '.tar' + ext
+    return f"{stem}_{index:04d}{ext}"
+
+def create_typical_files(output_dir="typical_files", count=10000):
+    """Create `count` normal, well-behaved files for happy path testing."""
+
     # Create output directory
     Path(output_dir).mkdir(exist_ok=True)
     os.chdir(output_dir)
@@ -101,7 +108,16 @@ def create_typical_files(output_dir="typical_files"):
         'personal_journal.txt'
     ]
     typical_files.extend(personal_files)
-    
+
+    # Expand the curated names up to `count` unique filenames. The first copy of
+    # each name is kept verbatim; later copies get a numeric suffix.
+    base_names = typical_files
+    typical_files = []
+    for i in range(count):
+        name = base_names[i % len(base_names)]
+        copy_index = i // len(base_names)
+        typical_files.append(name if copy_index == 0 else numbered(name, copy_index))
+
     # Create all files
     created_files = []
     file_types = {
@@ -135,8 +151,9 @@ def create_typical_files(output_dir="typical_files"):
                 f.write(content)
             
             created_files.append(filename)
-            print(f"Created: {filename}")
-            
+            if len(created_files) % 500 == 0:
+                print(f"Created {len(created_files)} / {count} files...")
+
         except Exception as e:
             print(f"Failed to create {filename}: {e}")
     
@@ -156,7 +173,7 @@ def create_typical_files(output_dir="typical_files"):
     return created_files
 
 if __name__ == "__main__":
-    print("Creating 100 typical files for happy path testing...")
+    print("Creating 10,000 typical files for happy path testing...")
     print("=" * 60)
     
     files = create_typical_files()
