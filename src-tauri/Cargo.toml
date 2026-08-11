@@ -26,7 +26,6 @@ tauri-plugin-notification = "2"
 notify-rust = "4.11.7"
 tauri-plugin-devtools = "2.0.0"
 tauri-plugin-dialog = "2"
-clippy = "0.0.302"
 time = { version = "0.3.41", features = ["parsing"] }
 natord = "1.0.9"
 rfd = { version = "0.15.4", default-features = false, features = ["gtk3"] }
