@@ -1,2 +1,4 @@
+edition = "2024"
 max_width = 140
 use_small_heuristics = "Max"
+empty_item_single_line = false
