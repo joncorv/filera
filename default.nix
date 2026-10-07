@@ -17,16 +17,16 @@
 
 rustPlatform.buildRustPackage rec {
   pname = "filera";
-  version = "0.4.42";
+  version = "0.4.43";
 
   src = ./.;
 
-  cargoHash = "sha256-vJP1LFkYG4jhpZHjJgNpiGIH7/n/rQjq8jqrLGXqbeY=";
+  cargoHash = "sha256-Ak8oQ8YNwWIY5X7t5L9e2MiUYgUMNwvZXp0zm8E6PGM=";
 
   npmDeps = fetchNpmDeps {
     name = "${pname}-${version}-npm-deps";
     inherit src;
-    hash = "sha256-d93paLVIhEVXG7f1+JNgFSXSYJ/Klfy7aTlLKdzjhgY=";
+    hash = "sha256-LZu9de9pWszqmBERD/7RlZuNLL5BcSl/cVhGi56+JQw=";
   };
 
   nativeBuildInputs = [
