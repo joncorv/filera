@@ -6,6 +6,7 @@ const BLANK_NAME: &str = "<BLANK>";
 
 fn task_custom_text(file: &mut WorkingFile, text: &String, at_start: &bool, active: &bool) {
     if *active {
+        // for file in files {
         let file_stem: String;
         let file_extension: String;
         let file_name = file.target.file_name().unwrap().to_string_lossy();
@@ -41,6 +42,7 @@ fn task_custom_text(file: &mut WorkingFile, text: &String, at_start: &bool, acti
                 file.target.set_file_name(format!("{file_stem}{text}.{file_extension}"));
             }
         };
+        // }
     }
 }
 fn task_find_and_replace(file: &mut WorkingFile, find_text: &str, replace_text: &str, active: &bool) {
@@ -383,53 +385,87 @@ pub fn process_tasks_on_working_files(state: &State<'_, Mutex<AppState>>) {
     let mut state = state.lock().unwrap();
     let state = &mut *state;
 
-    for (index, file) in &mut state.working_files.iter_mut().enumerate() {
+    // reset the target and active to baseline
+    for file in &mut state.working_files {
         file.target = file.source.clone();
         file.active = true;
+    }
 
-        for task in &state.tasks {
-            match task {
-                Task::CustomText { text, at_start, active } => {
+    // let files = &mut state.working_files;
+
+    for task in &state.tasks {
+        match task {
+            Task::CustomText { text, at_start, active } => {
+                for file in &mut state.working_files {
                     task_custom_text(file, text, at_start, active);
                 }
-                Task::FindAndReplace { find_text, replace_text, active } => {
+
+                // task_custom_text(file, text, at_start, active);
+            }
+            Task::FindAndReplace { find_text, replace_text, active } => {
+                for file in &mut state.working_files {
                     task_find_and_replace(file, find_text, replace_text, active);
                 }
+            }
 
-                Task::ClearAll { active } => {
+            Task::ClearAll { active } => {
+                for file in &mut state.working_files {
                     task_clear_all(file, active);
                 }
+            }
 
-                Task::ChangeCase { case_choice, active } => {
+            Task::ChangeCase { case_choice, active } => {
+                for file in &mut state.working_files {
                     task_change_case(file, case_choice, active);
                 }
-                Task::NumSequence { start_num, num_padding, separator, at_start, active } => {
-                    task_num_sequence(file, index, start_num, num_padding, at_start, separator, active);
+            }
+            Task::NumSequence { start_num, num_padding, separator, at_start, active } => {
+                let mut active_index: usize = 0;
+                for file in &mut state.working_files {
+                    if file.active {
+                        active_index += 1;
+                        task_num_sequence(file, active_index - 1, start_num, num_padding, at_start, separator, active);
+                    }
                 }
+            }
 
-                Task::Date { year, month, day, at_start, separator, active } => {
+            Task::Date { year, month, day, at_start, separator, active } => {
+                for file in &mut state.working_files {
                     task_date(file, year, month, day, at_start, separator, active);
                 }
+            }
 
-                Task::Time { at_start, separator, active } => {
+            Task::Time { at_start, separator, active } => {
+                for file in &mut state.working_files {
                     task_time(file, at_start, separator, active);
                 }
-                Task::FilterName { inclusive, name } => {
+            }
+            Task::FilterName { inclusive, name } => {
+                for file in &mut state.working_files {
                     task_filter_name(file, inclusive, name);
                 }
-                Task::FilterDocType { inclusive, doc_types } => {
+            }
+            Task::FilterDocType { inclusive, doc_types } => {
+                for file in &mut state.working_files {
                     task_filter_doc_type(file, inclusive, doc_types);
                 }
-                Task::FilterTime { before, time } => {
+            }
+            Task::FilterTime { before, time } => {
+                for file in &mut state.working_files {
                     task_filter_time(file, before, time);
                 }
-                Task::FilterTimePeriod { inclusive, start_time, end_time } => {
+            }
+            Task::FilterTimePeriod { inclusive, start_time, end_time } => {
+                for file in &mut state.working_files {
                     task_filter_time_period(file, inclusive, start_time, end_time);
                 }
-                Task::FilterSize { greater_than, byte_base_size, size } => {
+            }
+            Task::FilterSize { greater_than, byte_base_size, size } => {
+                for file in &mut state.working_files {
                     task_filter_size(file, greater_than, byte_base_size, size);
                 }
             }
         }
     }
+    // }
 }
