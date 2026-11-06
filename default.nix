@@ -49,7 +49,7 @@ rustPlatform.buildRustPackage rec {
   buildAndTestSubdir = cargoRoot;
 
   meta = with lib; {
-    description = "Filera - A powerful, cross-platform batch file renaming tool";
+    description = "Batch file renaming app";
     homepage = "https://github.com/joncorv/filera";
     license = licenses.mit;
     maintainers = [ ];

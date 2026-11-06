@@ -1,4 +1,5 @@
 use crate::{AppState, FileStatus, FileStatusResponse, FileStatusStats, HashMap, Mutex, Path, PathBuf, State, Task, WorkingFile};
+use anyhow::{anyhow, Error, Result};
 use std::time::SystemTime;
 
 #[tauri::command]
@@ -7,9 +8,7 @@ pub fn solve_duplicates(file_names: Vec<String>, state: &State<'_, Mutex<AppStat
     let mut file_names = file_names;
     state.file_names.append(&mut file_names);
     state.file_names.sort_unstable();
-    state
-        .file_names
-        .sort_by(|a, b| natord::compare(&a.to_lowercase(), &b.to_lowercase()));
+    state.file_names.sort_by(|a, b| natord::compare(&a.to_lowercase(), &b.to_lowercase()));
     state.file_names.dedup();
 }
 
@@ -77,9 +76,7 @@ pub fn sort_file_names(state: &State<'_, Mutex<AppState>>) {
                 .filter_map(|file| {
                     std::fs::metadata(file).ok()?; // File must exist
 
-                    let extension = Path::new(file)
-                        .extension()
-                        .map_or("zz_no_ext".to_string(), |ext| ext.to_string_lossy().to_string());
+                    let extension = Path::new(file).extension().map_or("zz_no_ext".to_string(), |ext| ext.to_string_lossy().to_string());
 
                     Some((file.clone(), extension))
                 })
@@ -107,6 +104,42 @@ pub fn sort_file_names(state: &State<'_, Mutex<AppState>>) {
     if state.sort_descending {
         state.file_names_sorted.reverse();
     }
+}
+
+pub fn check_file_permissions(state: &State<'_, Mutex<AppState>>) -> Result<(), Error> {
+    let state = state.lock().unwrap();
+    let mut found_errors = Vec::new();
+
+    for file in state.file_names_sorted.as_slice() {
+        match std::fs::metadata(file) {
+            // we can access metadata
+            Ok(data) => {
+                // but file is read-only
+                if data.permissions().readonly() {
+                    let error = format!("Error: Read-only file: {}", file);
+                    found_errors.push(error);
+                }
+            }
+            // unable to access file metadata
+            Err(e) => {
+                let error = format!("Error: {:?}: {}", e.to_string(), file);
+                found_errors.push(error);
+            }
+        }
+    }
+
+    let error_result = found_errors.join("\n");
+
+    rfd::MessageDialog::new().set_title("Warning").set_description(error_result).set_buttons(rfd::MessageButtons::Ok).show();
+
+    // match dialog {
+    //     rfd::MessageDialogResult::Ok => {
+    //         Ok(())
+    //     }
+    //     _ => println!("ok this failed"),
+    // }
+
+    Ok(())
 }
 
 pub fn state_update_sort(sort_choice: String, sort_descending: bool, state: &State<'_, Mutex<AppState>>) {
@@ -143,12 +176,7 @@ pub fn convert_file_names_to_working_files(state: &State<'_, Mutex<AppState>>) {
     let file_paths = &state.file_names_sorted;
 
     for (index, file_path) in file_paths.iter().enumerate() {
-        let working_file = WorkingFile {
-            source: PathBuf::from(file_path.clone()),
-            target: PathBuf::new(),
-            active: true,
-            stable_id: index,
-        };
+        let working_file = WorkingFile { source: PathBuf::from(file_path.clone()), target: PathBuf::new(), active: true, stable_id: index };
 
         let is_file = working_file.source.is_file();
         let is_legal_file = !file_path.contains(".DS_Store");
@@ -266,11 +294,7 @@ pub fn build_response(state: &State<'_, Mutex<AppState>>) -> FileStatusResponse 
         indices
             .iter()
             .map(|index| {
-                state
-                    .file_statuses
-                    .get(*index)
-                    .cloned()
-                    .expect("filtered filestatus index should point to an existing file_status")
+                state.file_statuses.get(*index).cloned().expect("filtered filestatus index should point to an existing file_status")
             })
             .collect()
     } else {

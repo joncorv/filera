@@ -2,7 +2,7 @@ use crate::process_tasks::process_tasks_on_working_files;
 use crate::{AppState, FileStatusResponse, FileStatusStats, Mutex, PathBuf, State, Task};
 
 use crate::atomics::{
-    apply_search, apply_selections_to_filestatuses, build_response, convert_file_names_to_working_files,
+    apply_search, apply_selections_to_filestatuses, build_response, check_file_permissions, convert_file_names_to_working_files,
     convert_working_files_to_file_status, resolve_workingfile_duplicates, solve_duplicates, sort_file_names,
     state_clear_selected_filestatuses, state_update_search, state_update_sort, state_update_tasks,
 };
@@ -14,12 +14,15 @@ use std::{fs::copy, fs::rename};
 use tauri_plugin_notification::NotificationExt;
 // use time::format_description::well_known::Iso8601;
 // use time::OffsetDateTime;
+use anyhow::Error;
+use anyhow::Result;
 use walkdir::WalkDir;
 
 #[tauri::command]
 pub fn user_open_files(file_names: Vec<String>, state: State<'_, Mutex<AppState>>) -> FileStatusResponse {
     solve_duplicates(file_names, &state);
     sort_file_names(&state);
+    check_file_permissions(&state);
     convert_file_names_to_working_files(&state);
     process_tasks_on_working_files(&state);
     resolve_workingfile_duplicates(&state);
@@ -230,17 +233,9 @@ pub async fn user_rename_files(
                         }
                         state.file_names.clear();
                         state.working_files.clear();
-                        let blank = FileStatusResponse {
-                            statuses: vec![],
-                            stats: FileStatusStats::default(),
-                        };
+                        let blank = FileStatusResponse { statuses: vec![], stats: FileStatusStats::default() };
 
-                        app.notification()
-                            .builder()
-                            .title("Success")
-                            .body("Files converted successfully")
-                            .show()
-                            .unwrap();
+                        app.notification().builder().title("Success").body("Files converted successfully").show().unwrap();
 
                         Ok(blank)
                     }
@@ -265,17 +260,9 @@ pub async fn user_rename_files(
                         }
                         state.file_names.clear();
                         state.working_files.clear();
-                        let blank = FileStatusResponse {
-                            statuses: vec![],
-                            stats: FileStatusStats::default(),
-                        };
+                        let blank = FileStatusResponse { statuses: vec![], stats: FileStatusStats::default() };
 
-                        app.notification()
-                            .builder()
-                            .title("Success")
-                            .body("Files converted successfully")
-                            .show()
-                            .unwrap();
+                        app.notification().builder().title("Success").body("Files converted successfully").show().unwrap();
 
                         Ok(blank)
                     }
@@ -293,17 +280,9 @@ pub async fn user_rename_files(
                         }
                         state.file_names.clear();
                         state.working_files.clear();
-                        let blank = FileStatusResponse {
-                            statuses: vec![],
-                            stats: FileStatusStats::default(),
-                        };
+                        let blank = FileStatusResponse { statuses: vec![], stats: FileStatusStats::default() };
 
-                        app.notification()
-                            .builder()
-                            .title("Success")
-                            .body("Files converted successfully")
-                            .show()
-                            .unwrap();
+                        app.notification().builder().title("Success").body("Files converted successfully").show().unwrap();
 
                         Ok(blank)
                     }
