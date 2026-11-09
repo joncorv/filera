@@ -4,6 +4,10 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
+    rust-overlay = {
+      url = "github:oxalica/rust-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -11,25 +15,34 @@
       self,
       nixpkgs,
       flake-utils,
+      rust-overlay,
     }:
     flake-utils.lib.eachDefaultSystem (
       system:
       let
-        pkgs = nixpkgs.legacyPackages.${system};
+        pkgs = import nixpkgs {
+          inherit system;
+          overlays = [ rust-overlay.overlays.default ];
+        };
+
+        # Single source of truth for the Rust version: ./rust-toolchain.toml
+        rustToolchain = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
+        rustPlatform = pkgs.makeRustPlatform {
+          cargo = rustToolchain;
+          rustc = rustToolchain;
+        };
       in
       {
-        packages.default = pkgs.callPackage ./default.nix { };
+        packages.default = pkgs.callPackage ./default.nix { inherit rustPlatform; };
 
         devShells.default = pkgs.mkShell {
           # Don't use inputsFrom - we want a clean dev environment
           nativeBuildInputs = with pkgs; [
             pkg-config
-            cargo
-            rustc
+            rustToolchain # cargo, rustc, rustfmt, clippy, rust-analyzer
             nodejs
             cargo-tauri
             # Development tools
-            rust-analyzer
             cargo-watch
             typescript-language-server
           ];
