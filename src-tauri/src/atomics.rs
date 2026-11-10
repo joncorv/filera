@@ -1,4 +1,7 @@
 use crate::{AppState, FileStatus, FileStatusResponse, FileStatusStats, HashMap, Mutex, Path, PathBuf, State, Task, WorkingFile};
+use anyhow::Error;
+use anyhow::Result;
+// use anyhow::anyhow;
 use std::time::SystemTime;
 
 #[tauri::command]
@@ -7,9 +10,7 @@ pub fn solve_duplicates(file_names: Vec<String>, state: &State<'_, Mutex<AppStat
     let mut file_names = file_names;
     state.file_names.append(&mut file_names);
     state.file_names.sort_unstable();
-    state
-        .file_names
-        .sort_by(|a, b| natord::compare(&a.to_lowercase(), &b.to_lowercase()));
+    state.file_names.sort_by(|a, b| natord::compare(&a.to_lowercase(), &b.to_lowercase()));
     state.file_names.dedup();
 }
 
@@ -77,9 +78,7 @@ pub fn sort_file_names(state: &State<'_, Mutex<AppState>>) {
                 .filter_map(|file| {
                     std::fs::metadata(file).ok()?; // File must exist
 
-                    let extension = Path::new(file)
-                        .extension()
-                        .map_or("zz_no_ext".to_string(), |ext| ext.to_string_lossy().to_string());
+                    let extension = Path::new(file).extension().map_or("zz_no_ext".to_string(), |ext| ext.to_string_lossy().to_string());
 
                     Some((file.clone(), extension))
                 })
@@ -107,6 +106,42 @@ pub fn sort_file_names(state: &State<'_, Mutex<AppState>>) {
     if state.sort_descending {
         state.file_names_sorted.reverse();
     }
+}
+
+pub fn check_file_permissions(state: &State<'_, Mutex<AppState>>) -> Result<(), Error> {
+    let state = state.lock().unwrap();
+    let mut found_errors = Vec::new();
+
+    for file in state.file_names_sorted.as_slice() {
+        match std::fs::metadata(file) {
+            // we can access metadata
+            Ok(data) => {
+                // but file is read-only
+                if data.permissions().readonly() {
+                    let error = format!("Error: Read-only file: {}", file);
+                    found_errors.push(error);
+                }
+            }
+            // unable to access file metadata
+            Err(e) => {
+                let error = format!("Error: {:?}: {}", e.to_string(), file);
+                found_errors.push(error);
+            }
+        }
+    }
+
+    let error_result = found_errors.join("\n");
+
+    rfd::MessageDialog::new().set_title("Warning").set_description(error_result).set_buttons(rfd::MessageButtons::Ok).show();
+
+    // match dialog {
+    //     rfd::MessageDialogResult::Ok => {
+    //         Ok(())
+    //     }
+    //     _ => println!("ok this failed"),
+    // }
+
+    Ok(())
 }
 
 pub fn state_update_sort(sort_choice: String, sort_descending: bool, state: &State<'_, Mutex<AppState>>) {
@@ -143,12 +178,7 @@ pub fn convert_file_names_to_working_files(state: &State<'_, Mutex<AppState>>) {
     let file_paths = &state.file_names_sorted;
 
     for (index, file_path) in file_paths.iter().enumerate() {
-        let working_file = WorkingFile {
-            source: PathBuf::from(file_path.clone()),
-            target: PathBuf::new(),
-            active: true,
-            stable_id: index,
-        };
+        let working_file = WorkingFile { source: PathBuf::from(file_path.clone()), target: PathBuf::new(), active: true, stable_id: index };
 
         let is_file = working_file.source.is_file();
         let is_legal_file = !file_path.contains(".DS_Store");
@@ -164,41 +194,35 @@ pub fn convert_file_names_to_working_files(state: &State<'_, Mutex<AppState>>) {
 
 pub fn resolve_workingfile_duplicates(state: &State<'_, Mutex<AppState>>) {
     let mut state = state.lock().unwrap();
+    let mut hash: HashMap<&PathBuf, usize> = HashMap::new();
 
-    state.working_files = state
-        .working_files
-        .drain(..)
-        .scan(HashMap::<PathBuf, usize>::new(), |seen, working_file| {
-            let count = seen.entry(working_file.target.clone()).or_insert(0);
-            let new_target = match *count {
-                0 => working_file.target.clone(),
-                n => {
-                    let (parent, stem, extension) = (
-                        working_file.target.parent(),
-                        working_file.target.file_stem().unwrap_or_default().to_string_lossy(),
-                        working_file.target.extension().map(|e| e.to_string_lossy()),
-                    );
+    for working_file in &mut state.working_files {
+        // if base filename is a match
+        if let Some(count) = hash.get(&working_file.target) {
+            let mut iteration = count.to_owned();
+            let prefix = working_file.target.file_prefix().unwrap_or_default().to_string_lossy();
+            let extension = working_file.target.extension().map_or_default(|ext| format!(".{}", ext.to_string_lossy()));
 
-                    let new_filename = match extension {
-                        Some(ext) => format!("{}_{:04}.{}", stem, n, ext),
-                        None => format!("{}_{:04}", stem, n),
-                    };
+            // need to operate on dummy
+            let mut target_dummy = working_file.target.clone();
 
-                    match parent {
-                        Some(p) => p.join(new_filename),     // Move happens here
-                        None => PathBuf::from(new_filename), // Move happens here
-                    }
+            // iterate until target_dummy is not found in hash
+            'filename_search: loop {
+                let new_filename = format!("{}{:04}{}", prefix, iteration, extension,);
+                target_dummy.set_file_name(new_filename);
+
+                if !hash.contains_key(&target_dummy) {
+                    break 'filename_search;
                 }
-            };
-            *count += 1;
-            Some(WorkingFile {
-                source: working_file.source,
-                target: new_target,
-                active: working_file.active,
-                stable_id: working_file.stable_id,
-            })
-        })
-        .collect();
+                iteration += 1;
+            }
+
+            working_file.target = target_dummy;
+            hash.insert(&working_file.target, iteration);
+        } else {
+            hash.insert(&working_file.target, 1);
+        }
+    }
 }
 
 pub fn convert_working_files_to_file_status(state: &State<'_, Mutex<AppState>>) {
@@ -266,11 +290,7 @@ pub fn build_response(state: &State<'_, Mutex<AppState>>) -> FileStatusResponse 
         indices
             .iter()
             .map(|index| {
-                state
-                    .file_statuses
-                    .get(*index)
-                    .cloned()
-                    .expect("filtered filestatus index should point to an existing file_status")
+                state.file_statuses.get(*index).cloned().expect("filtered filestatus index should point to an existing file_status")
             })
             .collect()
     } else {

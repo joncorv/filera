@@ -38,8 +38,8 @@ jobs:
           node-version: '24'
           cache: "npm"
 
-      - name: install Rust stable
-        uses: dtolnay/rust-toolchain@stable
+      - name: install Rust (version from rust-toolchain.toml)
+        run: rustup toolchain install
 
       - name: Rust cache
         uses: swatinem/rust-cache@v2
@@ -75,10 +75,10 @@ jobs:
           node-version: '24'
           cache: "npm"
 
-      - name: install Rust stable
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: aarch64-apple-darwin,x86_64-apple-darwin
+      - name: install Rust (version from rust-toolchain.toml)
+        run: |
+          rustup toolchain install
+          rustup target add aarch64-apple-darwin x86_64-apple-darwin
 
       - name: Rust cache
         uses: swatinem/rust-cache@v2
@@ -171,10 +171,10 @@ jobs:
           node-version: '24'
           cache: "npm"
 
-      - name: install Rust stable
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: aarch64-apple-darwin,x86_64-apple-darwin
+      - name: install Rust (version from rust-toolchain.toml)
+        run: |
+          rustup toolchain install
+          rustup target add aarch64-apple-darwin x86_64-apple-darwin
 
       - name: Rust cache
         uses: swatinem/rust-cache@v2
