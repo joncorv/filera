@@ -14,8 +14,8 @@ use std::{fs::copy, fs::rename};
 use tauri_plugin_notification::NotificationExt;
 // use time::format_description::well_known::Iso8601;
 // use time::OffsetDateTime;
-use anyhow::Error;
-use anyhow::Result;
+// use anyhow::Error;
+// use anyhow::Result;
 use walkdir::WalkDir;
 
 #[tauri::command]
@@ -233,9 +233,17 @@ pub async fn user_rename_files(
                         }
                         state.file_names.clear();
                         state.working_files.clear();
-                        let blank = FileStatusResponse { statuses: vec![], stats: FileStatusStats::default() };
+                        let blank = FileStatusResponse {
+                            statuses: vec![],
+                            stats: FileStatusStats::default(),
+                        };
 
-                        app.notification().builder().title("Success").body("Files converted successfully").show().unwrap();
+                        app.notification()
+                            .builder()
+                            .title("Success")
+                            .body("Files converted successfully")
+                            .show()
+                            .unwrap();
 
                         Ok(blank)
                     }
@@ -260,9 +268,17 @@ pub async fn user_rename_files(
                         }
                         state.file_names.clear();
                         state.working_files.clear();
-                        let blank = FileStatusResponse { statuses: vec![], stats: FileStatusStats::default() };
+                        let blank = FileStatusResponse {
+                            statuses: vec![],
+                            stats: FileStatusStats::default(),
+                        };
 
-                        app.notification().builder().title("Success").body("Files converted successfully").show().unwrap();
+                        app.notification()
+                            .builder()
+                            .title("Success")
+                            .body("Files converted successfully")
+                            .show()
+                            .unwrap();
 
                         Ok(blank)
                     }
@@ -280,9 +296,17 @@ pub async fn user_rename_files(
                         }
                         state.file_names.clear();
                         state.working_files.clear();
-                        let blank = FileStatusResponse { statuses: vec![], stats: FileStatusStats::default() };
+                        let blank = FileStatusResponse {
+                            statuses: vec![],
+                            stats: FileStatusStats::default(),
+                        };
 
-                        app.notification().builder().title("Success").body("Files converted successfully").show().unwrap();
+                        app.notification()
+                            .builder()
+                            .title("Success")
+                            .body("Files converted successfully")
+                            .show()
+                            .unwrap();
 
                         Ok(blank)
                     }

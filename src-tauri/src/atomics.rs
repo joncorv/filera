@@ -1,6 +1,6 @@
 use crate::{AppState, FileStatus, FileStatusResponse, FileStatusStats, HashMap, Mutex, Path, PathBuf, State, Task, WorkingFile};
-use anyhow::Error;
-use anyhow::Result;
+// use anyhow::Error;
+// use anyhow::Result;
 // use anyhow::anyhow;
 use std::time::SystemTime;
 
@@ -10,7 +10,9 @@ pub fn solve_duplicates(file_names: Vec<String>, state: &State<'_, Mutex<AppStat
     let mut file_names = file_names;
     state.file_names.append(&mut file_names);
     state.file_names.sort_unstable();
-    state.file_names.sort_by(|a, b| natord::compare(&a.to_lowercase(), &b.to_lowercase()));
+    state
+        .file_names
+        .sort_by(|a, b| natord::compare(&a.to_lowercase(), &b.to_lowercase()));
     state.file_names.dedup();
 }
 
@@ -20,128 +22,124 @@ pub fn sort_file_names(state: &State<'_, Mutex<AppState>>) {
 
     match sort_choice {
         "name" => {
-            let mut valid_files: Vec<(String, String)> = state
+            state
                 .file_names
-                .iter()
-                .filter_map(|file| {
-                    let filename = Path::new(file).file_name()?.to_string_lossy().to_string();
-                    Some((file.clone(), filename))
-                })
-                .collect();
-
-            valid_files.sort_by_key(|(_, key)| key.clone());
-            state.file_names_sorted = valid_files.into_iter().map(|(path, _)| path).collect();
+                .sort_by(|a, b| natord::compare(&a.to_lowercase(), &b.to_lowercase()));
         }
         "modified" => {
-            let mut valid_files: Vec<(String, SystemTime)> = state
-                .file_names
-                .iter()
-                .filter_map(|file| {
-                    let meta_data = std::fs::metadata(file).ok()?.modified().unwrap_or(SystemTime::UNIX_EPOCH);
-                    Some((file.clone(), meta_data))
-                })
-                .collect();
-
-            valid_files.sort_by_key(|(_, key)| *key);
-            state.file_names_sorted = valid_files.into_iter().map(|(path, _)| path).collect();
+            state.file_names.sort_by(|a, b| {
+                let a_meta = if let Ok(ok_a_metadata) = std::fs::metadata(a) {
+                    ok_a_metadata.modified().unwrap_or(SystemTime::UNIX_EPOCH)
+                } else {
+                    SystemTime::UNIX_EPOCH
+                };
+                let b_meta = if let Ok(ok_b_metadata) = std::fs::metadata(b) {
+                    ok_b_metadata.modified().unwrap_or(SystemTime::UNIX_EPOCH)
+                } else {
+                    SystemTime::UNIX_EPOCH
+                };
+                a_meta.cmp(&b_meta)
+            });
         }
         "created" => {
-            let mut valid_files: Vec<(String, SystemTime)> = state
-                .file_names
-                .iter()
-                .filter_map(|file| {
-                    let meta_data = std::fs::metadata(file).ok()?.created().unwrap_or(SystemTime::UNIX_EPOCH);
-                    Some((file.clone(), meta_data))
-                })
-                .collect();
-
-            valid_files.sort_by_key(|(_, key)| *key);
-            state.file_names_sorted = valid_files.into_iter().map(|(path, _)| path).collect();
+            state.file_names.sort_by(|a, b| {
+                let a_meta = if let Ok(ok_a_metadata) = std::fs::metadata(a) {
+                    ok_a_metadata.created().unwrap_or(SystemTime::UNIX_EPOCH)
+                } else {
+                    SystemTime::UNIX_EPOCH
+                };
+                let b_meta = if let Ok(ok_b_metadata) = std::fs::metadata(b) {
+                    ok_b_metadata.created().unwrap_or(SystemTime::UNIX_EPOCH)
+                } else {
+                    SystemTime::UNIX_EPOCH
+                };
+                a_meta.cmp(&b_meta)
+            });
         }
         "size" => {
-            let mut valid_files: Vec<(String, _)> = state
-                .file_names
-                .iter()
-                .filter_map(|file| {
-                    let meta_data = std::fs::metadata(file).ok()?.len();
-                    Some((file.clone(), meta_data))
-                })
-                .collect();
-
-            valid_files.sort_by_key(|(_, key)| std::cmp::Reverse(*key));
-            state.file_names_sorted = valid_files.into_iter().map(|(path, _)| path).collect();
+            state.file_names.sort_by(|a, b| {
+                let a_meta = if let Ok(ok_a_metadata) = std::fs::metadata(a) {
+                    ok_a_metadata.len()
+                } else {
+                    0
+                };
+                let b_meta = if let Ok(ok_b_metadata) = std::fs::metadata(b) {
+                    ok_b_metadata.len()
+                } else {
+                    0
+                };
+                a_meta.cmp(&b_meta)
+            });
         }
         "type" => {
-            let mut valid_files: Vec<(String, String)> = state
-                .file_names
-                .iter()
-                .filter_map(|file| {
-                    std::fs::metadata(file).ok()?; // File must exist
+            state.file_names.sort_by(|a, b| {
+                let a_ext = Path::new(a)
+                    .extension()
+                    .map_or_else(|| ".zzz".to_string(), |ext| ext.to_string_lossy().to_string());
+                let b_ext = Path::new(b)
+                    .extension()
+                    .map_or_else(|| ".zzz".to_string(), |ext| ext.to_string_lossy().to_string());
 
-                    let extension = Path::new(file).extension().map_or("zz_no_ext".to_string(), |ext| ext.to_string_lossy().to_string());
-
-                    Some((file.clone(), extension))
-                })
-                .collect();
-
-            valid_files.sort_by_key(|(_, key)| key.clone());
-            state.file_names_sorted = valid_files.into_iter().map(|(path, _)| path).collect();
+                a_ext.cmp(&b_ext)
+            });
         }
         _ => {
-            // for now use the name sorting
-            let mut valid_files: Vec<(String, String)> = state
+            state
                 .file_names
-                .iter()
-                .filter_map(|file| {
-                    let filename = Path::new(file).file_name()?.to_string_lossy().to_string();
-                    Some((file.clone(), filename))
-                })
-                .collect();
-
-            valid_files.sort_by_key(|(_, key)| key.clone());
-            state.file_names_sorted = valid_files.into_iter().map(|(path, _)| path).collect();
+                .sort_by(|a, b| natord::compare(&a.to_lowercase(), &b.to_lowercase()));
         }
     }
 
     if state.sort_descending {
-        state.file_names_sorted.reverse();
+        state.file_names.reverse();
     }
 }
 
-pub fn check_file_permissions(state: &State<'_, Mutex<AppState>>) -> Result<(), Error> {
-    let state = state.lock().unwrap();
+use std::collections::HashSet;
+pub fn check_file_permissions(state: &State<'_, Mutex<AppState>>) {
+    let mut state = state.lock().unwrap();
     let mut found_errors = Vec::new();
+    let mut problem_files: HashSet<String> = HashSet::new();
 
-    for file in state.file_names_sorted.as_slice() {
-        match std::fs::metadata(file) {
-            // we can access metadata
-            Ok(data) => {
-                // but file is read-only
-                if data.permissions().readonly() {
-                    let error = format!("Error: Read-only file: {}", file);
-                    found_errors.push(error);
+    {
+        for file in state.file_names.as_slice() {
+            match std::fs::metadata(file) {
+                // we can access metadata
+                Ok(data) => {
+                    // but file is read-only
+                    if data.permissions().readonly() {
+                        let error = format!("Error: Read-only file: {}", file);
+                        found_errors.push(error);
+                        problem_files.insert(file.clone());
+                    }
                 }
-            }
-            // unable to access file metadata
-            Err(e) => {
-                let error = format!("Error: {:?}: {}", e.to_string(), file);
-                found_errors.push(error);
+                // unable to access file metadata
+                Err(e) => {
+                    let error = format!("Error: {:?}: {}", e.to_string(), file);
+                    found_errors.push(error);
+                    problem_files.insert(file.clone());
+                }
             }
         }
     }
 
     let error_result = found_errors.join("\n");
+    let dialog = rfd::MessageDialog::new()
+        .set_title("Warning")
+        .set_description(error_result)
+        .set_buttons(rfd::MessageButtons::YesNo)
+        .show();
 
-    rfd::MessageDialog::new().set_title("Warning").set_description(error_result).set_buttons(rfd::MessageButtons::Ok).show();
+    match dialog {
+        rfd::MessageDialogResult::Yes => {
+            state.file_names.retain(|file| !problem_files.contains(file));
+        }
+        _ => {
+            println!("User decides to keep in files they don't have permission to edit 🤷");
+        }
+    }
 
-    // match dialog {
-    //     rfd::MessageDialogResult::Ok => {
-    //         Ok(())
-    //     }
-    //     _ => println!("ok this failed"),
-    // }
-
-    Ok(())
+    // Ok(())
 }
 
 pub fn state_update_sort(sort_choice: String, sort_descending: bool, state: &State<'_, Mutex<AppState>>) {
@@ -155,7 +153,7 @@ pub fn state_update_sort(sort_choice: String, sort_descending: bool, state: &Sta
 #[tauri::command]
 pub fn state_update_tasks(task_list: Vec<Task>, state: &State<'_, Mutex<AppState>>) {
     let mut state = state.lock().unwrap();
-    state.tasks = task_list.clone();
+    state.tasks = task_list;
 }
 
 #[tauri::command]
@@ -175,10 +173,15 @@ pub fn state_clear_selected_filestatuses(state: &State<'_, Mutex<AppState>>) {
 pub fn convert_file_names_to_working_files(state: &State<'_, Mutex<AppState>>) {
     let mut state = state.lock().unwrap();
     let mut new_working_files: Vec<WorkingFile> = Vec::with_capacity(state.file_names.len());
-    let file_paths = &state.file_names_sorted;
+    let file_paths = &state.file_names;
 
     for (index, file_path) in file_paths.iter().enumerate() {
-        let working_file = WorkingFile { source: PathBuf::from(file_path.clone()), target: PathBuf::new(), active: true, stable_id: index };
+        let working_file = WorkingFile {
+            source: PathBuf::from(file_path.clone()),
+            target: PathBuf::new(),
+            active: true,
+            stable_id: index,
+        };
 
         let is_file = working_file.source.is_file();
         let is_legal_file = !file_path.contains(".DS_Store");
@@ -201,7 +204,10 @@ pub fn resolve_workingfile_duplicates(state: &State<'_, Mutex<AppState>>) {
         if let Some(count) = hash.get(&working_file.target) {
             let mut iteration = count.to_owned();
             let prefix = working_file.target.file_prefix().unwrap_or_default().to_string_lossy();
-            let extension = working_file.target.extension().map_or_default(|ext| format!(".{}", ext.to_string_lossy()));
+            let extension = working_file
+                .target
+                .extension()
+                .map_or_default(|ext| format!(".{}", ext.to_string_lossy()));
 
             // need to operate on dummy
             let mut target_dummy = working_file.target.clone();
@@ -290,7 +296,11 @@ pub fn build_response(state: &State<'_, Mutex<AppState>>) -> FileStatusResponse 
         indices
             .iter()
             .map(|index| {
-                state.file_statuses.get(*index).cloned().expect("filtered filestatus index should point to an existing file_status")
+                state
+                    .file_statuses
+                    .get(*index)
+                    .cloned()
+                    .expect("filtered filestatus index should point to an existing file_status")
             })
             .collect()
     } else {
