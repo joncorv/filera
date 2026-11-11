@@ -45,6 +45,7 @@ pub fn user_open_folders(directories: Vec<String>, state: State<'_, Mutex<AppSta
 
     solve_duplicates(file_names, &state);
     sort_file_names(&state);
+    check_file_permissions(&state);
     convert_file_names_to_working_files(&state);
     process_tasks_on_working_files(&state);
     resolve_workingfile_duplicates(&state);
@@ -73,6 +74,7 @@ pub fn user_dragdrop_files(files: Vec<String>, state: State<'_, Mutex<AppState>>
 
     solve_duplicates(file_names, &state);
     sort_file_names(&state);
+    check_file_permissions(&state);
     convert_file_names_to_working_files(&state);
     process_tasks_on_working_files(&state);
     resolve_workingfile_duplicates(&state);
