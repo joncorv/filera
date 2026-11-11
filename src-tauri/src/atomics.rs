@@ -98,7 +98,7 @@ pub fn sort_file_names(state: &State<'_, Mutex<AppState>>) {
 use std::collections::HashSet;
 pub fn check_file_permissions(state: &State<'_, Mutex<AppState>>) {
     let mut state = state.lock().unwrap();
-    let mut found_errors = Vec::new();
+    // let mut found_errors = Vec::new();
     let mut problem_files: HashSet<String> = HashSet::new();
 
     {
@@ -109,37 +109,41 @@ pub fn check_file_permissions(state: &State<'_, Mutex<AppState>>) {
                     // but file is read-only
                     if data.permissions().readonly() {
                         let error = format!("Error: Read-only file: {}", file);
-                        found_errors.push(error);
+                        println!("{}", error.clone());
+                        // found_errors.push(error);
                         problem_files.insert(file.clone());
                     }
                 }
                 // unable to access file metadata
                 Err(e) => {
                     let error = format!("Error: {:?}: {}", e.to_string(), file);
-                    found_errors.push(error);
+                    println!("{}", error.clone());
+                    // found_errors.push(error);
                     problem_files.insert(file.clone());
                 }
             }
         }
     }
 
-    let error_result = found_errors.join("\n");
-    let dialog = rfd::MessageDialog::new()
-        .set_title("Warning")
-        .set_description(error_result)
-        .set_buttons(rfd::MessageButtons::YesNo)
-        .show();
+    // if problem_files are found
+    if !problem_files.is_empty() {
+        // let error_result = found_errors.join("\n");
+        let dialog = rfd::MessageDialog::new()
+            .set_level(rfd::MessageLevel::Error)
+            .set_title("Your user account does not have permission to edit these files")
+            .set_description("Remove them from your processing list?")
+            .set_buttons(rfd::MessageButtons::YesNo)
+            .show();
 
-    match dialog {
-        rfd::MessageDialogResult::Yes => {
-            state.file_names.retain(|file| !problem_files.contains(file));
-        }
-        _ => {
-            println!("User decides to keep in files they don't have permission to edit 🤷");
+        match dialog {
+            rfd::MessageDialogResult::Yes => {
+                state.file_names.retain(|file| !problem_files.contains(file));
+            }
+            _ => {
+                println!("User decides to keep in files they don't have permission to edit 🤷");
+            }
         }
     }
-
-    // Ok(())
 }
 
 pub fn state_update_sort(sort_choice: String, sort_descending: bool, state: &State<'_, Mutex<AppState>>) {
