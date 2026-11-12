@@ -1,3 +1,0 @@
-Edge case test file (creation failed)
-Intended name: ::colon_double.txt
-Error: [Errno 2] No such file or directory: '::colon_double.txt'

@@ -1,4 +1,0 @@
-Edge case test file
-Original name: ___triple_under.txt
-Created for testing file renaming applications.
-Contains challenging characters or patterns.

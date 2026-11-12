@@ -1,3 +1,0 @@
-Edge case test file (creation failed)
-Intended name: del *.txt
-Error: [Errno 22] Invalid argument: 'del *.txt'
