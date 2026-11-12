@@ -1,0 +1,55 @@
+name: "test"
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+  # lets main.yml (publish) run this as a gate before releasing
+  workflow_call:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: ["ubuntu-22.04", "windows-latest", "macos-latest"]
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: install dependencies (ubuntu only)
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
+      - name: setup node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: "npm"
+
+      - name: install Rust (version from rust-toolchain.toml)
+        run: rustup toolchain install
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: "./src-tauri -> target"
+
+      - name: install frontend dependencies
+        run: npm ci
+
+      # type-checks the frontend, and creates ../dist, which tauri's
+      # generate_context! needs to exist at compile time
+      - name: build frontend
+        run: npm run build
+
+      - name: run tests
+        working-directory: src-tauri
+        run: cargo test --locked

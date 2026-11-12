@@ -10,8 +10,13 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
+  # Run the test suite first; every publish job waits on this
+  test:
+    uses: ./.github/workflows/test.yml
+
   # Windows and Linux → GitHub Releases
   publish-tauri:
+    needs: test
     permissions:
       contents: write
     strategy:
@@ -62,6 +67,7 @@ jobs:
 
   # macOS → GitHub Releases (DMG, notarized with Developer ID, universal binary)
   publish-macos-dmg:
+    needs: test
     permissions:
       contents: write
     runs-on: macos-latest
@@ -159,6 +165,7 @@ jobs:
 
   # macOS → App Store Connect (universal binary)
   publish-macos-appstore:
+    needs: test
     permissions:
       contents: write
     runs-on: macos-latest
@@ -261,6 +268,7 @@ jobs:
         run: security delete-keychain $KEYCHAIN_PATH || true
 
   publish-nix:
+    needs: test
     permissions:
       contents: write
     runs-on: ubuntu-latest
