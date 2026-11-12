@@ -5,7 +5,8 @@
 <h1 align="center">Filera</h1>
 
 <p align="center">
-  A cross-platform desktop application for batch file renaming, built with Tauri (Rust + Vue 3).
+  Rename, move, and organize files in bulk.<br>
+  Simple rules. Live preview. Open source.
 </p>
 
 <p align="center">

@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "Filera - Batch file renamer",
+        "title": "Filera",
         "width": 1200,
         "height": 800,
         "zoomHotkeysEnabled": false,

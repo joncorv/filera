@@ -49,7 +49,7 @@ rustPlatform.buildRustPackage rec {
   buildAndTestSubdir = cargoRoot;
 
   meta = with lib; {
-    description = "Batch file renaming app";
+    description = "Rename, move, and organize files in bulk";
     homepage = "https://github.com/joncorv/filera";
     license = licenses.mit;
     maintainers = [ ];

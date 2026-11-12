@@ -1,5 +1,5 @@
 {
-  description = "Filera - A modern file management application";
+  description = "Filera: rename, move, and organize files in bulk";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
