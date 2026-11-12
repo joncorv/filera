@@ -3,7 +3,6 @@ pub use std::time::SystemTime;
 // use anyhow::Error;
 // use anyhow::Result;
 // use anyhow::anyhow;
-use std::time::SystemTime;
 
 #[tauri::command]
 pub fn solve_duplicates(file_names: Vec<String>, state: &State<'_, Mutex<AppState>>) {
