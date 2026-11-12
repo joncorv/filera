@@ -21,19 +21,19 @@ pub use tauri::{Manager, State};
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct WorkingFile {
-    source: PathBuf,
-    target: PathBuf,
-    active: bool,
-    stable_id: usize,
+    pub source: PathBuf,
+    pub target: PathBuf,
+    pub active: bool,
+    pub stable_id: usize,
 }
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct FileStatus {
-    old_file_name: String,
-    new_file_name: String,
-    active: bool,
-    selected: bool,
-    stable_id: usize,
+    pub old_file_name: String,
+    pub new_file_name: String,
+    pub active: bool,
+    pub selected: bool,
+    pub stable_id: usize,
 }
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, Default)]
@@ -58,19 +58,19 @@ pub struct SelectedFileStatusAnchor {
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, Default)]
 pub struct AppState {
-    file_names: Vec<String>,
+    pub file_names: Vec<String>,
     // file_names_sorted: Vec<String>,
-    working_files: Vec<WorkingFile>,
-    tasks: Vec<Task>,
-    sort_choice: String,
-    sort_descending: bool,
-    search: String,
-    output: Output,
-    file_statuses: Vec<FileStatus>,
-    filtered_filestatus_indices: Option<Vec<usize>>,
-    filtered_count: usize,
-    selected_filestatuses: Option<HashSet<usize>>,
-    selected_filestatus_anchor: Option<SelectedFileStatusAnchor>,
+    pub working_files: Vec<WorkingFile>,
+    pub tasks: Vec<Task>,
+    pub sort_choice: String,
+    pub sort_descending: bool,
+    pub search: String,
+    pub output: Output,
+    pub file_statuses: Vec<FileStatus>,
+    pub filtered_filestatus_indices: Option<Vec<usize>>,
+    pub filtered_count: usize,
+    pub selected_filestatuses: Option<HashSet<usize>>,
+    pub selected_filestatus_anchor: Option<SelectedFileStatusAnchor>,
 }
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]

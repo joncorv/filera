@@ -1,18 +1,48 @@
-#:schema https://dystroy.org/bacon/.bacon.schema.json
-
-# This is a configuration file for the bacon tool
-#
-# Complete help on configuration: https://dystroy.org/bacon/config/
-#
-# You may check the current default at
-#   https://github.com/Canop/bacon/blob/main/defaults/default-bacon.toml
-
 default_job = "check"
 env.CARGO_TERM_COLOR = "always"
 
 [jobs.check]
 command = ["cargo", "check"]
 need_stdout = false
+
+# This job lets you run
+# - all tests: bacon test
+# - a specific test: bacon test -- config::test_default_files
+# - the tests of a package: bacon test -- -- -p config
+[jobs.test]
+command = ["cargo", "test", "--", "--show-output"]
+need_stdout = true
+# allow_warnings = true
+# background = false
+on_change_strategy = "kill_then_restart"
+scroll_anchor = "auto"
+
+[jobs.run-long]
+command = [
+  "cargo",
+  "run",
+  # put launch parameters for your program behind a `--` separator
+]
+need_stdout = true
+allow_warnings = true
+background = false
+on_change_strategy = "kill_then_restart"
+# kill = ["pkill", "-TERM", "-P"]
+scroll_anchor = "auto"
+
+[jobs.bench]
+command = [
+  "cargo",
+  "bench",
+  "--color",
+  "always"
+  # put launch parameters for your program behind a `--` separator
+]
+need_stdout = true
+allow_warnings = true
+background = false
+on_change_strategy = "kill_then_restart"
+scroll_anchor = "auto"
 
 [jobs.check-all]
 command = ["cargo", "check", "--all-targets"]
@@ -43,25 +73,16 @@ need_stdout = false
 # The 'dismiss' feature may come handy
 [jobs.pedantic]
 command = [
-	"cargo", "clippy",
-	"--",
-	"-W", "clippy::pedantic",
+  "cargo",
+  "clippy",
+  "--",
+  "-W",
+  "clippy::pedantic",
 ]
 need_stdout = false
 
-# This job lets you run
-# - all tests: bacon test
-# - a specific test: bacon test -- config::test_default_files
-# - the tests of a package: bacon test -- -- -p config
-[jobs.test]
-command = ["cargo", "test"]
-need_stdout = true
-
 [jobs.nextest]
-command = [
-    "cargo", "nextest", "run",
-    "--hide-progress-bar", "--failure-output", "final"
-]
+command = ["cargo", "nextest", "run", "--hide-progress-bar", "--failure-output", "final"]
 need_stdout = true
 analyzer = "nextest"
 
@@ -74,14 +95,15 @@ need_stdout = false
 [jobs.doc-open]
 command = ["cargo", "doc", "--no-deps", "--open"]
 need_stdout = false
-on_success = "back" # so that we don't open the browser at each change
+on_success = "back"  # so that we don't open the browser at each change
 
 # You can run your application and have the result displayed in bacon,
 # if it makes sense for this crate.
 [jobs.run]
 command = [
-    "cargo", "run",
-    # put launch parameters for your program behind a `--` separator
+  "cargo",
+  "run",
+  # put launch parameters for your program behind a `--` separator
 ]
 need_stdout = true
 allow_warnings = true
@@ -99,32 +121,6 @@ scroll_anchor = "auto"
 # a binding `r = job:run-long` at the end of this file .
 # A custom kill command such as the one suggested below is frequently needed to kill
 # long running programs (uncomment it if you need it)
-[jobs.run-long]
-command = [
-    "cargo", "run",
-    # put launch parameters for your program behind a `--` separator
-]
-need_stdout = true
-allow_warnings = true
-background = false
-on_change_strategy = "kill_then_restart"
-# kill = ["pkill", "-TERM", "-P"]
-scroll_anchor = "auto"
-
-
-
-[jobs.bench]
-command = [
-    "cargo", "bench", "--color", "always"
-    # put launch parameters for your program behind a `--` separator
-]
-need_stdout = true
-allow_warnings = true
-background = false
-on_change_strategy = "kill_then_restart"
-# kill = ["pkill", "-TERM", "-P"]
-scroll_anchor = "auto"
-
 # This parameterized job runs the example of your choice, as soon
 # as the code compiles.
 # Call it as
@@ -140,4 +136,4 @@ allow_warnings = true
 # should go in your personal global prefs.toml file instead.
 [keybindings]
 # alt-m = "job:my-job"
-c = "job:clippy-all" # comment this to have 'c' run clippy on only the default target
+c = "job:clippy-all"  # comment this to have 'c' run clippy on only the default target
