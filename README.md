@@ -1,4 +1,13 @@
 # Filera
+
+[![Tests](https://github.com/joncorv/filera/actions/workflows/test.yml/badge.svg)](https://github.com/joncorv/filera/actions/workflows/test.yml)
+[![Release](https://img.shields.io/github/v/release/joncorv/filera?display_name=release)](https://github.com/joncorv/filera/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/joncorv/filera/total)](https://github.com/joncorv/filera/releases)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+[![Platforms](https://img.shields.io/badge/platforms-macOS%20%7C%20Windows%20%7C%20Linux%20%7C%20NixOS-lightgrey)](https://github.com/joncorv/filera/releases/latest)
+[![Built with Tauri](https://img.shields.io/badge/built%20with-Tauri-24C8DB?logo=tauri)](https://tauri.app)
+[![Cachix](https://img.shields.io/badge/cachix-filera-blue)](https://app.cachix.org/cache/filera)
+
 A cross-platform desktop application for batch file renaming, built with Tauri (Rust + Vue 3).
 
 ![filera app ui](src/assets/app_ui.png?raw=true "Filera App UI")
