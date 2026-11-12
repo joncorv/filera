@@ -17,16 +17,16 @@
 
 rustPlatform.buildRustPackage rec {
   pname = "filera";
-  version = "0.4.37";
+  version = "0.4.48";
 
   src = ./.;
 
-  cargoHash = "sha256-GQX2nDEHQPt1hRxvmfA+700OOxDHobI/vZSph5liDdg=";
+  cargoHash = "sha256-R1fwl8/+7aUbh+gW/XoUfTEnfCUbdo837b+LVvNlcbg=";
 
   npmDeps = fetchNpmDeps {
     name = "${pname}-${version}-npm-deps";
     inherit src;
-    hash = "sha256-wYu0YR63phxm7iVo0l9UXT5wZJocVjifzT+e6bnYtI8=";
+    hash = "sha256-LZu9de9pWszqmBERD/7RlZuNLL5BcSl/cVhGi56+JQw=";
   };
 
   nativeBuildInputs = [
@@ -49,7 +49,7 @@ rustPlatform.buildRustPackage rec {
   buildAndTestSubdir = cargoRoot;
 
   meta = with lib; {
-    description = "Filera - A powerful, cross-platform batch file renaming tool";
+    description = "Batch file renaming app";
     homepage = "https://github.com/joncorv/filera";
     license = licenses.mit;
     maintainers = [ ];

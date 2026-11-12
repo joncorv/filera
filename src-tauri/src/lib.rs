@@ -59,7 +59,7 @@ pub struct SelectedFileStatusAnchor {
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, Default)]
 pub struct AppState {
     file_names: Vec<String>,
-    file_names_sorted: Vec<String>,
+    // file_names_sorted: Vec<String>,
     working_files: Vec<WorkingFile>,
     tasks: Vec<Task>,
     sort_choice: String,
