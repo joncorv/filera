@@ -1,14 +1,20 @@
-# Filera
+<p align="center">
+  <img src="src-tauri/icons/128x128@2x.png" width="128" height="128" alt="Filera icon">
+</p>
 
-[![Tests](https://github.com/joncorv/filera/actions/workflows/test.yml/badge.svg)](https://github.com/joncorv/filera/actions/workflows/test.yml)
-[![Release](https://img.shields.io/github/v/release/joncorv/filera?display_name=release)](https://github.com/joncorv/filera/releases/latest)
-[![Downloads](https://img.shields.io/github/downloads/joncorv/filera/total)](https://github.com/joncorv/filera/releases)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
-[![Platforms](https://img.shields.io/badge/platforms-macOS%20%7C%20Windows%20%7C%20Linux%20%7C%20NixOS-lightgrey)](https://github.com/joncorv/filera/releases/latest)
-[![Built with Tauri](https://img.shields.io/badge/built%20with-Tauri-24C8DB?logo=tauri)](https://tauri.app)
-[![Cachix](https://img.shields.io/badge/cachix-filera-blue)](https://app.cachix.org/cache/filera)
+<h1 align="center">Filera</h1>
 
-A cross-platform desktop application for batch file renaming, built with Tauri (Rust + Vue 3).
+<p align="center">
+  A cross-platform desktop application for batch file renaming, built with Tauri (Rust + Vue 3).
+</p>
+
+<p align="center">
+  <a href="https://github.com/joncorv/filera/actions/workflows/test.yml"><img src="https://github.com/joncorv/filera/actions/workflows/test.yml/badge.svg" alt="Tests"></a>
+  <a href="https://github.com/joncorv/filera/releases/latest"><img src="https://img.shields.io/github/v/release/joncorv/filera?display_name=release" alt="Release"></a>
+  <a href="https://github.com/joncorv/filera/releases"><img src="https://img.shields.io/github/downloads/joncorv/filera/total" alt="Downloads"></a>
+  <a href="https://github.com/joncorv/filera/releases/latest"><img src="https://img.shields.io/badge/platforms-macOS%20%7C%20Windows%20%7C%20Linux%20%7C%20NixOS-lightgrey" alt="Platforms"></a>
+  <a href="https://tauri.app"><img src="https://img.shields.io/badge/built%20with-Tauri-24C8DB?logo=tauri" alt="Built with Tauri"></a>
+</p>
 
 ![filera app ui](src/assets/app_ui.png?raw=true "Filera App UI")
 
