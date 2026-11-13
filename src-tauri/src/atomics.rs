@@ -22,9 +22,12 @@ pub fn sort_file_names(state: &State<'_, Mutex<AppState>>) {
 
     match sort_choice {
         "name" => {
-            state
-                .file_names
-                .sort_by(|a, b| natord::compare(&a.to_lowercase(), &b.to_lowercase()));
+            // sort by filename only (not full path), so files from different folders interleave by name
+            state.file_names.sort_by(|a, b| {
+                let a_name = Path::new(a).file_name().unwrap_or_default().to_string_lossy().to_lowercase();
+                let b_name = Path::new(b).file_name().unwrap_or_default().to_string_lossy().to_lowercase();
+                natord::compare(&a_name, &b_name)
+            });
         }
         "modified" => {
             state.file_names.sort_by(|a, b| {
@@ -68,17 +71,19 @@ pub fn sort_file_names(state: &State<'_, Mutex<AppState>>) {
                 } else {
                     0
                 };
-                a_meta.cmp(&b_meta)
+                // largest first in the default direction
+                b_meta.cmp(&a_meta)
             });
         }
         "type" => {
             state.file_names.sort_by(|a, b| {
+                // files without an extension get a key that sorts after real extensions
                 let a_ext = Path::new(a)
                     .extension()
-                    .map_or_else(|| ".zzz".to_string(), |ext| ext.to_string_lossy().to_string());
+                    .map_or_else(|| "zzz".to_string(), |ext| ext.to_string_lossy().to_lowercase());
                 let b_ext = Path::new(b)
                     .extension()
-                    .map_or_else(|| ".zzz".to_string(), |ext| ext.to_string_lossy().to_string());
+                    .map_or_else(|| "zzz".to_string(), |ext| ext.to_string_lossy().to_lowercase());
 
                 a_ext.cmp(&b_ext)
             });
@@ -207,11 +212,9 @@ pub fn resolve_workingfile_duplicates(state: &State<'_, Mutex<AppState>>) {
         // if base filename is a match
         if let Some(count) = hash.get(&working_file.target) {
             let mut iteration = count.to_owned();
+            let file_name = working_file.target.file_name().unwrap_or_default().to_string_lossy();
             let prefix = working_file.target.file_prefix().unwrap_or_default().to_string_lossy();
-            let extension = working_file
-                .target
-                .extension()
-                .map_or_default(|ext| format!(".{}", ext.to_string_lossy()));
+            let extension = &file_name[prefix.len()..];
 
             // need to operate on dummy
             let mut target_dummy = working_file.target.clone();
