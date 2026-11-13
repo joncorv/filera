@@ -1,9 +1,13 @@
+#![allow(dead_code)]
+
 use filera_lib::{AppState, Mutex};
 use tauri::test::{MockRuntime, mock_app};
 use tauri::{App, Manager, State};
 use tempfile::TempDir;
 
-use super::*;
+use anyhow::Error;
+use std::fs::File;
+use std::io::Write;
 
 pub fn create_mock_app_state() -> State<'static, Mutex<AppState>> {
     let app = mock_app();

@@ -21,14 +21,6 @@ pub fn sort_file_names(state: &State<'_, Mutex<AppState>>) {
     let sort_choice: &str = &state.sort_choice;
 
     match sort_choice {
-        "name" => {
-            // sort by filename only (not full path), so files from different folders interleave by name
-            state.file_names.sort_by(|a, b| {
-                let a_name = Path::new(a).file_name().unwrap_or_default().to_string_lossy().to_lowercase();
-                let b_name = Path::new(b).file_name().unwrap_or_default().to_string_lossy().to_lowercase();
-                natord::compare(&a_name, &b_name)
-            });
-        }
         "modified" => {
             state.file_names.sort_by(|a, b| {
                 let a_meta = if let Ok(ok_a_metadata) = std::fs::metadata(a) {
@@ -85,13 +77,18 @@ pub fn sort_file_names(state: &State<'_, Mutex<AppState>>) {
                     .extension()
                     .map_or_else(|| "zzz".to_string(), |ext| ext.to_string_lossy().to_lowercase());
 
-                a_ext.cmp(&b_ext)
+                let a_name = Path::new(a).file_name().unwrap_or_default().to_string_lossy().to_lowercase();
+                let b_name = Path::new(b).file_name().unwrap_or_default().to_string_lossy().to_lowercase();
+
+                a_ext.cmp(&b_ext).then(natord::compare(&a_name, &b_name))
             });
         }
         _ => {
-            state
-                .file_names
-                .sort_by(|a, b| natord::compare(&a.to_lowercase(), &b.to_lowercase()));
+            state.file_names.sort_by(|a, b| {
+                let a_name = Path::new(a).file_name().unwrap_or_default().to_string_lossy().to_lowercase();
+                let b_name = Path::new(b).file_name().unwrap_or_default().to_string_lossy().to_lowercase();
+                natord::compare(&a_name, &b_name)
+            });
         }
     }
 
